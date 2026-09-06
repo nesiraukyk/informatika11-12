@@ -1,17 +1,13 @@
-TRUMPA ATMINTINĖ MOKYTOJUI
+INFORMATIKA 11 v3
 
-config.js:
-- open = ar tema atidaryta
-- practiceOpen = ar veikia praktika
-- assessmentOpen = ar veikia atsiskaitymas
+Pirmiausia atidarykite SETUP.md.
 
-questions.js:
-- praktikos klausimai
+v3 funkcijos:
+- keli mokytojai ir atskiros jų klasės;
+- mokinių paskyros;
+- rezultatų, bandymų ir laiko kaupimas;
+- failų įkėlimas mokiniams;
+- mokinių darbų pateikimas;
+- temų/testų atrakinimas klasei.
 
-assessment.js:
-- tikro atsiskaitymo klausimai; kol nereikia, laikykite tuščią
-
-resources/:
-- mokiniams atsisiunčiami failai
-
-Jei norite ką nors pakeisti, galite tiesiog atsiųsti man šį ZIP ar atskirus failus ir parašyti, ką pakeisti.
+Mokytojų duomenys atskiriami Supabase RLS taisyklėmis.

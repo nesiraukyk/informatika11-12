@@ -1,0 +1,4 @@
+Supabase prijungtas.
+Project URL: https://gmqnaupstlwvckttjpfe.supabase.co
+Publishable key įrašytas į supabase-config.js.
+Secret/service_role raktai nėra įtraukti.

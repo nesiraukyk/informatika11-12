@@ -7,88 +7,81 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header class="topbar">
+<header class="topbar hidden" id="appHeader">
   <div class="wrap nav">
-    <button class="brand" data-go="home"><span class="brandMark">11</span><span><b>Informatika</b><small>III gimnazijos klasė</small></span></button>
+    <button class="brand" data-route="dashboard"><span class="brandMark">11</span><span><b>Informatika</b><small id="headerRole">Mokymosi platforma</small></span></button>
     <div class="navRight">
-      <button class="navBtn" data-go="home">Temos</button>
-      <button class="navBtn" data-go="history">Mano rezultatai</button>
+      <button class="navBtn" data-route="dashboard">Pradžia</button>
+      <button class="navBtn" id="teacherNav" data-route="teacher">Mokytojo skydelis</button>
+      <button class="navBtn" id="studentNav" data-route="student">Mano klasė</button>
+      <button class="navBtn" data-route="profile">Paskyra</button>
       <button class="iconBtn" id="themeToggle">◐</button>
+      <button class="danger" id="logoutBtn">Atsijungti</button>
     </div>
   </div>
 </header>
 
 <main class="wrap">
-<section id="view-home" class="view">
-  <div class="hero">
-    <div class="heroCopy">
-      <span class="eyebrow">MOKYMOSI PLATFORMA</span>
-      <h1>Mokykis. Praktikuokis. Kartok.</h1>
-      <p>Temos atrakinamos tada, kai jas pradedate mokytis. Praktikos bandymai sudaromi atsitiktinai, o atsiskaitymai prieinami tik mokytojui juos atidarius.</p>
-      <div class="stats">
-        <span><b id="openTopicsCount">1</b> atidaryta tema</span>
-        <span><b id="practiceCount">65</b> praktikos klausimai</span>
-        <span><b id="attemptCount">0</b> bandymų</span>
-      </div>
-    </div>
-    <div class="currentCard">
-      <span class="now">DABAR MOKOMĖS</span>
-      <div class="currentIcon">✒️</div>
-      <h2>Vektorinės grafikos ypatumai</h2>
-      <p>Vektoriai, Bezjė kreivės, RGB ir CMYK, raiška, failų formatai, eksportas ir dizaino principai.</p>
-      <button class="primary" data-open-topic="vektorine-grafika">Atidaryti temą →</button>
+<section id="view-setup" class="view hidden">
+  <div class="authShell">
+    <div class="authCard">
+      <span class="kicker">PIRMAS PALEIDIMAS</span>
+      <h1>Dar reikia prijungti duomenų bazę</h1>
+      <p>Atidaryk <b>SETUP.md</b>. Sukūrus Supabase projektą, į <code>supabase-config.js</code> reikės įrašyti Project URL ir Publishable key.</p>
+      <div class="notice">Kol šie du duomenys neįrašyti, prisijungimai ir mokinių rezultatų kaupimas neveiks.</div>
     </div>
   </div>
+</section>
 
-  <div class="sectionHead">
-    <span class="kicker">2026–2027</span>
-    <h2>III gimnazijos klasės temos</h2>
-    <p>Temos ir rekomenduojamos valandos sudėtos pagal pateiktas bendrosios programos įgyvendinimo rekomendacijas.</p>
+<section id="view-auth" class="view hidden">
+  <div class="authShell two">
+    <div class="authIntro">
+      <span class="eyebrow">INFORMATIKA 11</span>
+      <h1>Viena platforma mokymuisi, praktikai ir darbams.</h1>
+      <p>Mokytojas mato tik savo klases. Mokinys mato tik savo mokytojo atidarytas temas, failus, užduotis ir savo rezultatus.</p>
+      <ul class="featureList">
+        <li>Praktikos bandymų istorija ir rezultatai</li>
+        <li>Paskutinis prisijungimas ir mokymosi laikas</li>
+        <li>Mokytojo įkeliami mokymosi failai</li>
+        <li>Mokinių darbų pateikimas ir atsisiuntimas</li>
+      </ul>
+    </div>
+    <div class="authCard">
+      <div class="authTabs">
+        <button class="tab active" id="tabLogin">Prisijungti</button>
+        <button class="tab" id="tabSignup">Mokinio registracija</button>
+      </div>
+      <form id="loginForm">
+        <label>El. paštas<input type="email" id="loginEmail" required autocomplete="email"></label>
+        <label>Slaptažodis<input type="password" id="loginPassword" required autocomplete="current-password"></label>
+        <button class="primary wide" type="submit">Prisijungti</button>
+      </form>
+      <form id="signupForm" class="hidden">
+        <label>Vardas ir pavardė<input type="text" id="signupName" required></label>
+        <label>El. paštas<input type="email" id="signupEmail" required></label>
+        <label>Slaptažodis<input type="password" id="signupPassword" required minlength="8"></label>
+        <button class="primary wide" type="submit">Sukurti mokinio paskyrą</button>
+        <p class="formHint">Mokytojų paskyros saugumo sumetimais sukuriamos atskirai – mokinys pats negali pasirinkti mokytojo rolės.</p>
+      </form>
+      <div id="authMessage" class="formMessage hidden"></div>
+    </div>
   </div>
-  <div id="topicsGrid" class="topicsGrid"></div>
+</section>
+
+<section id="view-dashboard" class="view hidden">
+  <div id="dashboardContent"></div>
+</section>
+
+<section id="view-teacher" class="view hidden">
+  <div id="teacherContent"></div>
+</section>
+
+<section id="view-student" class="view hidden">
+  <div id="studentContent"></div>
 </section>
 
 <section id="view-topic" class="view hidden">
-  <button class="back" data-go="home">← Visos temos</button>
-  <div id="topicHeader"></div>
-
-  <div class="topicLayout">
-    <div class="topicMain">
-      <section class="panel">
-        <div class="panelHead">
-          <div><span class="kicker">PRAKTIKA</span><h2>Pasitikrink žinias</h2></div>
-          <span class="openBadge">Atidaryta</span>
-        </div>
-        <p class="muted">Klausimai ir atsakymų variantai kiekvieno bandymo metu sumaišomi. Po atsakymo iškart gausi paaiškinimą.</p>
-        <div class="controls">
-          <label>Klausimų skaičius
-            <select id="practiceSize"><option>5</option><option selected>10</option><option>15</option><option>20</option></select>
-          </label>
-          <button class="primary large" id="startPractice">Pradėti praktiką</button>
-        </div>
-      </section>
-
-      <section class="panel">
-        <div class="panelHead"><div><span class="kicker">MOKYMOSI FAILAI</span><h2>Atsisiunčiama medžiaga</h2></div></div>
-        <div id="resourcesList"></div>
-      </section>
-
-      <section class="panel">
-        <div class="panelHead">
-          <div><span class="kicker">ATSISKAITYMAS</span><h2>Temos testas</h2></div>
-          <span id="assessmentStatus" class="lockBadge">🔒 Užrakinta</span>
-        </div>
-        <div id="assessmentBox"></div>
-      </section>
-    </div>
-    <aside>
-      <section class="panel sticky">
-        <span class="kicker">KĄ REIKIA MOKĖTI</span>
-        <h3>Temos gairės</h3>
-        <ul id="topicGoals" class="goals"></ul>
-      </section>
-    </aside>
-  </div>
+  <div id="topicContent"></div>
 </section>
 
 <section id="view-quiz" class="view hidden">
@@ -118,21 +111,22 @@
     <div class="resultActions">
       <button class="primary" id="retryQuiz">Bandyti dar kartą</button>
       <button class="ghost" id="reviewErrors">Peržiūrėti klaidas</button>
-      <button class="ghost" data-go="home">Temos</button>
+      <button class="ghost" data-route="student">Grįžti</button>
     </div>
   </div>
   <div id="errorsReview" class="panel hidden"></div>
 </section>
 
-<section id="view-history" class="view hidden">
-  <div class="sectionHead histHead"><div><span class="kicker">ŠIS ĮRENGINYS</span><h2>Mano rezultatų istorija</h2><p>Rezultatai saugomi tik šioje naršyklėje.</p></div><button class="danger" id="clearHistory">Išvalyti istoriją</button></div>
-  <div class="panel" id="historyList"></div>
+<section id="view-profile" class="view hidden">
+  <div id="profileContent"></div>
 </section>
 </main>
 
+<div id="modal" class="modal hidden"><div class="modalCard"><button class="modalClose" id="modalClose">×</button><div id="modalContent"></div></div></div>
 <div id="toast" class="toast hidden"></div>
-<footer><div class="wrap">Informatika 11 · III gimnazijos klasė</div></footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
 <script src="config.js"></script>
 <script src="questions.js"></script>
 <script src="assessment.js"></script>
