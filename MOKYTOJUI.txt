@@ -1,0 +1,17 @@
+TRUMPA ATMINTINĖ MOKYTOJUI
+
+config.js:
+- open = ar tema atidaryta
+- practiceOpen = ar veikia praktika
+- assessmentOpen = ar veikia atsiskaitymas
+
+questions.js:
+- praktikos klausimai
+
+assessment.js:
+- tikro atsiskaitymo klausimai; kol nereikia, laikykite tuščią
+
+resources/:
+- mokiniams atsisiunčiami failai
+
+Jei norite ką nors pakeisti, galite tiesiog atsiųsti man šį ZIP ar atskirus failus ir parašyti, ką pakeisti.
