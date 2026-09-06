@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="11 klasės informatikos mokymosi platforma – atsitiktiniai testai pagal III gimnazijos klasės temas.">
+<title>Informatika 11 | Mokymosi platforma</title>
+<style>
+:root {
+  --bg:#f3f6fb; --card:#ffffff; --card2:#f8fafc; --ink:#172033; --muted:#667085;
+  --line:#e3e8ef; --brand:#335cff; --brand2:#2447da; --ok:#138a4b; --bad:#c9362b;
+  --warn:#b7791f; --shadow:0 12px 35px rgba(31,45,75,.08); --radius:20px;
+}
+[data-theme="dark"] {
+  --bg:#0e1421; --card:#151d2c; --card2:#1b2536; --ink:#eef3fb; --muted:#9ba9be;
+  --line:#2b374b; --brand:#6f8cff; --brand2:#8da3ff; --ok:#4fd18b; --bad:#ff7c73;
+  --warn:#f4c266; --shadow:0 12px 35px rgba(0,0,0,.24);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.shell{max-width:1200px;margin:auto;padding:0 22px}
+.topbar{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.nav{height:72px;display:flex;align-items:center;gap:14px}
+.logo{display:flex;align-items:center;gap:11px;font-weight:850;font-size:18px}
+.logoMark{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--brand),#7c5cff);display:grid;place-items:center;color:white;box-shadow:0 8px 18px rgba(51,92,255,.25)}
+.spacer{flex:1}
+.iconBtn,.ghost,.primary,.danger{border:1px solid var(--line);border-radius:12px;padding:10px 14px;background:var(--card);color:var(--ink);font-weight:700}
+.iconBtn{padding:9px 11px}
+.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+.primary:hover{background:var(--brand2)}
+.danger{color:var(--bad);background:var(--card)}
+.hero{padding:64px 0 30px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;background:color-mix(in srgb,var(--brand) 10%,var(--card));color:var(--brand);padding:7px 10px;border-radius:999px;font-size:13px;font-weight:800}
+.hero h1{font-size:clamp(34px,5vw,64px);line-height:1.02;letter-spacing:-.04em;margin:18px 0 16px;max-width:850px}
+.hero p{max-width:720px;color:var(--muted);font-size:18px;line-height:1.6}
+.heroActions{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
+.heroActions button{padding:13px 18px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:28px 0 8px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:17px;box-shadow:var(--shadow)}
+.stat b{display:block;font-size:24px}
+.stat span{color:var(--muted);font-size:13px}
+.sectionHead{display:flex;align-items:end;gap:16px;margin:38px 0 16px}
+.sectionHead h2{margin:0;font-size:28px}
+.sectionHead p{margin:5px 0 0;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.topic{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:19px;box-shadow:var(--shadow);transition:.2s transform,.2s border-color;display:flex;flex-direction:column;min-height:210px}
+.topic:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--brand) 36%,var(--line))}
+.topicIcon{font-size:29px}
+.topic h3{margin:13px 0 7px;font-size:18px}
+.topic p{color:var(--muted);font-size:14px;line-height:1.5;margin:0 0 14px}
+.meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto}
+.pill{font-size:12px;font-weight:800;border-radius:999px;padding:6px 9px;background:var(--card2);border:1px solid var(--line);color:var(--muted)}
+.topicActions{display:flex;gap:8px;margin-top:13px}
+.topicActions button{flex:1}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+.hidden{display:none!important}
+.quizTop{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.progress{height:9px;background:var(--card2);border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.progress>div{height:100%;background:linear-gradient(90deg,var(--brand),#7a5cff);transition:width .25s}
+.qbox{margin-top:18px}
+.qnum{color:var(--muted);font-size:13px;font-weight:800}
+.question{font-size:24px;line-height:1.35;margin:8px 0 18px;font-weight:820}
+.answers{display:grid;gap:10px}
+.answer{width:100%;text-align:left;border:1px solid var(--line);background:var(--card2);color:var(--ink);padding:14px 16px;border-radius:14px;font-weight:650}
+.answer:hover{border-color:var(--brand)}
+.answer.good{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 12%,var(--card));color:var(--ok)}
+.answer.bad{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 10%,var(--card));color:var(--bad)}
+.answer.selected{border-color:var(--brand);box-shadow:0 0 0 2px color-mix(in srgb,var(--brand) 18%,transparent)}
+.feedback{margin-top:14px;padding:14px;border-radius:14px;background:var(--card2);border:1px solid var(--line);line-height:1.5}
+.quizActions{display:flex;align-items:center;gap:9px;margin-top:16px}
+.resultHero{text-align:center;padding:20px 0}
+.scoreRing{width:132px;height:132px;border-radius:50%;margin:10px auto 18px;display:grid;place-items:center;background:conic-gradient(var(--brand) var(--score),var(--line) 0);position:relative}
+.scoreRing:after{content:"";position:absolute;inset:12px;background:var(--card);border-radius:50%}
+.scoreRing b{z-index:1;font-size:30px}
+.resultGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.resultGrid>div{padding:14px;background:var(--card2);border:1px solid var(--line);border-radius:14px;text-align:center}
+.resultGrid b{display:block;font-size:22px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:15px}
+.tab{border:1px solid var(--line);background:var(--card2);color:var(--ink);padding:9px 13px;border-radius:999px;font-weight:750}
+.tab.on{background:var(--brand);border-color:var(--brand);color:white}
+.formGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+label{font-size:13px;font-weight:800;display:block;margin-bottom:6px}
+input,select,textarea{width:100%;background:var(--card2);border:1px solid var(--line);color:var(--ink);border-radius:11px;padding:10px 11px}
+textarea{min-height:80px;resize:vertical}
+.bankRow{padding:14px 0;border-bottom:1px solid var(--line);display:flex;gap:12px;align-items:start}
+.bankRow:last-child{border-bottom:0}
+.bankRow .text{flex:1}
+.bankRow small{color:var(--muted)}
+.notice{padding:13px 15px;border-radius:13px;background:color-mix(in srgb,var(--brand) 9%,var(--card));border:1px solid color-mix(in srgb,var(--brand) 25%,var(--line));color:var(--muted);line-height:1.5}
+.footer{padding:44px 0;color:var(--muted);font-size:13px;text-align:center}
+.historyItem{display:grid;grid-template-columns:1fr auto;gap:10px;padding:12px 0;border-bottom:1px solid var(--line)}
+.historyItem:last-child{border-bottom:0}
+code{background:var(--card2);border:1px solid var(--line);padding:2px 6px;border-radius:6px}
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}.stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:620px){.grid,.formGrid{grid-template-columns:1fr}.hero{padding-top:38px}.stats{grid-template-columns:1fr 1fr}.nav .navText{display:none}.question{font-size:20px}.resultGrid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="shell nav">
+    <div class="logo"><div class="logoMark">11</div><span>Informatika</span></div>
+    <div class="spacer"></div>
+    <button class="ghost navText" onclick="showHome()">Temos</button>
+    <button class="ghost navText" onclick="showHistory()">Rezultatai</button>
+    <button class="ghost navText" onclick="showTeacher()">Mokytojui</button>
+    <button class="iconBtn" id="themeBtn" title="Keisti temą" onclick="toggleTheme()">🌙</button>
+  </div>
+</div>
+
+<main class="shell">
+<section id="home">
+  <div class="hero">
+    <span class="eyebrow">● III gimnazijos klasė · mokymuisi ir praktikai</span>
+    <h1>Informatika, kurią gali praktikuoti vėl ir vėl.</h1>
+    <p>Pasirink temą, gauk atsitiktinius klausimus, pasitikrink atsakymus ir kartok tol, kol jautiesi užtikrintai. Kiekvienas naujas bandymas sudaromas iš naujo.</p>
+    <div class="heroActions">
+      <button class="primary" onclick="startMixed('practice')">🎯 Mišri praktika</button>
+      <button class="ghost" onclick="startMixed('test')">📝 Mišrus testas</button>
+    </div>
+  </div>
+  <div class="stats">
+    <div class="stat"><b id="statTopics">13</b><span>temų</span></div>
+    <div class="stat"><b id="statQuestions">0</b><span>klausimų banke</span></div>
+    <div class="stat"><b id="statAttempts">0</b><span>atliktų bandymų</span></div>
+    <div class="stat"><b id="statBest">–</b><span>geriausias rezultatas</span></div>
+  </div>
+  <div class="sectionHead">
+    <div><h2>Pasirink temą</h2><p>Mokymosi režimas rodo paaiškinimą iškart. Testo režimas – tik pabaigoje.</p></div>
+  </div>
+  <div class="grid" id="topicGrid"></div>
+</section>
+
+<section id="quiz" class="hidden">
+  <div class="sectionHead">
+    <div><h2 id="quizTitle">Testas</h2><p id="quizSubtitle"></p></div>
+    <div class="spacer"></div>
+    <button class="ghost" onclick="confirmExit()">← Grįžti</button>
+  </div>
+  <div class="panel">
+    <div class="quizTop">
+      <span class="pill" id="modePill"></span>
+      <span class="pill" id="levelPill"></span>
+      <div class="spacer"></div>
+      <b id="qCounter"></b>
+    </div>
+    <div class="progress"><div id="progressBar" style="width:0"></div></div>
+    <div class="qbox">
+      <div class="qnum" id="qTopic"></div>
+      <div class="question" id="questionText"></div>
+      <div class="answers" id="answers"></div>
+      <div id="feedback" class="feedback hidden"></div>
+      <div class="quizActions">
+        <button class="ghost hidden" id="prevBtn" onclick="prevQuestion()">← Atgal</button>
+        <div class="spacer"></div>
+        <button class="primary hidden" id="nextBtn" onclick="nextQuestion()">Toliau →</button>
+        <button class="primary hidden" id="submitBtn" onclick="finishQuiz()">Baigti testą</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="results" class="hidden">
+  <div class="sectionHead"><div><h2>Rezultatas</h2><p id="resultTopic"></p></div></div>
+  <div class="panel resultHero">
+    <div class="scoreRing" id="scoreRing" style="--score:0%"><b id="scoreText">0%</b></div>
+    <h2 id="resultMessage"></h2>
+    <div class="resultGrid">
+      <div><b id="correctN">0</b><span>teisingai</span></div>
+      <div><b id="wrongN">0</b><span>klaidingai</span></div>
+      <div><b id="thresholdN">80%</b><span>tikslas</span></div>
+    </div>
+    <div class="heroActions" style="justify-content:center">
+      <button class="primary" onclick="retryQuiz()">↻ Bandyti dar kartą</button>
+      <button class="ghost" onclick="reviewMistakes()">Peržiūrėti klaidas</button>
+      <button class="ghost" onclick="showHome()">Temos</button>
+    </div>
+  </div>
+  <div id="mistakeReview" class="panel hidden" style="margin-top:14px"></div>
+</section>
+
+<section id="history" class="hidden">
+  <div class="sectionHead"><div><h2>Rezultatų istorija</h2><p>Rezultatai saugomi tik šiame įrenginyje ir šioje naršyklėje.</p></div><div class="spacer"></div><button class="danger" onclick="clearHistory()">Išvalyti</button></div>
+  <div class="panel" id="historyList"></div>
+</section>
+
+<section id="teacher" class="hidden">
+  <div class="sectionHead"><div><h2>Mokytojo režimas</h2><p>Valdyk klausimų banką, eksportuok jį ir keisk testo nustatymus.</p></div></div>
+  <div class="tabs">
+    <button class="tab on" data-t="settings" onclick="teacherTab('settings',this)">Nustatymai</button>
+    <button class="tab" data-t="bank" onclick="teacherTab('bank',this)">Klausimų bankas</button>
+    <button class="tab" data-t="import" onclick="teacherTab('import',this)">Importas / eksportas</button>
+  </div>
+
+  <div id="teacher-settings" class="panel">
+    <div class="formGrid">
+      <div><label>Klausimų skaičius viename bandyme</label><select id="settingCount"><option>5</option><option selected>10</option><option>15</option><option>20</option><option>25</option></select></div>
+      <div><label>Tikslas / išlaikymo riba</label><select id="settingPass"><option>60</option><option>70</option><option selected>80</option><option>90</option><option>100</option></select></div>
+    </div>
+    <div class="heroActions"><button class="primary" onclick="saveSettings()">Išsaugoti nustatymus</button></div>
+    <div class="notice" style="margin-top:16px"><b>Pastaba:</b> tai statinė svetainė, todėl mokinių rezultatai šiuo metu lieka jų naršyklėje. Jei norėsi bendros klasės rezultatų suvestinės, kitame etape galima prijungti duomenų bazę ir prisijungimus.</div>
+  </div>
+
+  <div id="teacher-bank" class="panel hidden">
+    <div class="formGrid">
+      <div><label>Tema</label><select id="newTopic"></select></div>
+      <div><label>Sunkumas</label><select id="newLevel"><option>Lengvas</option><option selected>Vidutinis</option><option>Sunkesnis</option></select></div>
+    </div>
+    <div style="margin-top:12px"><label>Klausimas</label><textarea id="newQ" placeholder="Įrašyk klausimą..."></textarea></div>
+    <div class="formGrid" style="margin-top:10px">
+      <div><label>A</label><input id="o0"></div><div><label>B</label><input id="o1"></div>
+      <div><label>C</label><input id="o2"></div><div><label>D</label><input id="o3"></div>
+    </div>
+    <div class="formGrid" style="margin-top:10px">
+      <div><label>Teisingas atsakymas</label><select id="newCorrect"><option value="0">A</option><option value="1">B</option><option value="2">C</option><option value="3">D</option></select></div>
+      <div><label>Paaiškinimas</label><input id="newExp" placeholder="Kodėl atsakymas teisingas?"></div>
+    </div>
+    <div class="heroActions"><button class="primary" onclick="addQuestion()">+ Pridėti klausimą</button></div>
+    <hr style="border:0;border-top:1px solid var(--line);margin:22px 0">
+    <div class="formGrid">
+      <div><label>Filtruoti temą</label><select id="bankTopicFilter" onchange="renderBank()"></select></div>
+      <div><label>Ieškoti klausimo</label><input id="bankSearch" oninput="renderBank()" placeholder="Paieška..."></div>
+    </div>
+    <div id="bankList" style="margin-top:10px"></div>
+  </div>
+
+  <div id="teacher-import" class="panel hidden">
+    <h3>Eksportas ir atsarginė kopija</h3>
+    <p style="color:var(--muted)">Eksportuotas JSON failas saugo visą klausimų banką. Jį galėsi importuoti kitame kompiuteryje arba panaudoti atnaujintai svetainės versijai.</p>
+    <div class="heroActions">
+      <button class="primary" onclick="exportBank()">Eksportuoti klausimus (.json)</button>
+      <label class="ghost" style="cursor:pointer">Importuoti JSON<input id="importFile" type="file" accept=".json" style="display:none"></label>
+      <button class="ghost" onclick="exportResults()">Eksportuoti rezultatus (.csv)</button>
+      <button class="danger" onclick="resetBank()">Atkurti pradinį banką</button>
+    </div>
+  </div>
+</section>
+</main>
+
+<div class="shell footer">Sukurta 11 klasės informatikos praktikai · 13 III gimnazijos klasės temų · veikia ir be prisijungimo</div>
+
+<script>
+const DEFAULT_DATA = {"topics": [{"id": "viz", "title": "Duomenų vizualizavimas", "icon": "📊", "desc": "Diagramos, grafikai, infografikai ir tinkamas duomenų pateikimas."}, {"id": "vector", "title": "Vektorinė grafika", "icon": "✒️", "desc": "Vektorinė ir taškinė grafika, SVG, raiška ir formatų pasirinkimas."}, {"id": "structures", "title": "Duomenų struktūros", "icon": "🧩", "desc": "Duomenų tipai, sąrašai, eilutės ir darbas su jų elementais."}, {"id": "files", "title": "Tekstiniai duomenų srautai", "icon": "📄", "desc": "TXT failų skaitymas, rašymas, papildymas ir duomenų skaidymas."}, {"id": "algorithms", "title": "Algoritmai", "icon": "🧠", "desc": "Paieška, rikiavimas, elementų šalinimas ir papildymas."}, {"id": "functions", "title": "Paprogramės", "icon": "⚙️", "desc": "Funkcijos, parametrai, grąžinamos reikšmės ir kodo skaidymas."}, {"id": "bigdata", "title": "Didelių duomenų tyrinėjimas", "icon": "🗃️", "desc": "Duomenų šaltiniai, kokybė, analizė ir didelių duomenų ypatybės."}, {"id": "ai", "title": "DI ir neuroniniai tinklai", "icon": "🤖", "desc": "DI, mašininis mokymasis, modelio mokymas, privalumai ir rizikos."}, {"id": "crypto", "title": "Kriptografinės sistemos", "icon": "🔐", "desc": "Viešasis ir privatusis raktas, šifravimas, sertifikatai."}, {"id": "networks", "title": "Kompiuterių tinklai", "icon": "🌐", "desc": "LAN/WAN, IP, maršrutizatoriai, protokolai ir interneto paslaugos."}, {"id": "collab", "title": "Virtualus bendravimas", "icon": "💬", "desc": "Bendradarbiavimo priemonės, etiketas, sinchroninis ir asinchroninis darbas."}, {"id": "safety", "title": "Saugus darbas technologijomis", "icon": "🛡️", "desc": "Kibernetinis saugumas, ergonomika, atsarginės kopijos ir poveikis aplinkai."}, {"id": "animation", "title": "2D animacija ir modeliavimas", "icon": "🎞️", "desc": "Kadrai, laiko juosta, sluoksniai, animavimo principai ir eksportas."}], "questions": [{"topic": "viz", "q": "Kuri diagrama dažniausiai tinkamiausia reikšmės kitimui laike parodyti?", "opts": ["Skritulinė", "Linijinė", "Taškinė be ašių", "Veno"], "c": 1, "exp": "Linijinė diagrama gerai parodo tendenciją ir kitimą laiko ašyje.", "level": "Lengvas"}, {"topic": "viz", "q": "Kada skritulinė diagrama yra tinkamiausia?", "opts": ["Kai rodome visumos dalių proporcijas", "Kai turime šimtus laiko taškų", "Kai lyginame du nepriklausomus kintamuosius", "Kai reikia parodyti programos algoritmą"], "c": 0, "exp": "Skritulinė diagrama tinkama, kai kategorijos sudaro vieną visumą ir norime parodyti jų dalis.", "level": "Lengvas"}, {"topic": "viz", "q": "Ką būtina pateikti diagramoje, jei kitaip neaišku, ką reiškia spalvos ar simboliai?", "opts": ["Slaptažodį", "Legendą", "Failo plėtinį", "Programos kodą"], "c": 1, "exp": "Legenda paaiškina spalvų, simbolių ar duomenų serijų reikšmes.", "level": "Lengvas"}, {"topic": "viz", "q": "Kuri vizualizacija geriausiai tinka dviejų skaitinių kintamųjų ryšiui tirti?", "opts": ["Sklaidos (XY) diagrama", "Skritulinė diagrama", "Piktograma", "Organizacinė schema"], "c": 0, "exp": "Sklaidos diagrama leidžia matyti dviejų skaitinių kintamųjų tarpusavio ryšį.", "level": "Vidutinis"}, {"topic": "viz", "q": "Kuris veiksmas gali klaidinti žiūrovą?", "opts": ["Aiškiai nurodytos ašys", "Duomenų šaltinio nurodymas", "Sutrumpinta Y ašis, smarkiai išpučianti nedidelius skirtumus", "Vienodi matavimo vienetai"], "c": 2, "exp": "Sutrumpinta ašis gali vizualiai perdėti skirtumus, todėl ją reikia naudoti atsargiai ir aiškiai pažymėti.", "level": "Vidutinis"}, {"topic": "viz", "q": "Koks svarbiausias infografiko tikslas?", "opts": ["Paslėpti duomenų šaltinį", "Aiškiai ir glaustai perteikti informaciją vaizdu", "Pakeisti visus tekstinius paaiškinimus", "Naudoti kuo daugiau spalvų"], "c": 1, "exp": "Infografikas turi padėti greitai suprasti svarbiausią informaciją, o ne ją užgožti.", "level": "Lengvas"}, {"topic": "viz", "q": "Kuris failo formatas dažniausiai tinka skaidriam fonui išsaugoti rastrinėje grafikoje?", "opts": ["PNG", "JPG", "TXT", "MP3"], "c": 0, "exp": "PNG palaiko alfa kanalą ir skaidrumą; įprastas JPG skaidrumo nepalaiko.", "level": "Vidutinis"}, {"topic": "viz", "q": "Ką pirmiausia verta padaryti prieš pasirenkant diagramos tipą?", "opts": ["Padidinti šrifto dydį", "Nuspręsti, kokią žinutę ar ryšį norime parodyti", "Ištrinti duomenų pavadinimus", "Pasirinkti mėgstamiausią spalvą"], "c": 1, "exp": "Vizualizacijos tipas turi būti parenkamas pagal duomenų pobūdį ir norimą perteikti įžvalgą.", "level": "Vidutinis"}, {"topic": "vector", "q": "Iš ko sudarytas vektorinis vaizdas?", "opts": ["Tik iš pikselių", "Iš matematiškai aprašytų objektų ir kreivių", "Tik iš fotografijų", "Iš garso bangų"], "c": 1, "exp": "Vektorinė grafika objektus aprašo taškais, linijomis, kreivėmis ir jų savybėmis.", "level": "Lengvas"}, {"topic": "vector", "q": "Koks pagrindinis vektorinės grafikos privalumas didinant vaizdą?", "opts": ["Failas visada tampa mažesnis", "Vaizdas nepraranda ryškumo dėl mastelio keitimo", "Automatiškai tampa nuotrauka", "Nereikia spalvų"], "c": 1, "exp": "Vektoriai perskaičiuojami matematiškai, todėl mastelis gali būti keičiamas neprarandant kokybės.", "level": "Lengvas"}, {"topic": "vector", "q": "Kuris formatas yra vektorinės grafikos formatas?", "opts": ["SVG", "JPEG", "BMP", "GIF"], "c": 0, "exp": "SVG (Scalable Vector Graphics) yra plačiai naudojamas vektorinės grafikos formatas.", "level": "Lengvas"}, {"topic": "vector", "q": "Kas nutinka rasterizuojant vektorinį objektą?", "opts": ["Jis paverčiamas pikselių vaizdu", "Jis paverčiamas garso failu", "Ištrinamos visos spalvos", "Jis tampa programos kodu"], "c": 0, "exp": "Rasterizavimas paverčia vektorinį vaizdą taškine, pikseliais sudaryta grafika.", "level": "Vidutinis"}, {"topic": "vector", "q": "Kuris įrankis labiausiai siejamas su vektorine grafika?", "opts": ["Inkscape", "Notepad", "VLC", "Audacity"], "c": 0, "exp": "Inkscape yra vektorinės grafikos kūrimo programa.", "level": "Lengvas"}, {"topic": "vector", "q": "Kas yra Bezjė kreivė?", "opts": ["Garso glaudinimo būdas", "Kreivė, valdoma atraminiais taškais ir rankenėlėmis", "Tinklo protokolas", "Duomenų bazės lentelė"], "c": 1, "exp": "Bezjė kreivės naudojamos vektorinėje grafikoje sklandžioms kreivėms formuoti.", "level": "Vidutinis"}, {"topic": "vector", "q": "Kada dažniau rinktumėmės vektorinį formatą?", "opts": ["Logotipui, kurį reikės spausdinti įvairiais dydžiais", "Telefono nuotraukai su milijonais atspalvių", "Ilgam vaizdo įrašui", "Garso įrašui"], "c": 0, "exp": "Logotipams svarbus mastelio keitimas neprarandant kokybės, todėl vektorius tam labai tinkamas.", "level": "Vidutinis"}, {"topic": "vector", "q": "Kas vektorinėje grafikoje dažniausiai apibrėžia objekto kontūrą?", "opts": ["Stroke", "Frame rate", "Bitrate", "Codec"], "c": 0, "exp": "Stroke reiškia objekto kontūrą, o fill – jo užpildą.", "level": "Vidutinis"}, {"topic": "structures", "q": "Kuris Python duomenų tipas saugo sveikąjį skaičių?", "opts": ["int", "float", "str", "bool"], "c": 0, "exp": "int skirtas sveikiesiems skaičiams.", "level": "Lengvas"}, {"topic": "structures", "q": "Kuris Python duomenų tipas saugo tekstą?", "opts": ["str", "int", "bool", "float"], "c": 0, "exp": "str (string) naudojamas simbolių eilutėms saugoti.", "level": "Lengvas"}, {"topic": "structures", "q": "Kokia bus len([4, 8, 15, 16]) reikšmė Python kalboje?", "opts": ["3", "4", "15", "16"], "c": 1, "exp": "len() grąžina elementų skaičių, todėl atsakymas 4.", "level": "Lengvas"}, {"topic": "structures", "q": "Koks yra pirmojo Python sąrašo elemento indeksas?", "opts": ["1", "0", "-2", "10"], "c": 1, "exp": "Python indeksavimas prasideda nuo 0.", "level": "Lengvas"}, {"topic": "structures", "q": "Ką grąžina loginis palyginimas 7 > 3?", "opts": ["7", "3", "True", "None"], "c": 2, "exp": "Palyginimo rezultatas yra loginė reikšmė True.", "level": "Lengvas"}, {"topic": "structures", "q": "Koks bus rezultatas: 'Info' + 'rmatika'?", "opts": ["Info rmatika", "Informatika", "Klaida", "Infor"], "c": 1, "exp": "Operatorius + sujungia dvi eilutes į vieną.", "level": "Lengvas"}, {"topic": "structures", "q": "Kuri išraiška paima paskutinį sąrašo a elementą Python kalboje?", "opts": ["a[0]", "a[1]", "a[-1]", "a[last]"], "c": 2, "exp": "Indeksas -1 Python kalboje reiškia paskutinį sekos elementą.", "level": "Vidutinis"}, {"topic": "structures", "q": "Kuris tipas geriausiai tinka reikšmei „prisijungęs / neprisijungęs“ saugoti?", "opts": ["bool", "float", "str sąrašas", "complex"], "c": 0, "exp": "Dvejetainėms būsenoms tinkamas loginis bool tipas.", "level": "Vidutinis"}, {"topic": "files", "q": "Kuri Python funkcija naudojama failui atverti?", "opts": ["open()", "fileStart()", "readText()", "loadFileNow()"], "c": 0, "exp": "Standartinė Python funkcija failui atverti yra open().", "level": "Lengvas"}, {"topic": "files", "q": "Koks failo atvėrimo režimas 'r'?", "opts": ["Rašymas", "Skaitymas", "Papildymas", "Šifravimas"], "c": 1, "exp": "'r' reiškia read – skaitymo režimą.", "level": "Lengvas"}, {"topic": "files", "q": "Koks failo atvėrimo režimas 'a'?", "opts": ["Papildymas failo pabaigoje", "Tik skaitymas", "Failo trynimas", "Dvejetainis šifravimas"], "c": 0, "exp": "'a' (append) leidžia rašyti failo pabaigoje neištrinant ankstesnio turinio.", "level": "Vidutinis"}, {"topic": "files", "q": "Kodėl patogu naudoti konstrukciją with open(...) as f: ?", "opts": ["Ji automatiškai uždaro failą pasibaigus blokui", "Ji visada ištrina failą", "Ji išjungia klaidas", "Ji pakeičia TXT į PDF"], "c": 0, "exp": "with konteksto valdiklis pasirūpina failo uždarymu.", "level": "Vidutinis"}, {"topic": "files", "q": "Kuris simbolis dažniausiai žymi eilutės pabaigą tekste?", "opts": ["\\n", "\\x", "\\q", "\\z"], "c": 0, "exp": "\\n yra naujos eilutės simbolis.", "level": "Lengvas"}, {"topic": "files", "q": "Ką dažniausiai daro split() su teksto eilute?", "opts": ["Padalija ją į dalis pagal skirtuką", "Užšifruoja", "Paverčia paveikslėliu", "Ištrina failą"], "c": 0, "exp": "split() suskaido eilutę į elementus, pagal nutylėjimą – pagal baltuosius simbolius.", "level": "Vidutinis"}, {"topic": "files", "q": "Kada naudinga skaityti failą eilutė po eilutės?", "opts": ["Kai failas didelis ir nenorime visko laikyti atmintyje", "Tik kai failas tuščias", "Tik paveikslėliams", "Kai norime išjungti programą"], "c": 0, "exp": "Eilučių iteravimas taupo atmintį ir patogus didesniems tekstiniams failams.", "level": "Vidutinis"}, {"topic": "files", "q": "Kuo skiriasi 'w' nuo 'a' režimo?", "opts": ["'w' perrašo failą, o 'a' papildo jo pabaigą", "Jie visiškai vienodi", "'w' tik skaito, 'a' tik šifruoja", "'a' trina failą"], "c": 0, "exp": "'w' atidarant esamą failą jo turinys perrašomas, o 'a' prideda naujus duomenis pabaigoje.", "level": "Vidutinis"}, {"topic": "algorithms", "q": "Kas yra algoritmas?", "opts": ["Baigtinė aiškių veiksmų seka uždaviniui spręsti", "Kompiuterio detalė", "Failo formatas", "Tik programavimo kalba"], "c": 0, "exp": "Algoritmas – nuosekli, apibrėžta veiksmų seka problemai spręsti.", "level": "Lengvas"}, {"topic": "algorithms", "q": "Kaip veikia tiesinė paieška?", "opts": ["Tikrina elementus nuosekliai, kol randa ieškomą reikšmę", "Visada pradeda nuo vidurio ir dalija sritį pusiau", "Rikiuoja tik mažėjimo tvarka", "Šifruoja sąrašą"], "c": 0, "exp": "Tiesinė paieška peržiūri elementus vieną po kito.", "level": "Lengvas"}, {"topic": "algorithms", "q": "Ką turi užtikrinti rikiavimas pagal du kriterijus?", "opts": ["Pirmiausia taikomas pagrindinis kriterijus, o sutapus – antrasis", "Abu kriterijai ignoruojami", "Duomenys tampa atsitiktiniai", "Elementai ištrinami"], "c": 0, "exp": "Pavyzdžiui, pirmiausia pagal klasę, o vienodoje klasėje – pagal pavardę.", "level": "Vidutinis"}, {"topic": "algorithms", "q": "Kuri operacija pakeičia duomenų struktūros dydį?", "opts": ["Elemento pridėjimas", "Reikšmės palyginimas", "Elemento perskaitymas", "Loginė sąlyga"], "c": 0, "exp": "Pridėjus elementą sąrašo elementų skaičius padidėja.", "level": "Lengvas"}, {"topic": "algorithms", "q": "Koks svarbus algoritmo vertinimo kriterijus?", "opts": ["Korektiškumas", "Programuotojo mėgstama spalva", "Monitoriaus dydis", "Klaviatūros gamintojas"], "c": 0, "exp": "Algoritmas pirmiausia turi pateikti teisingą rezultatą numatytiems duomenims.", "level": "Lengvas"}, {"topic": "algorithms", "q": "Ką reiškia pseudokodas?", "opts": ["Žmogui suprantamas algoritmo aprašas, nepririštas prie konkrečios kalbos sintaksės", "Slaptas dvejetainis failas", "Tik Python programa", "Duomenų bazės slaptažodis"], "c": 0, "exp": "Pseudokodas padeda aprašyti algoritmo logiką prieš pasirenkant konkrečią programavimo kalbą.", "level": "Vidutinis"}, {"topic": "algorithms", "q": "Kodėl prieš kuriant algoritmą svarbu apibrėžti įvestį ir išvestį?", "opts": ["Kad būtų aišku, kokius duomenis gauname ir kokio rezultato tikimės", "Kad programa būtų spalvingesnė", "Kad nereikėtų testuoti", "Kad veiktų tik internete"], "c": 0, "exp": "Aiški įvestis ir išvestis padeda tiksliai suformuluoti sprendžiamą uždavinį.", "level": "Vidutinis"}, {"topic": "algorithms", "q": "Jei sąraše reikia pašalinti visus neigiamus skaičius, ką algoritmas turi tikrinti?", "opts": ["Kiekvieno elemento ženklą / sąlygą x < 0", "Tik pirmą elementą", "Failo pavadinimą", "Ekrano raišką"], "c": 0, "exp": "Reikia peržiūrėti elementus ir pašalinti tuos, kurie tenkina sąlygą x < 0.", "level": "Vidutinis"}, {"topic": "functions", "q": "Kam naudojamos funkcijos programoje?", "opts": ["Kodui skaidyti į pakartotinai naudojamas logines dalis", "Tik failams trinti", "Tik paveikslėliams rodyti", "Operacinei sistemai įdiegti"], "c": 0, "exp": "Funkcijos padeda struktūruoti kodą ir tą pačią logiką naudoti pakartotinai.", "level": "Lengvas"}, {"topic": "functions", "q": "Koks Python raktažodis naudojamas funkcijai aprašyti?", "opts": ["def", "func", "make", "returnonly"], "c": 0, "exp": "Python funkcijos aprašymas prasideda raktažodžiu def.", "level": "Lengvas"}, {"topic": "functions", "q": "Kas yra funkcijos parametras?", "opts": ["Kintamasis funkcijos apraše, per kurį jai perduodama reikšmė", "Programos failo plėtinys", "Ekrano dydis", "Komentaro rūšis"], "c": 0, "exp": "Parametrai leidžia funkcijai priimti duomenis iš ją kviečiančio kodo.", "level": "Lengvas"}, {"topic": "functions", "q": "Ką Python funkcijoje daro return?", "opts": ["Grąžina reikšmę kvietimo vietai ir baigia funkcijos vykdymą", "Ištrina funkciją", "Sukuria failą", "Paleidžia naršyklę"], "c": 0, "exp": "return pateikia funkcijos rezultatą kvietėjui.", "level": "Lengvas"}, {"topic": "functions", "q": "Kuo formalusis parametras skiriasi nuo faktinio?", "opts": ["Formalusis rašomas funkcijos apraše, faktinis perduodamas kvietime", "Jie niekuo nesiskiria ir sąvokos nevartojamos", "Faktinis visada yra failas", "Formalusis visada skaičius 0"], "c": 0, "exp": "Formalieji parametrai apibrėžia vietas reikšmėms, o faktiniai argumentai pateikiami kviečiant funkciją.", "level": "Vidutinis"}, {"topic": "functions", "q": "Kuris kvietimas teisingas funkcijai def suma(a, b): ... ?", "opts": ["suma(3, 5)", "def suma(3,5)", "suma = (3;5)", "return suma"], "c": 0, "exp": "Funkcija kviečiama jos vardu ir argumentais skliaustuose.", "level": "Lengvas"}, {"topic": "functions", "q": "Kodėl verta vengti vienos milžiniškos funkcijos?", "opts": ["Mažesnes funkcijas lengviau testuoti, suprasti ir pakartotinai naudoti", "Didelė funkcija negali turėti kintamųjų", "Python draudžia daugiau nei 10 eilučių", "Funkcija tada neveikia internete"], "c": 0, "exp": "Aiškus atsakomybių skaidymas gerina kodo skaitomumą ir priežiūrą.", "level": "Vidutinis"}, {"topic": "functions", "q": "Jei funkcija turi apskaičiuoti kvadrato plotą pagal kraštinę a, kokia tinkama grąžinama išraiška?", "opts": ["a * a", "a + 4", "2 * a", "a / 2"], "c": 0, "exp": "Kvadrato plotas yra a², t. y. a * a.", "level": "Lengvas"}, {"topic": "bigdata", "q": "Kuri savybė dažnai siejama su dideliais duomenimis (Big Data)?", "opts": ["Didelė apimtis", "Tik maži TXT failai", "Vienas įrašas", "Duomenų nebuvimas"], "c": 0, "exp": "Didelė duomenų apimtis yra viena klasikinių Big Data savybių.", "level": "Lengvas"}, {"topic": "bigdata", "q": "Ką reiškia duomenų kokybė?", "opts": ["Duomenų tikslumą, pilnumą, nuoseklumą ir tinkamumą naudoti", "Tik failo spalvą", "Tik eilučių skaičių", "Tik duomenų kainą"], "c": 0, "exp": "Kokybiški duomenys turi būti patikimi ir tinkami numatytai analizei.", "level": "Vidutinis"}, {"topic": "bigdata", "q": "Kodėl svarbu žinoti duomenų šaltinį?", "opts": ["Kad galėtume vertinti patikimumą ir duomenų kilmę", "Kad diagrama būtų didesnė", "Kad nereikėtų tikrinti datos", "Kad failas taptų PDF"], "c": 0, "exp": "Šaltinis yra svarbus vertinant duomenų patikimumą, aktualumą ir naudojimo sąlygas.", "level": "Lengvas"}, {"topic": "bigdata", "q": "Kas yra atviri duomenys?", "opts": ["Duomenys, kuriuos leidžiama laisvai pasiekti ir pakartotinai naudoti pagal nustatytas sąlygas", "Bet kokie pavogti duomenys", "Tik slaptažodžiai", "Tik asmens sveikatos įrašai"], "c": 0, "exp": "Atviri duomenys skelbiami taip, kad juos būtų galima teisėtai pasiekti ir panaudoti pakartotinai.", "level": "Vidutinis"}, {"topic": "bigdata", "q": "Ką verta daryti su trūkstamomis reikšmėmis prieš analizę?", "opts": ["Nustatyti jų priežastį ir pasirinkti pagrįstą tvarkymo būdą", "Visada pakeisti nuliu", "Visada ištrinti visą duomenų rinkinį", "Ignoruoti nepastebėjus"], "c": 0, "exp": "Trūkstamų duomenų tvarkymo būdas priklauso nuo konteksto ir gali paveikti išvadas.", "level": "Vidutinis"}, {"topic": "bigdata", "q": "Kuris veiksmas yra duomenų paruošimo dalis?", "opts": ["Dublikatų aptikimas ir šalinimas", "Monitoriaus valymas", "Programos logotipo keitimas", "Pelės greičio keitimas"], "c": 0, "exp": "Dublikatų šalinimas yra tipinė duomenų valymo užduotis.", "level": "Lengvas"}, {"topic": "bigdata", "q": "Kas gali sukelti šališką analizės rezultatą?", "opts": ["Nereprezentatyvi duomenų imtis", "Aiškūs matavimo vienetai", "Duomenų šaltinio dokumentavimas", "Pakankamas duomenų kiekis"], "c": 0, "exp": "Jei imtis neatspindi tiriamos populiacijos, išvados gali būti šališkos.", "level": "Vidutinis"}, {"topic": "bigdata", "q": "Ką reiškia koreliacija?", "opts": ["Statistinį dviejų kintamųjų tarpusavio ryšį, kuris savaime neįrodo priežasties", "Priežasties įrodymą bet kuriuo atveju", "Failų glaudinimą", "Duomenų šifravimą"], "c": 0, "exp": "Koreliacija rodo sąryšį, tačiau pati savaime neįrodo priežastinio ryšio.", "level": "Sunkesnis"}, {"topic": "ai", "q": "Kas yra dirbtinis intelektas?", "opts": ["Sistemų gebėjimas atlikti užduotis, kurioms paprastai reikia žmogaus intelektinių gebėjimų", "Tik robotų aparatinė įranga", "Failo formatas", "Interneto kabelis"], "c": 0, "exp": "DI apima metodus, leidžiančius sistemoms atpažinti dėsningumus, prognozuoti, generuoti ar priimti sprendimus.", "level": "Lengvas"}, {"topic": "ai", "q": "Kas yra mašininis mokymasis?", "opts": ["DI sritis, kurioje modeliai mokosi iš duomenų", "Monitoriaus kalibravimas", "Failų kopijavimas", "Tik programavimas be duomenų"], "c": 0, "exp": "Mašininis mokymasis leidžia modeliams išmokti dėsningumus iš pavyzdžių ir duomenų.", "level": "Lengvas"}, {"topic": "ai", "q": "Kam naudojamas mokymo duomenų rinkinys?", "opts": ["Modelio parametrams išmokti", "Tik galutiniam rezultatui spausdinti", "Kompiuteriui išjungti", "Slaptažodžiui generuoti"], "c": 0, "exp": "Mokymo duomenys naudojami modelio parametrams pritaikyti.", "level": "Vidutinis"}, {"topic": "ai", "q": "Kam reikalingas testavimo duomenų rinkinys?", "opts": ["Įvertinti, kaip modelis veikia su mokymo metu nematytais duomenimis", "Išmokyti modelį atmintinai", "Pakeisti operacinę sistemą", "Sukurti vektorinį logotipą"], "c": 0, "exp": "Testavimo duomenys padeda vertinti modelio gebėjimą generalizuoti.", "level": "Vidutinis"}, {"topic": "ai", "q": "Kas yra per didelis prisitaikymas (overfitting)?", "opts": ["Modelis labai gerai atsimena mokymo duomenis, bet prastai veikia su naujais", "Modelis per lėtai atsisiunčia failą", "Kompiuteris perkaista", "Duomenys yra SVG formatu"], "c": 0, "exp": "Overfitting reiškia silpną generalizaciją už mokymo duomenų ribų.", "level": "Sunkesnis"}, {"topic": "ai", "q": "Kuri priemonė leidžia naršyklėje mokyti paprastą klasifikavimo modelį be sudėtingo programavimo?", "opts": ["Teachable Machine", "Notepad", "File Explorer", "Paint tik kaip teksto redaktorius"], "c": 0, "exp": "Teachable Machine yra edukacinė priemonė paprastiems ML modeliams mokyti naršyklėje.", "level": "Lengvas"}, {"topic": "ai", "q": "Kodėl DI sistemoje svarbu vertinti mokymo duomenų šališkumą?", "opts": ["Šališki duomenys gali lemti neteisingus ar diskriminuojančius rezultatus", "Kad failas būtų mažesnis", "Kad modelis turėtų daugiau spalvų", "Kad nereikėtų testuoti"], "c": 0, "exp": "Modelis perima dalį dėsningumų ir šališkumų, esančių mokymo duomenyse.", "level": "Vidutinis"}, {"topic": "ai", "q": "Kuris teiginys apie generatyvinį DI teisingas?", "opts": ["Jis gali generuoti naują turinį pagal išmoktus dėsningumus", "Jis visada pateikia tik faktus be klaidų", "Jis neveikia su tekstu", "Jis yra tik antivirusinė programa"], "c": 0, "exp": "Generatyvinis DI kuria tekstą, vaizdus ar kitą turinį, tačiau gali klysti ir jo rezultatus reikia vertinti kritiškai.", "level": "Vidutinis"}, {"topic": "crypto", "q": "Koks pagrindinis šifravimo tikslas?", "opts": ["Apsaugoti duomenų konfidencialumą", "Padidinti ekrano raišką", "Pagreitinti spausdintuvą", "Sukurti diagramą"], "c": 0, "exp": "Šifravimas paverčia duomenis tokia forma, kurios be tinkamo rakto perskaityti neturėtų būti galima.", "level": "Lengvas"}, {"topic": "crypto", "q": "Asimetrinėje kriptografijoje naudojami:", "opts": ["Viešasis ir privatusis raktai", "Du vienodi slaptažodžiai", "Tik PIN kodas", "Tik failo pavadinimas"], "c": 0, "exp": "Asimetrinė kriptografija remiasi matematiškai susijusia viešojo ir privataus rakto pora.", "level": "Lengvas"}, {"topic": "crypto", "q": "Kurį raktą savininkas turi saugoti paslaptyje?", "opts": ["Privatųjį", "Viešąjį", "Abu turi būti vieši", "Nė vieno"], "c": 0, "exp": "Privatusis raktas neturi būti atskleidžiamas kitiems.", "level": "Lengvas"}, {"topic": "crypto", "q": "Ką patvirtina skaitmeninis sertifikatas?", "opts": ["Viešojo rakto ryšį su konkrečiu subjektu", "Kad kompiuteris turi daug RAM", "Failo dydį", "Interneto greitį"], "c": 0, "exp": "Sertifikatas padeda patikimai susieti viešąjį raktą su asmeniu, organizacija ar svetaine.", "level": "Vidutinis"}, {"topic": "crypto", "q": "Ką suteikia skaitmeninis parašas?", "opts": ["Autentiškumo ir duomenų vientisumo patikrinimą", "Failo suspaudimą", "Vaizdo raiškos padidinimą", "Anonimiškumą bet kokiomis sąlygomis"], "c": 0, "exp": "Skaitmeninis parašas leidžia tikrinti, kas pasirašė ir ar duomenys po pasirašymo nebuvo pakeisti.", "level": "Vidutinis"}, {"topic": "crypto", "q": "Kuo skiriasi šifravimas nuo maišos (hash) funkcijos?", "opts": ["Šifravimas numatytas atšifruoti su raktu, o maiša paprastai yra vienkryptė", "Maiša visada atkuria originalą", "Šifravimas nenaudoja raktų", "Jie visiškai vienodi"], "c": 0, "exp": "Kriptografinė maiša sukuria fiksuoto ilgio santrauką, o šifravimas skirtas duomenis vėliau atšifruoti.", "level": "Sunkesnis"}, {"topic": "crypto", "q": "Kodėl slaptažodžius sistemose geriau saugoti kaip saugias maišas, o ne atviru tekstu?", "opts": ["Nutekėjus duomenų bazei originalūs slaptažodžiai nėra tiesiogiai matomi", "Kad slaptažodžiai būtų trumpesni", "Kad juos būtų lengviau siųsti el. paštu", "Kad nereikėtų prisijungimo"], "c": 0, "exp": "Saugus maišymas su druska sumažina žalą nutekėjus slaptažodžių duomenų bazei.", "level": "Vidutinis"}, {"topic": "crypto", "q": "Kuris ryšys žiniatinklyje paprastai naudoja TLS?", "opts": ["HTTPS", "HTTP be S", "TXT", "CSV"], "c": 0, "exp": "HTTPS yra HTTP ryšys, apsaugotas TLS.", "level": "Lengvas"}, {"topic": "networks", "q": "Kas yra LAN?", "opts": ["Vietinis kompiuterių tinklas", "Viso pasaulio palydovų sistema", "Failo formatas", "Programavimo kalba"], "c": 0, "exp": "LAN (Local Area Network) jungia įrenginius ribotoje teritorijoje, pvz., mokykloje.", "level": "Lengvas"}, {"topic": "networks", "q": "Kokia pagrindinė maršrutizatoriaus paskirtis?", "opts": ["Persiųsti duomenų paketus tarp tinklų", "Spausdinti dokumentus", "Kurti SVG", "Įrašyti garsą"], "c": 0, "exp": "Maršrutizatorius parenka kelią ir persiunčia paketus tarp tinklų.", "level": "Lengvas"}, {"topic": "networks", "q": "Ką identifikuoja IP adresas?", "opts": ["Įrenginio tinklo sąsają IP tinkle", "Vartotojo vardą visose svetainėse", "Tik failo tipą", "Kompiuterio spalvą"], "c": 0, "exp": "IP adresas naudojamas tinklo sąsajai identifikuoti ir duomenims nukreipti.", "level": "Lengvas"}, {"topic": "networks", "q": "Kuo statinis IP skiriasi nuo dinaminio?", "opts": ["Statinis paprastai nekinta, dinaminis gali būti automatiškai suteikiamas ir keistis", "Dinaminis visada yra viešas", "Statinis neturi skaičių", "Jie niekuo nesiskiria"], "c": 0, "exp": "Dinaminį adresą dažnai suteikia DHCP, o statinis konfigūruojamas pastoviam naudojimui.", "level": "Vidutinis"}, {"topic": "networks", "q": "Kuris protokolas naudojamas žiniatinklio puslapiams perduoti saugiai?", "opts": ["HTTPS", "SMTP", "IMAP", "Bluetooth"], "c": 0, "exp": "HTTPS yra saugus HTTP variantas, naudojantis TLS.", "level": "Lengvas"}, {"topic": "networks", "q": "Kuris protokolas skirtas el. laiškams siųsti iš kliento ar tarp pašto serverių?", "opts": ["SMTP", "FTP", "DNS tik vardų keitimui", "SVG"], "c": 0, "exp": "SMTP yra pagrindinis el. pašto siuntimo protokolas.", "level": "Vidutinis"}, {"topic": "networks", "q": "Kokią funkciją atlieka DNS?", "opts": ["Susieja domenų vardus su IP adresais", "Šifruoja visus failus", "Kuria vartotojo slaptažodį", "Didina Wi‑Fi signalą fiziškai"], "c": 0, "exp": "DNS leidžia naudoti žmonėms patogius domenų vardus vietoj IP adresų.", "level": "Vidutinis"}, {"topic": "networks", "q": "Kuo komutatorius (switch) skiriasi nuo maršrutizatoriaus tipinėje paskirtyje?", "opts": ["Komutatorius jungia įrenginius tame pačiame LAN, maršrutizatorius jungia skirtingus tinklus", "Komutatorius yra tik spausdintuvas", "Maršrutizatorius saugo nuotraukas", "Jie yra programavimo kalbos"], "c": 0, "exp": "Komutatorius daugiausia perduoda kadrus vietiniame tinkle, o maršrutizatorius – paketus tarp IP tinklų.", "level": "Vidutinis"}, {"topic": "collab", "q": "Kas yra sinchroninis bendravimas?", "opts": ["Bendravimas realiu laiku", "Bendravimas tik laiškais po savaitės", "Failų glaudinimas", "Duomenų šifravimas"], "c": 0, "exp": "Vaizdo skambutis ar tiesioginis pokalbis yra sinchroninio bendravimo pavyzdžiai.", "level": "Lengvas"}, {"topic": "collab", "q": "Kuris yra asinchroninio bendravimo pavyzdys?", "opts": ["El. paštas", "Tiesioginis vaizdo skambutis", "Gyvas pokalbis klasėje", "Telefoninis skambutis"], "c": 0, "exp": "El. laišką gavėjas gali perskaityti ir atsakyti vėliau.", "level": "Lengvas"}, {"topic": "collab", "q": "Kokia bendro dokumento versijų istorijos nauda?", "opts": ["Galima matyti pakeitimus ir prireikus grįžti prie ankstesnės versijos", "Ji ištrina autorius", "Ji visada paskelbia dokumentą viešai", "Ji pakeičia dokumentą į vaizdo įrašą"], "c": 0, "exp": "Versijų istorija padeda sekti pakeitimus ir atkurti ankstesnę būseną.", "level": "Vidutinis"}, {"topic": "collab", "q": "Ką reiškia principas „mažiausios būtinos teisės“ bendrinant failą?", "opts": ["Suteikti tik tokias prieigos teises, kurių žmogui iš tikrųjų reikia", "Visiems suteikti administratoriaus teises", "Visus failus publikuoti internete", "Nenaudoti slaptažodžių"], "c": 0, "exp": "Jei žmogui pakanka peržiūros, nereikėtų suteikti redagavimo teisių.", "level": "Vidutinis"}, {"topic": "collab", "q": "Kuris elgesys atitinka skaitmeninį etiketą?", "opts": ["Aiškiai, pagarbiai ir pagal kontekstą komunikuoti", "Rašyti VISKĄ DIDŽIOSIOMIS RAIDĖMIS", "Viešinti kitų privačias žinutes be leidimo", "Siųsti tą pačią žinutę dešimtis kartų"], "c": 0, "exp": "Skaitmeninis etiketas remiasi pagarbiu, aiškiu ir atsakingu bendravimu.", "level": "Lengvas"}, {"topic": "collab", "q": "Kada verta naudoti komentarus bendrame dokumente?", "opts": ["Kai norime pateikti pastabą nekeisdami pagrindinio teksto", "Kai norime ištrinti visą dokumentą", "Kai norime paslėpti failą nuo savęs", "Tik spausdinant"], "c": 0, "exp": "Komentarai patogūs grįžtamajam ryšiui ir diskusijai apie konkrečią vietą.", "level": "Lengvas"}, {"topic": "collab", "q": "Kokia rizika kyla dalijantis nuoroda „Anyone with the link can edit“?", "opts": ["Nuorodai patekus pašaliniams jie gali pakeisti turinį", "Failas automatiškai tampa virusu", "Internetas išsijungia", "Dokumentas nebegali turėti teksto"], "c": 0, "exp": "Plačios redagavimo teisės padidina netyčinių ar tyčinių pakeitimų riziką.", "level": "Vidutinis"}, {"topic": "collab", "q": "Kas padeda efektyviau dirbti virtualioje komandoje?", "opts": ["Aiškūs vaidmenys, terminai ir susitarimai", "Nežinomi atsakingi asmenys", "Vien tik žodiniai neaiškūs susitarimai", "Failų pavadinimai be datos ir temos"], "c": 0, "exp": "Aiški atsakomybė ir darbo organizavimas mažina nesusipratimus.", "level": "Vidutinis"}, {"topic": "safety", "q": "Kuris slaptažodis saugesnis?", "opts": ["Ilga unikali slaptafrazė", "12345678", "password", "tas pats slaptažodis visoms paskyroms"], "c": 0, "exp": "Ilga ir unikali slaptafrazė yra atsparesnė spėjimui ir pakartotinio panaudojimo rizikai.", "level": "Lengvas"}, {"topic": "safety", "q": "Ką suteikia dviejų veiksnių autentifikavimas (2FA)?", "opts": ["Papildomą tapatybės patikrinimo sluoksnį", "Didesnę monitoriaus raišką", "Automatinį failų trynimą", "Greitesnį Wi‑Fi"], "c": 0, "exp": "2FA reikalauja dar vieno įrodymo, ne tik slaptažodžio.", "level": "Lengvas"}, {"topic": "safety", "q": "Koks dažnas fišingo požymis?", "opts": ["Skubus raginimas spausti nuorodą ir pateikti prisijungimo duomenis", "Aiškiai laukta žinutė iš žinomo mokytojo", "Lokaliai išsaugotas dokumentas", "Atnaujinta antivirusinė programa"], "c": 0, "exp": "Fišingo žinutės dažnai kuria skubą ir bando išvilioti jautrius duomenis.", "level": "Vidutinis"}, {"topic": "safety", "q": "Kodėl svarbios atsarginės kopijos?", "opts": ["Padeda atkurti duomenis praradus originalą", "Padidina virusų kiekį", "Pakeičia visus slaptažodžius", "Išjungia internetą"], "c": 0, "exp": "Atsarginė kopija apsaugo nuo duomenų praradimo dėl gedimo, klaidos ar atakos.", "level": "Lengvas"}, {"topic": "safety", "q": "Kuris įprotis palankesnis ergonomikai?", "opts": ["Reguliarios pertraukos ir tinkama ekrano bei sėdėjimo padėtis", "Nuolat dirbti be pertraukų", "Laikyti ekraną labai žemai ant kelių visą dieną", "Dirbti visiškoje tamsoje"], "c": 0, "exp": "Tinkama darbo vieta ir pertraukos padeda mažinti akių bei raumenų nuovargį.", "level": "Lengvas"}, {"topic": "safety", "q": "Ką geriausia daryti su nebereikalinga elektronine įranga?", "opts": ["Atiduoti tinkamam perdirbimui ar pakartotiniam naudojimui", "Mesti bet kur į gamtą", "Sudeginti", "Palikti viešoje vietoje su neištrintais duomenimis"], "c": 0, "exp": "Elektronikos atliekas reikia tvarkyti atsakingai, o prieš perduodant įrenginį – saugiai pašalinti asmens duomenis.", "level": "Vidutinis"}, {"topic": "safety", "q": "Kodėl programinės įrangos atnaujinimai svarbūs saugumui?", "opts": ["Jie dažnai pataiso žinomas saugumo spragas", "Jie visada ištrina failus", "Jie panaikina internetą", "Jie reikalingi tik dizainui"], "c": 0, "exp": "Atnaujinimai dažnai užtaiso pažeidžiamumus, kuriais galėtų pasinaudoti užpuolikai.", "level": "Vidutinis"}, {"topic": "safety", "q": "Koks saugesnis veiksmas gavus netikėtą prisijungimo nuorodą el. paštu?", "opts": ["Ne spausti aklai, o atsidaryti paslaugą per žinomą oficialų adresą ir patikrinti pranešimą", "Nedelsiant įvesti slaptažodį", "Persiųsti visai klasei", "Išjungti 2FA"], "c": 0, "exp": "Taip sumažinama rizika patekti į suklastotą prisijungimo puslapį.", "level": "Vidutinis"}, {"topic": "animation", "q": "Kas yra kadras (frame) animacijoje?", "opts": ["Vienas vaizdo momentas / būsena laiko sekoje", "Tinklo protokolas", "Failo slaptažodis", "Duomenų bazės lentelė"], "c": 0, "exp": "Animacija sudaroma iš nuosekliai rodomų kadrų ar tarpinių būsenų.", "level": "Lengvas"}, {"topic": "animation", "q": "Ką reiškia FPS?", "opts": ["Kadrų skaičių per sekundę", "Failų skaičių aplanke", "Spalvų skaičių pikselyje", "Funkcijų skaičių programoje"], "c": 0, "exp": "FPS (frames per second) nusako, kiek kadrų parodoma per sekundę.", "level": "Lengvas"}, {"topic": "animation", "q": "Kam naudojami keyframes?", "opts": ["Svarbioms objekto būsenoms tam tikrais laiko momentais apibrėžti", "Tik failams užrakinti", "Tik garsui išjungti", "Tik paveikslėliui ištrinti"], "c": 0, "exp": "Tarp pagrindinių kadrų programa gali apskaičiuoti tarpines būsenas.", "level": "Vidutinis"}, {"topic": "animation", "q": "Kas yra tweening?", "opts": ["Tarpinių animacijos būsenų generavimas tarp pagrindinių kadrų", "Failo šifravimas", "Tinklo maršruto parinkimas", "Duomenų rikiavimas"], "c": 0, "exp": "Tweening sukuria tarpinius kadrus, kad judėjimas ar kitimas būtų sklandus.", "level": "Vidutinis"}, {"topic": "animation", "q": "Kodėl animacijoje naudingi sluoksniai?", "opts": ["Leidžia atskirai valdyti skirtingus objektus ir scenos dalis", "Visada sumažina FPS iki 1", "Paverčia grafiką tik tekstu", "Išjungia skaidrumą"], "c": 0, "exp": "Sluoksniai padeda organizuoti elementus ir nepriklausomai juos redaguoti.", "level": "Lengvas"}, {"topic": "animation", "q": "Kas labiausiai lemia sklandesnio judesio įspūdį?", "opts": ["Pakankamas kadrų dažnis ir nuoseklus pokytis tarp kadrų", "Didelis failo pavadinimas", "Vien tik juodas fonas", "Nenaudojamos laiko žymos"], "c": 0, "exp": "Didesnis tinkamas FPS ir tolygūs pokyčiai paprastai suteikia sklandesnį judesį.", "level": "Vidutinis"}, {"topic": "animation", "q": "Kuris formatas gali saugoti paprastą animaciją, tačiau turi ribotą spalvų paletę?", "opts": ["GIF", "TXT", "CSV", "WAV"], "c": 0, "exp": "GIF palaiko animuotus kadrus, bet jo spalvų paletė yra ribota.", "level": "Vidutinis"}, {"topic": "animation", "q": "Ką reiškia modeliavimas kompiuterinėje grafikoje?", "opts": ["Objekto ar proceso atvaizdavimą supaprastintu skaitmeniniu modeliu", "Vien tik failo pervadinimą", "Interneto greičio matavimą", "Slaptažodžio įvedimą"], "c": 0, "exp": "Modelis leidžia skaitmeniškai vaizduoti ir tirti objektus, procesus ar jų savybes.", "level": "Vidutinis"}]};
+let DATA = JSON.parse(localStorage.getItem('inf11_bank') || 'null') || DEFAULT_DATA;
+let settings = JSON.parse(localStorage.getItem('inf11_settings') || 'null') || {count:10,pass:80};
+let state = {mode:'practice',topic:'mixed',items:[],i:0,answers:[],locked:false,lastSetup:null,lastResult:null};
+
+const $ = id => document.getElementById(id);
+const topicById = id => DATA.topics.find(t=>t.id===id);
+const questionsFor = id => id==='mixed' ? DATA.questions : DATA.questions.filter(q=>q.topic===id);
+const shuffle = arr => { let a=[...arr]; for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]} return a; };
+function shuffleQuestion(q) {
+  const mapped=q.opts.map((text,idx)=>({text,original:idx}));
+  return {...q,shuffled:shuffle(mapped)};
+}
+function showOnly(id) {
+  ['home','quiz','results','history','teacher'].forEach(x=>$(x).classList.toggle('hidden',x!==id));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function showHome(){renderHome();showOnly('home')}
+function renderHome() {
+  $('statTopics').textContent=DATA.topics.length;
+  $('statQuestions').textContent=DATA.questions.length;
+  const history=getHistory();
+  $('statAttempts').textContent=history.length;
+  $('statBest').textContent=history.length ? Math.max(...history.map(x=>x.pct))+'%' : '–';
+  $('topicGrid').innerHTML=DATA.topics.map(t=>{
+    const count=questionsFor(t.id).length;
+    const best=bestFor(t.id);
+    return `<article class="topic">
+      <div class="topicIcon">${t.icon}</div>
+      <h3>${escapeHtml(t.title)}</h3>
+      <p>${escapeHtml(t.desc)}</p>
+      <div class="meta"><span class="pill">${count} klaus.</span><span class="pill">${best===null?'Dar nepradėta':'Geriausias '+best+'%'}</span></div>
+      <div class="topicActions"><button class="primary" onclick="startQuiz('${t.id}','practice')">Praktika</button><button class="ghost" onclick="startQuiz('${t.id}','test')">Testas</button></div>
+    </article>`;
+  }).join('');
+}
+function startMixed(mode){startQuiz('mixed',mode)}
+function startQuiz(topic,mode) {
+  let pool=questionsFor(topic);
+  if(!pool.length) return alert('Šioje temoje dar nėra klausimų.');
+  const n=Math.min(settings.count,pool.length);
+  state.mode=mode; state.topic=topic; state.items=shuffle(pool).slice(0,n).map(shuffleQuestion);
+  state.i=0; state.answers=Array(n).fill(null); state.locked=false;
+  state.lastSetup={topic,mode};
+  $('quizTitle').textContent = topic==='mixed' ? 'Mišrus informatikos testas' : topicById(topic).title;
+  $('quizSubtitle').textContent = mode==='practice' ? 'Mokymosi režimas: atsakymą ir paaiškinimą matysi iškart.' : 'Testo režimas: atsakymai bus patikrinti tik pabaigoje.';
+  $('modePill').textContent = mode==='practice' ? '🎯 Praktika' : '📝 Testas';
+  showOnly('quiz'); renderQuestion();
+}
+function renderQuestion() {
+  const q=state.items[state.i];
+  $('qCounter').textContent=`${state.i+1} / ${state.items.length}`;
+  $('progressBar').style.width=((state.i)/state.items.length*100)+'%';
+  $('qTopic').textContent=(topicById(q.topic)?.title||'')+' · '+q.level;
+  $('levelPill').textContent=q.level;
+  $('questionText').textContent=q.q;
+  $('feedback').classList.add('hidden'); $('feedback').innerHTML='';
+  const stored=state.answers[state.i];
+  const lock=state.mode==='practice' && stored!==null;
+  $('answers').innerHTML=q.shuffled.map((o,idx)=>{
+    let cls='answer';
+    if(stored!==null && o.original===stored) cls+=' selected';
+    if(lock && o.original===q.c) cls+=' good';
+    if(lock && o.original===stored && stored!==q.c) cls+=' bad';
+    return `<button class="${cls}" onclick="chooseAnswer(${o.original})" ${lock?'disabled':''}><b>${String.fromCharCode(65+idx)}.</b> ${escapeHtml(o.text)}</button>`;
+  }).join('');
+  if(lock) showFeedback(q,stored);
+  $('prevBtn').classList.toggle('hidden',state.mode!=='test' || state.i===0);
+  const isLast=state.i===state.items.length-1;
+  $('nextBtn').classList.toggle('hidden', state.mode==='practice' ? stored===null || isLast : isLast);
+  $('submitBtn').classList.toggle('hidden', !isLast || (state.mode==='practice' && stored===null));
+}
+function chooseAnswer(original) {
+  const q=state.items[state.i];
+  if(state.mode==='practice' && state.answers[state.i]!==null) return;
+  state.answers[state.i]=original;
+  renderQuestion();
+  if(state.mode==='practice') showFeedback(q,original);
+}
+function showFeedback(q,answer) {
+  const ok=answer===q.c;
+  $('feedback').classList.remove('hidden');
+  $('feedback').innerHTML=`<b style="color:var(${ok?'--ok':'--bad'})">${ok?'✓ Teisingai':'✕ Neteisingai'}</b><br>${escapeHtml(q.exp)}`;
+}
+function nextQuestion(){ if(state.i<state.items.length-1){state.i++;renderQuestion()} }
+function prevQuestion(){ if(state.i>0){state.i--;renderQuestion()} }
+function finishQuiz() {
+  if(state.mode==='test' && state.answers.some(x=>x===null)) {
+    if(!confirm('Neatsakyti klausimai bus įskaityti kaip klaidingi. Baigti testą?')) return;
+  }
+  const correct=state.items.reduce((n,q,i)=>n+(state.answers[i]===q.c?1:0),0);
+  const pct=Math.round(correct/state.items.length*100);
+  const title=state.topic==='mixed'?'Mišrus testas':topicById(state.topic).title;
+  state.lastResult={correct,pct,total:state.items.length,title,items:state.items,answers:[...state.answers],topic:state.topic,mode:state.mode};
+  saveHistory({date:new Date().toISOString(),topic:state.topic,title,mode:state.mode,pct,correct,total:state.items.length});
+  showResults();
+}
+function showResults() {
+  const r=state.lastResult; if(!r)return;
+  $('resultTopic').textContent=r.title+' · '+(r.mode==='practice'?'Praktika':'Testas');
+  $('scoreRing').style.setProperty('--score',r.pct+'%'); $('scoreText').textContent=r.pct+'%';
+  $('correctN').textContent=r.correct; $('wrongN').textContent=r.total-r.correct; $('thresholdN').textContent=settings.pass+'%';
+  $('resultMessage').textContent=r.pct>=settings.pass ? (r.pct===100?'Puiku – 100%!':'Tikslas pasiektas!') : 'Dar vienas bandymas ir bus geriau.';
+  $('mistakeReview').classList.add('hidden');
+  showOnly('results'); renderHome();
+}
+function retryQuiz(){const s=state.lastSetup;if(s)startQuiz(s.topic,s.mode)}
+function reviewMistakes() {
+  const r=state.lastResult; if(!r)return;
+  const misses=r.items.map((q,i)=>({q,a:r.answers[i]})).filter(x=>x.a!==x.q.c);
+  const box=$('mistakeReview'); box.classList.remove('hidden');
+  box.innerHTML=misses.length?'<h3>Klaidos ir paaiškinimai</h3>'+misses.map((x,i)=>`
+    <div class="bankRow"><div class="text"><b>${i+1}. ${escapeHtml(x.q.q)}</b>
+    <small><br>Tavo atsakymas: ${x.a===null?'neatsakyta':escapeHtml(x.q.opts[x.a])}
+    <br>Teisingas: ${escapeHtml(x.q.opts[x.q.c])}
+    <br>${escapeHtml(x.q.exp)}</small></div></div>`).join(''):'<h3>Be klaidų 🎉</h3>';
+  box.scrollIntoView({behavior:'smooth'});
+}
+function confirmExit(){if(confirm('Baigti šį bandymą ir grįžti į temas?'))showHome()}
+function getHistory(){return JSON.parse(localStorage.getItem('inf11_history')||'[]')}
+function saveHistory(item){const h=getHistory();h.unshift(item);localStorage.setItem('inf11_history',JSON.stringify(h.slice(0,100)))}
+function bestFor(topic){const arr=getHistory().filter(x=>x.topic===topic);return arr.length?Math.max(...arr.map(x=>x.pct)):null}
+function showHistory() {
+  const h=getHistory(); $('historyList').innerHTML=h.length?h.map(x=>`
+    <div class="historyItem"><div><b>${escapeHtml(x.title)}</b><br><small style="color:var(--muted)">${new Date(x.date).toLocaleString('lt-LT')} · ${x.mode==='practice'?'Praktika':'Testas'} · ${x.correct}/${x.total}</small></div><b>${x.pct}%</b></div>`).join(''):'<div class="notice">Bandymų istorijos dar nėra.</div>';
+  showOnly('history');
+}
+function clearHistory(){if(confirm('Išvalyti visą rezultatų istoriją šiame įrenginyje?')){localStorage.removeItem('inf11_history');showHistory();renderHome()}}
+function showTeacher(){populateTeacher();teacherTab('settings',document.querySelector('.tab[data-t="settings"]'));showOnly('teacher')}
+function populateTeacher() {
+  $('settingCount').value=settings.count; $('settingPass').value=settings.pass;
+  const opts=DATA.topics.map(t=>`<option value="${t.id}">${escapeHtml(t.title)}</option>`).join('');
+  $('newTopic').innerHTML=opts;
+  $('bankTopicFilter').innerHTML='<option value="all">Visos temos</option>'+opts;
+  renderBank();
+}
+function teacherTab(name,btn) {
+  ['settings','bank','import'].forEach(x=>$('teacher-'+x).classList.toggle('hidden',x!==name));
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on')); if(btn)btn.classList.add('on');
+}
+function saveSettings() {
+  settings.count=Number($('settingCount').value); settings.pass=Number($('settingPass').value);
+  localStorage.setItem('inf11_settings',JSON.stringify(settings)); alert('Nustatymai išsaugoti.');
+}
+function addQuestion() {
+  const q=$('newQ').value.trim(), opts=[0,1,2,3].map(i=>$('o'+i).value.trim()), exp=$('newExp').value.trim();
+  if(!q||opts.some(x=>!x)||!exp) return alert('Užpildyk klausimą, 4 atsakymus ir paaiškinimą.');
+  DATA.questions.push({topic:$('newTopic').value,q,opts,c:Number($('newCorrect').value),exp,level:$('newLevel').value});
+  persistBank(); $('newQ').value=''; [0,1,2,3].forEach(i=>$('o'+i).value=''); $('newExp').value=''; renderBank(); renderHome();
+}
+function renderBank() {
+  if(!$('bankList'))return;
+  const f=$('bankTopicFilter').value||'all', s=($('bankSearch').value||'').toLowerCase();
+  const arr=DATA.questions.map((q,i)=>({q,i})).filter(x=>(f==='all'||x.q.topic===f)&&(!s||x.q.q.toLowerCase().includes(s)));
+  $('bankList').innerHTML=arr.length?arr.map(x=>`
+    <div class="bankRow"><div class="text"><b>${escapeHtml(x.q.q)}</b><br><small>${escapeHtml(topicById(x.q.topic)?.title||x.q.topic)} · ${x.q.level} · Teisingas: ${escapeHtml(x.q.opts[x.q.c])}</small></div><button class="danger" onclick="deleteQuestion(${x.i})">Trinti</button></div>`).join(''):'<div class="notice">Klausimų nerasta.</div>';
+}
+function deleteQuestion(i){if(confirm('Ištrinti šį klausimą?')){DATA.questions.splice(i,1);persistBank();renderBank();renderHome()}}
+function persistBank(){localStorage.setItem('inf11_bank',JSON.stringify(DATA))}
+function exportBank() {
+  download('informatika11_klausimu_bankas.json',JSON.stringify(DATA,null,2),'application/json');
+}
+function exportResults() {
+  const h=getHistory(), rows=[['Data','Tema','Režimas','Procentai','Teisingai','Iš viso'],...h.map(x=>[new Date(x.date).toLocaleString('lt-LT'),x.title,x.mode,x.pct,x.correct,x.total])];
+  const csv=rows.map(r=>r.map(v=>`"${String(v).replaceAll('"','""')}"`).join(';')).join('\n');
+  download('informatika11_rezultatai.csv','\ufeff'+csv,'text/csv;charset=utf-8');
+}
+function download(name,content,type){const b=new Blob([content],{type}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;a.click();URL.revokeObjectURL(a.href)}
+$('importFile').addEventListener('change',e=>{
+  const f=e.target.files[0]; if(!f)return; const r=new FileReader();
+  r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.topics||!Array.isArray(d.questions))throw Error();DATA=d;persistBank();populateTeacher();renderHome();alert('Klausimų bankas importuotas.')}catch{alert('Netinkamas JSON failas.')}};
+  r.readAsText(f);
+});
+function resetBank(){if(confirm('Atkurti pradinį klausimų banką? Tavo pridėti klausimai bus pašalinti.')){DATA=DEFAULT_DATA;localStorage.removeItem('inf11_bank');populateTeacher();renderHome()}}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function toggleTheme() {
+  const dark=document.documentElement.dataset.theme==='dark';
+  document.documentElement.dataset.theme=dark?'light':'dark';
+  localStorage.setItem('inf11_theme',dark?'light':'dark'); $('themeBtn').textContent=dark?'🌙':'☀️';
+}
+(function init(){
+  const th=localStorage.getItem('inf11_theme')||'light'; document.documentElement.dataset.theme=th; $('themeBtn').textContent=th==='dark'?'☀️':'🌙';
+  renderHome();
+})();
+</script>
+</body>
+</html>
