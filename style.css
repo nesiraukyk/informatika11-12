@@ -53,3 +53,17 @@ code{background:var(--surface2);border:1px solid var(--line);border-radius:7px;p
 .studentUploadPanel .miniList{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);display:grid;gap:8px}
 .studentUploadPanel .submissionRow{display:flex;align-items:center;gap:10px}
 input:disabled{opacity:.7;cursor:not-allowed}
+
+/* ===== v3.3 ===== */
+.inlineCount{display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 6px;margin-left:5px;border-radius:999px;background:var(--p);color:#fff;font-size:11px;font-weight:900}
+.dangerMini{color:var(--bad)!important;border-color:color-mix(in srgb,var(--bad) 35%,var(--line))!important}
+.classHeaderActions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:flex-end}
+.detailMetrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:16px 0 22px}
+.detailColumns{display:grid;grid-template-columns:1.15fr .85fr;gap:18px}
+.historyRow{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.assignmentBlock{padding:12px 0;border-bottom:1px solid var(--line)}
+.submittedFiles{margin:8px 0 0 18px;padding-left:12px;border-left:2px solid var(--line)}
+.previewBanner{margin-top:18px;padding:12px 15px;border-radius:14px;background:color-mix(in srgb,var(--p) 10%,var(--surface));border:1px solid color-mix(in srgb,var(--p) 28%,var(--line));display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.previewBanner span{color:var(--muted)}
+.previewDisabled{opacity:.92}
+@media(max-width:850px){.detailMetrics{grid-template-columns:repeat(2,minmax(0,1fr))}.detailColumns{grid-template-columns:1fr}.classHeaderActions{justify-content:flex-start}}

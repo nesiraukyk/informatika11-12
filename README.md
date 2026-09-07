@@ -29,3 +29,15 @@ Svarbiausi failai:
 - Mokinys vardą ir pavardę po registracijos gali pataisyti tik vieną kartą.
 - Mokinys gali tiesiai iš „Pradžia“ įkelti atliktą darbą, pasirinkdamas temą.
 - Mokytojas klasės „Užduotys ir darbai“ skiltyje mato ir atsisiunčia savarankiškai pateiktus mokinių failus.
+
+
+## v3.3 pakeitimai
+- Administratoriaus paskyra gali matyti visas klases ir išsamią mokinių statistiką.
+- Pridėta prisijungimų istorija (kaupiama nuo v3.3 įdiegimo).
+- Mokinio detalėse: aktyvus laikas, sesijų skaičius, vidutinė sesija, bandymų istorija, vidurkis, geriausias rezultatas, atsakymų tikslumas, pateiktų failų skaičius.
+- Mokytojo skydelyje matomas bendras pateiktų failų skaičius ir naujausi darbai.
+- Klasės skirtuke „Užduotys ir darbai“ rodomas pateiktų failų skaičius.
+- Mokytojas gali ištrinti mokinio failą tik po patvirtinimo.
+- Mokinys gali įkelti kelis failus vienu metu, vėliau pridėti daugiau ir ištrinti savo failus.
+- Vienai mokytojo sukurtai užduočiai mokinys gali pateikti kelis failus.
+- Mokytojas gali įjungti „Mokinio vaizdą“ ir demonstruoti temas bei užduočių išdėstymą neprisijungdamas kaip mokinys.
