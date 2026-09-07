@@ -22,7 +22,7 @@ function authMsg(text,error=false){$('authMessage').textContent=text;$('authMess
 
 function route(name){
  if(!me && !['auth','setup'].includes(name))return show('auth');
- if(name==='dashboard')renderDashboard();
+ if(name==='dashboard')return renderDashboard();
  if(name==='teacher')return profile?.role==='teacher'||profile?.role==='admin'?renderTeacher():renderStudent();
  if(name==='student')return renderStudent();
  if(name==='profile')return renderProfile();
@@ -33,9 +33,11 @@ document.querySelectorAll('[data-route]').forEach(b=>b.onclick=()=>route(b.datas
 function setHeader(){
  $('appHeader').classList.toggle('hidden',!me);
  if(!profile)return;
+ const isTeacher=['teacher','admin'].includes(profile.role);
  $('headerRole').textContent=profile.role==='teacher'?'Mokytojas':profile.role==='admin'?'Administratorius':'Mokinys';
- $('teacherNav').classList.toggle('hidden',!['teacher','admin'].includes(profile.role));
- $('studentNav').classList.toggle('hidden',profile.role!=='student');
+ $('homeNav').classList.toggle('hidden',true);
+ $('teacherNav').classList.toggle('hidden',!isTeacher);
+ $('studentNav').classList.toggle('hidden',isTeacher);
 }
 
 $('themeToggle').onclick=()=>{const n=(document.documentElement.dataset.theme||'light')==='dark'?'light':'dark';document.documentElement.dataset.theme=n;localStorage.setItem('inf11v3_theme',n)};
@@ -113,9 +115,76 @@ async function renderTeacher(){
   <div class="panel"><span class="kicker">GREITA SUVESTINĖ</span><h3>Naujausi mokiniai</h3>
    ${students.length?students.slice(0,7).map(s=>`<div class="studentRow"><div class="grow"><b>${esc(s.full_name||'Mokinys')}</b><div class="subtle">Paskutinį kartą: ${fmtDate(s.last_seen_at||s.last_login_at)}</div></div></div>`).join(''):'<div class="emptyState">Mokinių dar nėra.</div>'}
   </div>
+  <div class="panel" id="teacherLibrary">
+   <span class="kicker">MANO FAILAI</span><h3>Kraunama mokytojo biblioteka...</h3>
+  </div>
  </div></div>`;
  $('newClassBtn').onclick=openNewClassModal;
  document.querySelectorAll('[data-class]').forEach(b=>b.onclick=()=>openTeacherClass(b.dataset.class));
+ renderTeacherLibrary();
+}
+
+
+async function renderTeacherLibrary(){
+ const host=$('teacherLibrary');if(!host)return;
+ const {data:rows,error}=await sb.from('teacher_files').select('*').eq('owner_id',me.id).order('created_at',{ascending:false});
+ if(error){
+  host.innerHTML=`<span class="kicker">MANO FAILAI</span><h3>Mokytojo biblioteka</h3><div class="notice">${esc(error.message)}</div>`;
+  return;
+ }
+ host.innerHTML=`<div class="sectionTitle"><div class="grow"><span class="kicker">MANO FAILAI</span><h3>Mokytojo biblioteka</h3></div><button class="primary" id="uploadTeacherFileBtn">+ Įkelti</button></div>
+ <p class="muted">Privatūs tavo failai. Mokiniai jų nemato. Čia gali laikyti pamokų medžiagą, atsakymus, planus ar kitus mokytojo dokumentus.</p>
+ ${(rows||[]).length?(rows||[]).map(r=>`<div class="resourceRow"><div class="grow"><b>${esc(r.title||r.original_name)}</b><div class="subtle">${esc(r.original_name)} · ${fmtDate(r.created_at)}</div></div><button class="smallBtn" data-teacher-download="${r.id}">Atsisiųsti</button><button class="smallBtn" data-teacher-delete="${r.id}">Ištrinti</button></div>`).join(''):'<div class="emptyState">Privačių failų dar nėra.</div>'}`;
+ $('uploadTeacherFileBtn').onclick=openTeacherFileUploadModal;
+ document.querySelectorAll('[data-teacher-download]').forEach(b=>b.onclick=()=>downloadTeacherFile(b.dataset.teacherDownload));
+ document.querySelectorAll('[data-teacher-delete]').forEach(b=>b.onclick=()=>deleteTeacherFile(b.dataset.teacherDelete));
+}
+
+function openTeacherFileUploadModal(){
+ modal(`<span class="kicker">MOKYTOJO BIBLIOTEKA</span><h2>Įkelti privatų failą</h2>
+ <p class="muted">Šio failo mokiniai nematys.</p>
+ <form id="teacherFileForm" class="formGroup">
+  <label>Pavadinimas<input id="teacherFileTitle" placeholder="Pvz., Vektorinės grafikos pamokos planas"></label>
+  <label>Failas<input class="fileInput" type="file" id="teacherFileInput" required></label>
+  <button class="primary" type="submit" style="margin-top:14px">Įkelti</button>
+ </form>`);
+ $('teacherFileForm').onsubmit=async e=>{
+  e.preventDefault();
+  const f=$('teacherFileInput').files[0];if(!f)return;
+  const title=$('teacherFileTitle').value.trim()||f.name;
+  const safeName=f.name.replaceAll('/','_');
+  const path=`${me.id}/${crypto.randomUUID()}_${safeName}`;
+  toast('Įkeliamas failas...');
+  const {error:upErr}=await sb.storage.from('teacher-library').upload(path,f);
+  if(upErr)return toast(upErr.message);
+  const {error}=await sb.from('teacher_files').insert({
+   owner_id:me.id,title,storage_path:path,original_name:f.name,mime_type:f.type,size_bytes:f.size
+  });
+  if(error){
+   await sb.storage.from('teacher-library').remove([path]);
+   return toast(error.message);
+  }
+  closeModal();toast('Failas įkeltas.');renderTeacherLibrary();
+ };
+}
+
+async function downloadTeacherFile(id){
+ const {data:r,error}=await sb.from('teacher_files').select('*').eq('id',id).single();
+ if(error)return toast(error.message);
+ const {data,error:e}=await sb.storage.from('teacher-library').createSignedUrl(r.storage_path,60);
+ if(e)return toast(e.message);
+ window.open(data.signedUrl,'_blank');
+}
+
+async function deleteTeacherFile(id){
+ if(!confirm('Ištrinti šį privatų failą?'))return;
+ const {data:r,error}=await sb.from('teacher_files').select('*').eq('id',id).single();
+ if(error)return toast(error.message);
+ const {error:storageErr}=await sb.storage.from('teacher-library').remove([r.storage_path]);
+ if(storageErr)return toast(storageErr.message);
+ const {error:dbErr}=await sb.from('teacher_files').delete().eq('id',id);
+ if(dbErr)return toast(dbErr.message);
+ toast('Failas ištrintas.');renderTeacherLibrary();
 }
 
 function randomCode(){return Math.random().toString(36).slice(2,8).toUpperCase()}
@@ -283,7 +352,7 @@ async function openStudentTopic(topicId,c,access){
  $('topicContent').innerHTML=`<div class="pageHero"><button class="back" id="backStudent">← Mano klasė</button><span class="kicker">${t.code}</span><h1>${esc(t.title)}</h1><p>${esc(t.area)} · rekomenduojama ${t.hours} val.</p></div>
  <div class="contentGrid"><div class="stack">
   <div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">PRAKTIKA</span><h2>Žinių treniruotė</h2></div><span class="badge ${a.practice_open?'ok':''}">${a.practice_open?'Atidaryta':'Užrakinta'}</span></div>
-   <p class="muted">Kiekvienas bandymas sudaromas iš naujo. Rezultatas ir atlikimo laikas bus išsaugoti tavo paskyroje.</p>
+   <p class="muted"><b>Praktikuotis gali tiek kartų, kiek nori.</b> Kiekvieną kartą sistema iš didesnio klausimų banko atsitiktinai parenka 10 klausimų ir sumaišo atsakymų variantus, todėl bandymai nėra vienodi. Po kiekvieno atsakymo gausi paaiškinimą, o rezultatas ir atlikimo laikas bus išsaugoti tavo paskyroje.</p>
    <button class="primary" id="startPracticeTopic" ${a.practice_open?'':'disabled'}>Pradėti 10 klausimų praktiką</button>
   </div>
   <div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">MOKYMOSI FAILAI</span><h2>Failai atsisiuntimui</h2></div></div>

@@ -13,3 +13,11 @@ Svarbiausi failai:
 - `assessment.js` – kol kas tuščias atsiskaitymo bankas;
 - `config.js` – temų katalogas;
 - `app.js` – prisijungimai, mokytojo/mokinio skydeliai, rezultatai ir failai.
+
+
+## v3.1 pakeitimai
+- Sutvarkyta „Pradžia“ navigacija: mokinys po prisijungimo iškart patenka į savo klasę.
+- Mokytojo meniu neberodoma tuščia „Pradžia“ nuoroda.
+- Pridėta privati „Mokytojo biblioteka“ mokytojo failams.
+- Išplėstas „Žinių treniruotės“ paaiškinimas mokiniams.
+- `PATCH_v3_1.sql` sutvirtina profilio teises, kad mokinys negalėtų pats pasikeisti rolės.
