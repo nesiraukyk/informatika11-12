@@ -184,8 +184,7 @@ function openTeacherFileUploadModal(){
   e.preventDefault();
   const f=$('teacherFileInput').files[0];if(!f)return;
   const title=$('teacherFileTitle').value.trim()||f.name;
-  const safeName=f.name.replaceAll('/','_');
-  const path=`${me.id}/${crypto.randomUUID()}_${safeName}`;
+  const path=`${me.id}/${storageFileName(f.name)}`;
   toast('Įkeliamas failas...');
   const {error:upErr}=await sb.storage.from('teacher-library').upload(path,f);
   if(upErr)return toast(upErr.message);
@@ -217,6 +216,15 @@ async function deleteTeacherFile(id){
  const {error:dbErr}=await sb.from('teacher_files').delete().eq('id',id);
  if(dbErr)return toast(dbErr.message);
  toast('Failas ištrintas.');renderTeacherLibrary();
+}
+
+
+function storageFileName(originalName){
+ const name=String(originalName||'');
+ const dot=name.lastIndexOf('.');
+ let ext=dot>0?name.slice(dot+1).toLowerCase().replace(/[^a-z0-9]/g,''):'';
+ if(ext.length>12)ext='';
+ return `${crypto.randomUUID()}${ext?'.'+ext:''}`;
 }
 
 function randomCode(){return Math.random().toString(36).slice(2,8).toUpperCase()}
@@ -544,7 +552,7 @@ function resourceUploadModal(c){
  <button class="primary" type="submit" style="margin-top:14px">Įkelti</button></form>`);
  $('resourceForm').onsubmit=async e=>{
   e.preventDefault();const f=$('resourceFile').files[0];if(!f)return;
-  const topic=$('resourceTopic').value,path=`${c.id}/${topic}/${crypto.randomUUID()}_${f.name.replaceAll('/','_')}`;
+  const topic=$('resourceTopic').value,path=`${c.id}/${topic}/${storageFileName(f.name)}`;
   toast('Įkeliamas failas...');
   const {error:upErr}=await sb.storage.from('teacher-resources').upload(path,f);
   if(upErr)return toast(upErr.message);
@@ -799,7 +807,7 @@ function openDirectSubmissionModal(c,openTopics){
   toast(`Įkeliama: ${files.length} fail.`);
   let uploaded=0;
   for(const f of files){
-   const path=`${c.id}/direct/${me.id}/${crypto.randomUUID()}_${f.name.replaceAll('/','_')}`;
+   const path=`${c.id}/direct/${me.id}/${storageFileName(f.name)}`;
    const {error:upErr}=await sb.storage.from('student-submissions').upload(path,f);
    if(upErr){toast(`Nepavyko įkelti ${f.name}: ${upErr.message}`);continue}
    const {error}=await sb.from('direct_submissions').insert({
@@ -859,7 +867,7 @@ function submissionModal(assignmentId,c,topicId,access){
   toast(`Įkeliama: ${files.length} fail.`);
   let uploaded=0;
   for(const f of files){
-   const path=`${c.id}/${assignmentId}/${me.id}/${crypto.randomUUID()}_${f.name.replaceAll('/','_')}`;
+   const path=`${c.id}/${assignmentId}/${me.id}/${storageFileName(f.name)}`;
    const {error:upErr}=await sb.storage.from('student-submissions').upload(path,f);if(upErr){toast(`Nepavyko įkelti ${f.name}: ${upErr.message}`);continue}
    const {error}=await sb.from('submissions').insert({assignment_id:assignmentId,student_id:me.id,storage_path:path,original_name:f.name,mime_type:f.type,size_bytes:f.size});
    if(error){await sb.storage.from('student-submissions').remove([path]);toast(`Nepavyko išsaugoti ${f.name}: ${error.message}`);continue}

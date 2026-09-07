@@ -81,3 +81,12 @@ Svarbiausi failai:
 - Prieš trinant visada prašoma patvirtinimo.
 - Jei prie užduoties yra mokinių failų, rodomas aiškus papildomas perspėjimas; patvirtinus pašalinami ir susiję failai iš Storage.
 - Papildomo Supabase SQL šiai versijai nereikia, nes užduočių UPDATE/DELETE teisės jau buvo sukurtos bazinėje schemoje.
+
+
+## v3.9 pakeitimai
+- Sutvarkytas Supabase Storage „Invalid key“ klaidos atvejis.
+- Į Storage kelią daugiau nededamas originalus failo pavadinimas.
+- Lietuviškos raidės, tarpai, skliaustai ir kiti simboliai failo pavadinime nebeturėtų trukdyti įkėlimui.
+- Originalus failo pavadinimas vis tiek saugomas duomenų bazėje ir rodomas mokytojui / mokiniui.
+- Pataisymas pritaikytas mokymosi failams, mokytojo privačiai bibliotekai ir mokinių pateikiamiems darbams.
+- Papildomo Supabase SQL šiai versijai nereikia.
