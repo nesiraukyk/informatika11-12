@@ -41,3 +41,10 @@ Svarbiausi failai:
 - Mokinys gali įkelti kelis failus vienu metu, vėliau pridėti daugiau ir ištrinti savo failus.
 - Vienai mokytojo sukurtai užduočiai mokinys gali pateikti kelis failus.
 - Mokytojas gali įjungti „Mokinio vaizdą“ ir demonstruoti temas bei užduočių išdėstymą neprisijungdamas kaip mokinys.
+
+
+## v3.4 pakeitimai
+- Iš mokytojo pagrindinio skydelio pašalinta skiltis „Naujausi mokiniai“.
+- Skiltyje „Naujausi darbai“ prie kiekvieno failo pridėtas tik „Atsisiųsti“ mygtukas.
+- Failų trynimas paliktas klasės / užduoties valdymo vietose, kur yra patvirtinimas prieš trynimą.
+- Pridėtas `?v=3.4`, kad GitHub Pages greičiau užkrautų naują JavaScript/CSS versiją.

@@ -114,8 +114,8 @@ async function renderTeacher(){
 
  // Sujungiame naujausius savarankiškus ir konkrečių užduočių failus.
  const allSubmitted=[
-  ...directSubs.map(s=>({kind:'direct',student_id:s.student_id,class_id:s.class_id,name:s.original_name,title:s.title,at:s.submitted_at})),
-  ...assignmentSubs.map(s=>{const a=assignments.find(x=>x.id===s.assignment_id);return {kind:'assignment',student_id:s.student_id,class_id:a?.class_id,name:s.original_name,title:a?.title||'Užduotis',at:s.submitted_at}})
+  ...directSubs.map(s=>({id:s.id,kind:'direct',student_id:s.student_id,class_id:s.class_id,name:s.original_name,title:s.title,at:s.submitted_at})),
+  ...assignmentSubs.map(s=>{const a=assignments.find(x=>x.id===s.assignment_id);return {id:s.id,kind:'assignment',student_id:s.student_id,class_id:a?.class_id,name:s.original_name,title:a?.title||'Užduotis',at:s.submitted_at}})
  ].sort((a,b)=>new Date(b.at)-new Date(a.at));
 
  let teachers=[];
@@ -143,16 +143,15 @@ async function renderTeacher(){
   }).join(''):'<div class="emptyState"><b>Klasių dar nėra.</b></div>'}</div>
  </div>
  <div class="stack">
-  <div class="panel"><span class="kicker">GREITA SUVESTINĖ</span><h3>Naujausi mokiniai</h3>
-   ${students.length?students.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,7).map(s=>`<div class="studentRow"><div class="grow"><b>${esc(s.full_name||'Mokinys')}</b><div class="subtle">Paskutinį kartą: ${fmtDate(s.last_seen_at||s.last_login_at)}</div></div></div>`).join(''):'<div class="emptyState">Mokinių dar nėra.</div>'}
-  </div>
   <div class="panel"><span class="kicker">NAUJAUSI DARBAI</span><h3>Pateikti mokinių failai</h3>
-   ${allSubmitted.length?allSubmitted.slice(0,7).map(x=>{const st=students.find(s=>s.id===x.student_id),cl=classes.find(c=>c.id===x.class_id);return `<div class="studentRow"><div class="grow"><b>${esc(st?.full_name||'Mokinys')} · ${esc(x.title||x.name)}</b><div class="subtle">${esc(cl?.name||'Klasė')} · ${esc(x.name)} · ${fmtDate(x.at)}</div></div></div>`}).join(''):'<div class="emptyState">Pateiktų darbų dar nėra.</div>'}
+   ${allSubmitted.length?allSubmitted.slice(0,7).map(x=>{const st=students.find(s=>s.id===x.student_id),cl=classes.find(c=>c.id===x.class_id);return `<div class="studentRow"><div class="grow"><b>${esc(st?.full_name||'Mokinys')} · ${esc(x.title||x.name)}</b><div class="subtle">${esc(cl?.name||'Klasė')} · ${esc(x.name)} · ${fmtDate(x.at)}</div></div><button class="smallBtn" ${x.kind==='direct'?`data-latest-direct="${x.id}"`:`data-latest-assignment="${x.id}"`}>Atsisiųsti</button></div>`}).join(''):'<div class="emptyState">Pateiktų darbų dar nėra.</div>'}
   </div>
   ${isAdmin?'':`<div class="panel" id="teacherLibrary"><span class="kicker">MANO FAILAI</span><h3>Kraunama mokytojo biblioteka...</h3></div>`}
  </div></div>`;
  if(!isAdmin&&$('newClassBtn'))$('newClassBtn').onclick=openNewClassModal;
  document.querySelectorAll('[data-class]').forEach(b=>b.onclick=()=>openTeacherClass(b.dataset.class));
+ document.querySelectorAll('[data-latest-direct]').forEach(b=>b.onclick=()=>downloadDirectSubmission(b.dataset.latestDirect));
+ document.querySelectorAll('[data-latest-assignment]').forEach(b=>b.onclick=()=>downloadSubmission(b.dataset.latestAssignment));
  if(!isAdmin)renderTeacherLibrary();
 }
 
