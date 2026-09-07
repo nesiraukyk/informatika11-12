@@ -47,3 +47,9 @@ code{background:var(--surface2);border:1px solid var(--line);border-radius:7px;p
 .emptyState{text-align:center;color:var(--muted);padding:28px 12px}.emptyState b{display:block;color:var(--ink);font-size:17px;margin-bottom:5px}
 @media(max-width:900px){.authShell.two,.contentGrid{grid-template-columns:1fr}.dashboardGrid{grid-template-columns:repeat(2,1fr)}.studentTopics{grid-template-columns:1fr}}
 @media(max-width:620px){.dashboardGrid{grid-template-columns:1fr 1fr}.formGrid{grid-template-columns:1fr}.topicToggleRow{grid-template-columns:1fr}.navRight .navBtn{display:none}}
+
+/* ===== v3.2 ===== */
+.studentUploadPanel{margin:4px 0 26px}
+.studentUploadPanel .miniList{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);display:grid;gap:8px}
+.studentUploadPanel .submissionRow{display:flex;align-items:center;gap:10px}
+input:disabled{opacity:.7;cursor:not-allowed}

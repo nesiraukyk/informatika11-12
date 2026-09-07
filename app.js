@@ -35,9 +35,15 @@ function setHeader(){
  if(!profile)return;
  const isTeacher=['teacher','admin'].includes(profile.role);
  $('headerRole').textContent=profile.role==='teacher'?'Mokytojas':profile.role==='admin'?'Administratorius':'Mokinys';
- $('homeNav').classList.toggle('hidden',true);
+
+ // Mokinys turi vieną aiškią pradžios nuorodą, kuri visada atidaro jo klasę.
+ $('homeNav').classList.toggle('hidden',isTeacher);
+ $('homeNav').dataset.route='student';
  $('teacherNav').classList.toggle('hidden',!isTeacher);
- $('studentNav').classList.toggle('hidden',isTeacher);
+ $('studentNav').classList.add('hidden');
+
+ // Logotipas taip pat grąžina į tinkamą pagrindinį ekraną.
+ if($('brandHome'))$('brandHome').dataset.route=isTeacher?'teacher':'student';
 }
 
 $('themeToggle').onclick=()=>{const n=(document.documentElement.dataset.theme||'light')==='dark'?'light':'dark';document.documentElement.dataset.theme=n;localStorage.setItem('inf11v3_theme',n)};
@@ -290,11 +296,32 @@ async function deleteResource(id,c){
  await sb.storage.from('teacher-resources').remove([r.storage_path]);await sb.from('learning_resources').delete().eq('id',id);renderTeacherResources(c);
 }
 async function renderTeacherAssignments(c){
- const {data:rows}=await sb.from('assignments').select('*').eq('class_id',c.id).order('created_at',{ascending:false});
- $('teacherClassPanel').innerHTML=`<div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">UŽDUOTYS</span><h2>Mokinių darbų pateikimas</h2></div><button class="primary" id="newAssignmentBtn">+ Nauja užduotis</button></div>
- ${(rows||[]).length?(rows||[]).map(a=>`<div class="assignmentRow"><div class="grow"><b>${esc(a.title)}</b><div class="subtle">${esc(topicById(a.topic_id)?.title||a.topic_id)} · ${a.is_open?'Atidaryta':'Uždaryta'} · terminas ${a.due_at?fmtDate(a.due_at):'nenustatytas'}</div></div><button class="smallBtn" data-assignment="${a.id}">Pateikti darbai</button></div>`).join(''):'<div class="emptyState"><b>Užduočių dar nėra.</b>Sukurkite užduotį, kad mokiniai galėtų įkelti savo darbus.</div>'}</div>`;
+ const [{data:rows,error:assignErr},{data:direct,error:directErr}]=await Promise.all([
+  sb.from('assignments').select('*').eq('class_id',c.id).order('created_at',{ascending:false}),
+  sb.from('direct_submissions').select('*').eq('class_id',c.id).order('submitted_at',{ascending:false})
+ ]);
+ if(assignErr)return toast(assignErr.message);
+ if(directErr)return toast(directErr.message);
+
+ const ids=[...new Set((direct||[]).map(s=>s.student_id))];
+ let studs=[];if(ids.length)({data:studs}=await sb.from('profiles').select('id,full_name').in('id',ids));
+
+ $('teacherClassPanel').innerHTML=`
+ <div class="stack">
+  <div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">UŽDUOTYS</span><h2>Mokytojo sukurtos užduotys</h2></div><button class="primary" id="newAssignmentBtn">+ Nauja užduotis</button></div>
+   <p class="muted">Čia gali sukurti konkrečią užduotį su instrukcija ir terminu. Mokinys darbą pateiks prie tos užduoties.</p>
+   ${(rows||[]).length?(rows||[]).map(a=>`<div class="assignmentRow"><div class="grow"><b>${esc(a.title)}</b><div class="subtle">${esc(topicById(a.topic_id)?.title||a.topic_id)} · ${a.is_open?'Atidaryta':'Uždaryta'} · terminas ${a.due_at?fmtDate(a.due_at):'nenustatytas'}</div></div><button class="smallBtn" data-assignment="${a.id}">Pateikti darbai</button></div>`).join(''):'<div class="emptyState"><b>Užduočių dar nėra.</b>Jei reikia, sukurk konkrečią užduotį.</div>'}
+  </div>
+
+  <div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">MOKINIŲ FAILAI</span><h2>Mokinių savarankiškai pateikti darbai</h2></div><span class="badge">${(direct||[]).length}</span></div>
+   <p class="muted">Mokiniai gali įkelti atliktą darbą tiesiai iš savo „Pradžia“ skilties net ir tada, kai atskiros užduoties nesukūrei.</p>
+   ${(direct||[]).length?(direct||[]).map(s=>{const st=(studs||[]).find(x=>x.id===s.student_id);return `<div class="submissionRow"><div class="grow"><b>${esc(st?.full_name||'Mokinys')} · ${esc(s.title||s.original_name)}</b><div class="subtle">${esc(topicById(s.topic_id)?.title||s.topic_id)} · ${esc(s.original_name)} · ${fmtDate(s.submitted_at)}</div></div><button class="smallBtn" data-ddirect="${s.id}">Atsisiųsti</button></div>`}).join(''):'<div class="emptyState">Mokiniai savarankiškų darbų dar neįkėlė.</div>'}
+  </div>
+ </div>`;
+
  $('newAssignmentBtn').onclick=()=>newAssignmentModal(c);
  document.querySelectorAll('[data-assignment]').forEach(b=>b.onclick=()=>showSubmissions(b.dataset.assignment,c));
+ document.querySelectorAll('[data-ddirect]').forEach(b=>b.onclick=()=>downloadDirectSubmission(b.dataset.ddirect));
 }
 function newAssignmentModal(c){
  modal(`<span class="kicker">NAUJA UŽDUOTIS</span><h2>Sukurti darbų pateikimą</h2><form id="assignmentForm" class="formGroup">
@@ -320,6 +347,10 @@ async function downloadSubmission(id){
  const {data:s,error}=await sb.from('submissions').select('*').eq('id',id).single();if(error)return toast(error.message);
  const {data,error:e}=await sb.storage.from('student-submissions').createSignedUrl(s.storage_path,60);if(e)return toast(e.message);window.open(data.signedUrl,'_blank');
 }
+async function downloadDirectSubmission(id){
+ const {data:s,error}=await sb.from('direct_submissions').select('*').eq('id',id).single();if(error)return toast(error.message);
+ const {data,error:e}=await sb.storage.from('student-submissions').createSignedUrl(s.storage_path,60);if(e)return toast(e.message);window.open(data.signedUrl,'_blank');
+}
 
 /* ================= STUDENT ================= */
 async function getStudentClass(){
@@ -334,16 +365,61 @@ async function renderStudent(){
   $('joinForm').onsubmit=async e=>{e.preventDefault();const {error}=await sb.rpc('join_class_by_code',{p_code:$('joinCode').value.trim()});if(error)return toast(error.message);toast('Prisijungta prie klasės.');renderStudent()};return;
  }
  await startHeartbeat(c.id);
- const {data:access}=await sb.from('topic_access').select('*').eq('class_id',c.id);
- const {data:attempts}=await sb.from('practice_attempts').select('*').eq('student_id',me.id).eq('class_id',c.id);
- const {data:sessions}=await sb.from('activity_sessions').select('*').eq('user_id',me.id).eq('class_id',c.id);
+ const [{data:access},{data:attempts},{data:sessions},{data:direct,error:directErr}]=await Promise.all([
+  sb.from('topic_access').select('*').eq('class_id',c.id),
+  sb.from('practice_attempts').select('*').eq('student_id',me.id).eq('class_id',c.id),
+  sb.from('activity_sessions').select('*').eq('user_id',me.id).eq('class_id',c.id),
+  sb.from('direct_submissions').select('*').eq('student_id',me.id).eq('class_id',c.id).order('submitted_at',{ascending:false})
+ ]);
+ if(directErr)return toast(directErr.message);
+
  const secs=(sessions||[]).reduce((n,x)=>n+(x.duration_seconds||0),0),best=(attempts||[]).length?Math.max(...attempts.map(x=>x.score_percent||0)):0;
- $('studentContent').innerHTML=`<div class="pageHero"><span class="kicker">${esc(c.name)}</span><h1>Sveiki, ${esc(profile.full_name||'mokiny')}.</h1><p>Pasirinkite atidarytą temą. Mokymosi failai ir užduočių pateikimas yra temos viduje.</p></div>
+ const openTopics=CFG.topics.filter(t=>(access||[]).find(a=>a.topic_id===t.id)?.is_open);
+
+ $('studentContent').innerHTML=`<div class="pageHero"><span class="kicker">PRADŽIA · ${esc(c.name)}</span><h1>Sveiki, ${esc(profile.full_name||'mokiny')}.</h1><p>Čia yra tavo klasė: atidarytos temos, žinių treniruotės, mokymosi failai ir darbų pateikimas.</p></div>
  <div class="dashboardGrid"><div class="metric"><strong>${(attempts||[]).length}</strong><span>bandymų</span></div><div class="metric"><strong>${(attempts||[]).length?best+'%':'–'}</strong><span>geriausias rezultatas</span></div><div class="metric"><strong>${fmtSec(secs)}</strong><span>aktyvus laikas</span></div><div class="metric"><strong>${fmtDate(profile.last_seen_at||profile.last_login_at)}</strong><span>paskutinis aktyvumas</span></div></div>
+
+ <div class="panel studentUploadPanel">
+  <div class="sectionTitle"><div class="grow"><span class="kicker">MANO DARBAI</span><h2>Pateikti atliktą darbą</h2></div><button class="primary" id="directSubmitBtn" ${openTopics.length?'':'disabled'}>+ Įkelti failą</button></div>
+  <p class="muted">Čia gali įkelti Word, PDF, paveikslėlį ar kitą atliktos užduoties failą. Pasirink temą, įrašyk darbo pavadinimą ir pateik. Mokytojas savo paskyroje galės failą peržiūrėti arba atsisiųsti.</p>
+  ${(direct||[]).length?`<div class="miniList"><b>Paskutiniai mano pateikti darbai</b>${(direct||[]).slice(0,5).map(s=>`<div class="submissionRow"><div class="grow"><b>${esc(s.title||s.original_name)}</b><div class="subtle">${esc(topicById(s.topic_id)?.title||s.topic_id)} · ${esc(s.original_name)} · ${fmtDate(s.submitted_at)}</div></div><button class="smallBtn" data-my-direct="${s.id}">Atsisiųsti</button></div>`).join('')}</div>`:''}
+ </div>
+
  <div class="sectionHead"><span class="kicker">TEMOS</span><h2>Mokymosi turinys</h2></div>
  <div class="studentTopics">${CFG.topics.map(t=>{const a=(access||[]).find(x=>x.topic_id===t.id)||{};return `<article class="topicStudentCard ${a.is_open?'':'locked'}"><span class="badge ${a.is_open?'ok':''}">${a.is_open?'ATIDARYTA':'🔒 UŽRAKINTA'}</span><div style="font-size:30px;margin-top:12px">${t.icon}</div><h3>${esc(t.title)}</h3><p>${t.code} · ${t.hours} val.</p><button class="${a.is_open?'primary':'ghost'}" data-stopic="${t.id}" ${a.is_open?'':'disabled'}>${a.is_open?'Atidaryti':'Užrakinta'}</button></article>`}).join('')}</div>`;
+
+ if($('directSubmitBtn'))$('directSubmitBtn').onclick=()=>openDirectSubmissionModal(c,openTopics);
+ document.querySelectorAll('[data-my-direct]').forEach(b=>b.onclick=()=>downloadDirectSubmission(b.dataset.myDirect));
  document.querySelectorAll('[data-stopic]').forEach(b=>b.onclick=()=>openStudentTopic(b.dataset.stopic,c,access||[]));
 }
+
+function openDirectSubmissionModal(c,openTopics){
+ modal(`<span class="kicker">PATEIKTI DARBĄ</span><h2>Įkelti atliktą užduotį</h2>
+ <form id="directSubmissionForm" class="formGroup">
+  <label>Tema<select id="directTopic" required>${openTopics.map(t=>`<option value="${t.id}">${esc(t.title)}</option>`).join('')}</select></label>
+  <label>Darbo pavadinimas<input id="directTitle" required maxlength="120" placeholder="Pvz., Logotipo kūrimo užduotis"></label>
+  <label>Failas<input class="fileInput" type="file" id="directFile" required></label>
+  <button class="primary" type="submit" style="margin-top:14px">Pateikti mokytojui</button>
+ </form>`);
+ $('directSubmissionForm').onsubmit=async e=>{
+  e.preventDefault();
+  const f=$('directFile').files[0];if(!f)return;
+  if(f.size>25*1024*1024)return toast('Failas per didelis. Maksimalus dydis – 25 MB.');
+  const topicId=$('directTopic').value,title=$('directTitle').value.trim();
+  if(!title)return toast('Įrašyk darbo pavadinimą.');
+  const path=`${c.id}/direct/${me.id}/${crypto.randomUUID()}_${f.name.replaceAll('/','_')}`;
+  toast('Įkeliamas darbas...');
+  const {error:upErr}=await sb.storage.from('student-submissions').upload(path,f);
+  if(upErr)return toast(upErr.message);
+  const {error}=await sb.from('direct_submissions').insert({
+   class_id:c.id,topic_id:topicId,student_id:me.id,title,
+   storage_path:path,original_name:f.name,mime_type:f.type,size_bytes:f.size
+  });
+  if(error){await sb.storage.from('student-submissions').remove([path]);return toast(error.message)}
+  closeModal();toast('Darbas pateiktas mokytojui.');renderStudent();
+ };
+}
+
 async function openStudentTopic(topicId,c,access){
  const t=topicById(topicId),a=access.find(x=>x.topic_id===topicId);if(!a?.is_open)return toast('Tema užrakinta.');
  const {data:resources}=await sb.from('learning_resources').select('*').eq('class_id',c.id).eq('topic_id',topicId).order('created_at',{ascending:false});
@@ -418,9 +494,27 @@ $('reviewErrors').onclick=()=>{const r=quiz.last;if(!r)return;const bad=r.items.
 
 /* ================= PROFILE ================= */
 function renderProfile(){
+ const isStudent=profile.role==='student';
+ const nameLocked=isStudent&&profile.name_change_used===true;
+ const info=isStudent
+  ?(nameLocked?'Vardą ir pavardę jau keitei vieną kartą, todėl dabar jie užrakinti. Jei yra klaida, kreipkis į mokytoją.':'Jei registruojantis suklydai, vardą ir pavardę gali pataisyti vieną kartą. Po išsaugojimo jų keisti nebegalėsi.')
+  :'Vardą ir pavardę gali atnaujinti savo paskyroje.';
+
  $('profileContent').innerHTML=`<div class="pageHero"><span class="kicker">PASKYRA</span><h1>${esc(profile.full_name||'Vartotojas')}</h1><p>Rolė: ${profile.role==='teacher'?'mokytojas':profile.role==='admin'?'administratorius':'mokinys'} · paskutinis prisijungimas ${fmtDate(profile.last_login_at)}</p></div>
- <div class="panel" style="max-width:600px"><h2>Paskyros duomenys</h2><div class="formGroup"><label>Vardas ir pavardė<input id="profileName" value="${esc(profile.full_name||'')}"></label><button class="primary" id="saveProfile" style="margin-top:14px">Išsaugoti</button></div></div>`;
- show('profile');$('saveProfile').onclick=async()=>{const name=$('profileName').value.trim();const {error}=await sb.from('profiles').update({full_name:name}).eq('id',me.id);if(error)return toast(error.message);profile.full_name=name;toast('Išsaugota.')};
+ <div class="panel" style="max-width:600px"><h2>Paskyros duomenys</h2><p class="muted">${esc(info)}</p><div class="formGroup"><label>Vardas ir pavardė<input id="profileName" value="${esc(profile.full_name||'')}" ${nameLocked?'disabled':''}></label>${nameLocked?'':`<button class="primary" id="saveProfile" style="margin-top:14px">${isStudent?'Išsaugoti vienintelį pakeitimą':'Išsaugoti'}</button>`}</div></div>`;
+ show('profile');
+
+ if(!nameLocked&&$('saveProfile'))$('saveProfile').onclick=async()=>{
+  const name=$('profileName').value.trim();
+  if(name.length<2)return toast('Įrašyk vardą ir pavardę.');
+  if(isStudent&&!confirm('Po šio išsaugojimo vardo ir pavardės pats daugiau pakeisti negalėsi. Tęsti?'))return;
+  const {data,error}=await sb.rpc('update_my_name',{p_full_name:name});
+  if(error)return toast(error.message);
+  profile.full_name=(data||name);
+  if(isStudent)profile.name_change_used=true;
+  toast('Išsaugota.');
+  renderProfile();
+ };
 }
 
 /* ================= INIT ================= */

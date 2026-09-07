@@ -21,3 +21,11 @@ Svarbiausi failai:
 - Pridėta privati „Mokytojo biblioteka“ mokytojo failams.
 - Išplėstas „Žinių treniruotės“ paaiškinimas mokiniams.
 - `PATCH_v3_1.sql` sutvirtina profilio teises, kad mokinys negalėtų pats pasikeisti rolės.
+
+
+## v3.2 pakeitimai
+- Mokinio „Pradžia“ dabar visada atidaro jo klasės pagrindinį ekraną.
+- Pridėtas cache-busting (`?v=3.2`), kad GitHub Pages neberodytų senos JS/CSS versijos.
+- Mokinys vardą ir pavardę po registracijos gali pataisyti tik vieną kartą.
+- Mokinys gali tiesiai iš „Pradžia“ įkelti atliktą darbą, pasirinkdamas temą.
+- Mokytojas klasės „Užduotys ir darbai“ skiltyje mato ir atsisiunčia savarankiškai pateiktus mokinių failus.
