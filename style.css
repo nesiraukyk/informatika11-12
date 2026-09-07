@@ -67,3 +67,40 @@ input:disabled{opacity:.7;cursor:not-allowed}
 .previewBanner span{color:var(--muted)}
 .previewDisabled{opacity:.92}
 @media(max-width:850px){.detailMetrics{grid-template-columns:repeat(2,minmax(0,1fr))}.detailColumns{grid-template-columns:1fr}.classHeaderActions{justify-content:flex-start}}
+
+
+/* ===== v3.5 · klasės skelbimai ir nuorodos ===== */
+.classPostsPanel{margin:4px 0 22px}
+.classPost{
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:16px 18px;
+  margin-top:12px;
+  background:var(--card);
+}
+.classPost h3{margin:4px 0 6px}
+.classPost p{margin:0 0 10px;white-space:pre-wrap;line-height:1.55}
+.teacherPost{display:flex;align-items:flex-start;gap:14px}
+.postMeta{font-size:12px;color:var(--muted);font-weight:700}
+.postLink{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  margin-top:4px;
+  font-weight:800;
+  text-decoration:none;
+  color:#3157e8;
+}
+.postLink:hover{text-decoration:underline}
+textarea{
+  width:100%;
+  box-sizing:border-box;
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:12px 14px;
+  background:var(--card);
+  color:var(--text);
+  font:inherit;
+  resize:vertical;
+}
+.dangerSoft{white-space:nowrap}

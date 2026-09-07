@@ -284,15 +284,118 @@ function renderTeacherClassPanel(panel,c,students,members,attempts,sessions,acce
  }
  if(panel==='topics'){
   host.innerHTML=`<div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">PRIEIGA</span><h2>Temų ir atsiskaitymų atrakinimas</h2></div><button class="ghost" id="previewTopicsBtn">👁 Peržiūrėti kaip mokiniui</button></div>
-   ${CFG.topics.map(t=>{const a=access.find(x=>x.topic_id===t.id)||{};return `<div class="topicToggleRow"><div><b>${esc(t.title)}</b><div class="subtle">${t.code} · ${t.hours} val.</div></div>
+   ${CFG.topics.map(t=>{const a=access.find(x=>x.topic_id===t.id)||{};return `<div class="topicToggleRow"><div class="grow"><b>${esc(t.title)}</b><div class="subtle">${t.code} · ${t.hours} val.</div></div>
+    <button class="smallBtn" data-topic-posts="${t.id}">Pranešimai / nuorodos</button>
     <label class="toggle"><input type="checkbox" data-access="${t.id}" data-field="is_open" ${a.is_open?'checked':''}> Tema</label>
     <label class="toggle"><input type="checkbox" data-access="${t.id}" data-field="practice_open" ${a.practice_open?'checked':''}> Praktika</label>
     <label class="toggle"><input type="checkbox" data-access="${t.id}" data-field="assessment_open" ${a.assessment_open?'checked':''}> Atsiskaitymas</label></div>`}).join('')}</div>`;
   document.querySelectorAll('[data-access]').forEach(ch=>ch.onchange=()=>updateTopicAccess(c.id,ch.dataset.access,ch.dataset.field,ch.checked));
+  document.querySelectorAll('[data-topic-posts]').forEach(b=>b.onclick=()=>renderTeacherTopicPosts(c,b.dataset.topicPosts,access));
   $('previewTopicsBtn').onclick=()=>renderTeacherStudentPreview(c);
  }
  if(panel==='resources')renderTeacherResources(c);
  if(panel==='assignments')renderTeacherAssignments(c);
+}
+
+
+function normalizeHttpUrl(value){
+ const raw=(value||'').trim();
+ if(!raw)return '';
+ try{
+  const u=new URL(raw);
+  if(!['http:','https:'].includes(u.protocol))return null;
+  return u.href;
+ }catch{
+  return null;
+ }
+}
+
+
+async function renderTeacherTopicPosts(c,topicId,access){
+ const host=$('teacherClassPanel');
+ if(!host)return;
+ const t=topicById(topicId);
+ host.innerHTML=`<div class="panel"><span class="kicker">TEMOS PRANEŠIMAI</span><h2>Kraunama...</h2></div>`;
+
+ const {data:rows,error}=await sb.from('class_posts')
+   .select('*')
+   .eq('class_id',c.id)
+   .eq('topic_id',topicId)
+   .order('created_at',{ascending:false});
+
+ if(error){
+  host.innerHTML=`<div class="panel"><button class="back" id="backToTopicsPosts">← Grįžti į temas</button><span class="kicker">TEMOS PRANEŠIMAI</span><h2>${esc(t?.title||topicId)}</h2><div class="notice">${esc(error.message)}</div></div>`;
+  if($('backToTopicsPosts'))$('backToTopicsPosts').onclick=()=>renderTeacherClassPanel('topics',c,[],[],[],[],access);
+  return;
+ }
+
+ host.innerHTML=`<div class="panel">
+  <div class="sectionTitle">
+   <div class="grow"><button class="back" id="backToTopicsPosts">← Grįžti į temas</button><span class="kicker">TEMOS PRANEŠIMAI</span><h2>${esc(t?.title||topicId)}</h2></div>
+   <button class="primary" id="newTopicPostBtn">+ Naujas pranešimas</button>
+  </div>
+  <p class="muted">Šie pranešimai ir nuorodos bus rodomi tik šioje temoje, todėl nesimaišys su kitų temų medžiaga.</p>
+  ${(rows||[]).length?(rows||[]).map(p=>`
+   <div class="classPost teacherPost">
+    <div class="grow">
+     <div class="postMeta">${fmtDate(p.created_at)}</div>
+     <h3>${esc(p.title)}</h3>
+     ${p.body?`<p>${esc(p.body)}</p>`:''}
+     ${p.url?`<a class="postLink" href="${esc(p.url)}" target="_blank" rel="noopener noreferrer">Atidaryti nuorodą ↗</a>`:''}
+    </div>
+    <button class="smallBtn dangerSoft" data-delete-topic-post="${p.id}">Ištrinti</button>
+   </div>`).join(''):'<div class="emptyState"><b>Šiai temai pranešimų dar nėra.</b>Gali pridėti komentarą, instrukciją arba nuorodą.</div>'}
+ </div>`;
+
+ $('backToTopicsPosts').onclick=()=>renderTeacherClassPanel('topics',c,[],[],[],[],access);
+ $('newTopicPostBtn').onclick=()=>openTopicPostModal(c,topicId,access);
+ document.querySelectorAll('[data-delete-topic-post]').forEach(b=>b.onclick=()=>deleteTopicPost(b.dataset.deleteTopicPost,c,topicId,access));
+}
+
+function openTopicPostModal(c,topicId,access){
+ const t=topicById(topicId);
+ modal(`<span class="kicker">NAUJAS TEMOS PRANEŠIMAS</span><h2>${esc(t?.title||topicId)}</h2>
+ <p class="muted">Gali įrašyti tik pranešimą, tik nuorodą arba abu.</p>
+ <form id="topicPostForm" class="formGroup">
+  <label>Pavadinimas<input id="topicPostTitle" required maxlength="120" placeholder="Pvz., Inkscape mokomoji medžiaga"></label>
+  <label>Pranešimas<textarea id="topicPostBody" rows="4" maxlength="1500" placeholder="Pvz., Peržiūrėkite šį vaizdo įrašą prieš kitą pamoką."></textarea></label>
+  <label>Nuoroda <span class="subtle">(nebūtina)</span><input id="topicPostUrl" type="url" placeholder="https://..."></label>
+  <button class="primary" type="submit" style="margin-top:14px">Paskelbti temoje</button>
+ </form>`);
+
+ $('topicPostForm').onsubmit=async e=>{
+  e.preventDefault();
+  const title=$('topicPostTitle').value.trim();
+  const body=$('topicPostBody').value.trim();
+  const rawUrl=$('topicPostUrl').value.trim();
+  const url=normalizeHttpUrl(rawUrl);
+
+  if(!title)return toast('Įrašyk pavadinimą.');
+  if(!body&&!rawUrl)return toast('Įrašyk pranešimą arba pridėk nuorodą.');
+  if(rawUrl&&url===null)return toast('Nuoroda turi prasidėti http:// arba https://');
+
+  const {error}=await sb.from('class_posts').insert({
+   class_id:c.id,
+   topic_id:topicId,
+   author_id:me.id,
+   title,
+   body:body||null,
+   url:url||null
+  });
+  if(error)return toast(error.message);
+
+  closeModal();
+  toast('Pranešimas paskelbtas temoje.');
+  renderTeacherTopicPosts(c,topicId,access);
+ };
+}
+
+async function deleteTopicPost(id,c,topicId,access){
+ if(!confirm('Ar tikrai ištrinti šį temos pranešimą? Mokiniai jo nebematys.'))return;
+ const {error}=await sb.from('class_posts').delete().eq('id',id);
+ if(error)return toast(error.message);
+ toast('Pranešimas ištrintas.');
+ renderTeacherTopicPosts(c,topicId,access);
 }
 
 
@@ -522,6 +625,7 @@ async function renderStudent(){
  $('studentContent').innerHTML=`<div class="pageHero"><span class="kicker">PRADŽIA · ${esc(c.name)}</span><h1>Sveiki, ${esc(profile.full_name||'mokiny')}.</h1><p>Čia yra tavo klasė: atidarytos temos, žinių treniruotės, mokymosi failai ir darbų pateikimas.</p></div>
  <div class="dashboardGrid"><div class="metric"><strong>${(attempts||[]).length}</strong><span>bandymų</span></div><div class="metric"><strong>${(attempts||[]).length?best+'%':'–'}</strong><span>geriausias rezultatas</span></div><div class="metric"><strong>${fmtSec(secs)}</strong><span>aktyvus laikas</span></div><div class="metric"><strong>${fmtDate(profile.last_seen_at||profile.last_login_at)}</strong><span>paskutinis aktyvumas</span></div></div>
 
+
  <div class="panel studentUploadPanel">
   <div class="sectionTitle"><div class="grow"><span class="kicker">MANO DARBAI</span><h2>Pateikti atliktą darbą</h2></div><button class="primary" id="directSubmitBtn" ${openTopics.length?'':'disabled'}>+ Įkelti failus</button></div>
   <p class="muted">Gali pateikti vieną arba kelis failus vienu metu ir vėliau pridėti dar. Savo įkeltus failus gali atsisiųsti arba ištrinti. Mokytojas iškart matys juos savo klasės skiltyje „Užduotys ir darbai“.</p>
@@ -571,11 +675,18 @@ function openDirectSubmissionModal(c,openTopics){
 
 async function openStudentTopic(topicId,c,access){
  const t=topicById(topicId),a=access.find(x=>x.topic_id===topicId);if(!a?.is_open)return toast('Tema užrakinta.');
- const {data:resources}=await sb.from('learning_resources').select('*').eq('class_id',c.id).eq('topic_id',topicId).order('created_at',{ascending:false});
- const {data:assignments}=await sb.from('assignments').select('*').eq('class_id',c.id).eq('topic_id',topicId).eq('is_open',true).order('created_at',{ascending:false});
+ const [{data:resources},{data:assignments},{data:topicPosts}]=await Promise.all([
+  sb.from('learning_resources').select('*').eq('class_id',c.id).eq('topic_id',topicId).order('created_at',{ascending:false}),
+  sb.from('assignments').select('*').eq('class_id',c.id).eq('topic_id',topicId).eq('is_open',true).order('created_at',{ascending:false}),
+  sb.from('class_posts').select('*').eq('class_id',c.id).eq('topic_id',topicId).order('created_at',{ascending:false})
+ ]);
  let existing=[];if(assignments?.length)({data:existing}=await sb.from('submissions').select('*').eq('student_id',me.id).in('assignment_id',assignments.map(x=>x.id)).order('submitted_at',{ascending:false}));
  $('topicContent').innerHTML=`<div class="pageHero"><button class="back" id="backStudent">← Mano klasė</button><span class="kicker">${t.code}</span><h1>${esc(t.title)}</h1><p>${esc(t.area)} · rekomenduojama ${t.hours} val.</p></div>
  <div class="contentGrid"><div class="stack">
+  ${(topicPosts||[]).length?`<div class="panel classPostsPanel">
+   <div class="sectionTitle"><div class="grow"><span class="kicker">IŠ MOKYTOJO</span><h2>Pranešimai ir nuorodos</h2></div><span class="badge">${(topicPosts||[]).length}</span></div>
+   ${(topicPosts||[]).map(p=>`<div class="classPost"><div class="postMeta">${fmtDate(p.created_at)}</div><h3>${esc(p.title)}</h3>${p.body?`<p>${esc(p.body)}</p>`:''}${p.url?`<a class="postLink" href="${esc(p.url)}" target="_blank" rel="noopener noreferrer">Atidaryti nuorodą ↗</a>`:''}</div>`).join('')}
+  </div>`:''}
   <div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">PRAKTIKA</span><h2>Žinių treniruotė</h2></div><span class="badge ${a.practice_open?'ok':''}">${a.practice_open?'Atidaryta':'Užrakinta'}</span></div>
    <p class="muted"><b>Praktikuotis gali tiek kartų, kiek nori.</b> Kiekvieną kartą sistema iš didesnio klausimų banko atsitiktinai parenka 10 klausimų ir sumaišo atsakymų variantus, todėl bandymai nėra vienodi. Po kiekvieno atsakymo gausi paaiškinimą, o rezultatas ir atlikimo laikas bus išsaugoti tavo paskyroje.</p>
    <button class="primary" id="startPracticeTopic" ${a.practice_open?'':'disabled'}>Pradėti 10 klausimų praktiką</button>
@@ -628,6 +739,7 @@ async function renderTeacherStudentPreview(c){
  ]);
  $('teacherContent').innerHTML=`<div class="previewBanner"><b>👁 Mokinio vaizdo peržiūra</b><span>Tai tik peržiūros režimas – mokinio rezultatai nebus keičiami.</span></div>
  <div class="pageHero"><button class="back" id="backFromPreview">← Grįžti į klasės valdymą</button><span class="kicker">PRADŽIA · ${esc(c.name)}</span><h1>Mokinio klasės vaizdas</h1><p>Taip mokinys mato tavo atidarytas temas ir pagrindines skiltis.</p></div>
+
  <div class="panel studentUploadPanel previewDisabled"><div class="sectionTitle"><div class="grow"><span class="kicker">MANO DARBAI</span><h2>Pateikti atliktą darbą</h2></div><button class="primary" disabled>+ Įkelti failus</button></div><p class="muted">Mokinys čia gali pateikti vieną ar kelis atliktos užduoties failus.</p></div>
  <div class="sectionHead"><span class="kicker">TEMOS</span><h2>Mokymosi turinys</h2></div>
  <div class="studentTopics">${CFG.topics.map(t=>{const a=(access||[]).find(x=>x.topic_id===t.id)||{};return `<article class="topicStudentCard ${a.is_open?'':'locked'}"><span class="badge ${a.is_open?'ok':''}">${a.is_open?'ATIDARYTA':'🔒 UŽRAKINTA'}</span><div style="font-size:30px;margin-top:12px">${t.icon}</div><h3>${esc(t.title)}</h3><p>${t.code} · ${t.hours} val.</p><button class="${a.is_open?'primary':'ghost'}" data-preview-topic="${t.id}" ${a.is_open?'':'disabled'}>${a.is_open?'Atidaryti':'Užrakinta'}</button></article>`}).join('')}</div>`;
@@ -637,13 +749,18 @@ async function renderTeacherStudentPreview(c){
 }
 async function renderTeacherTopicPreview(topicId,c,access){
  const t=topicById(topicId),a=(access||[]).find(x=>x.topic_id===topicId);if(!a?.is_open)return toast('Tema užrakinta.');
- const [{data:resources},{data:assignments}]=await Promise.all([
+ const [{data:resources},{data:assignments},{data:topicPosts}]=await Promise.all([
   sb.from('learning_resources').select('*').eq('class_id',c.id).eq('topic_id',topicId).order('created_at',{ascending:false}),
-  sb.from('assignments').select('*').eq('class_id',c.id).eq('topic_id',topicId).eq('is_open',true).order('created_at',{ascending:false})
+  sb.from('assignments').select('*').eq('class_id',c.id).eq('topic_id',topicId).eq('is_open',true).order('created_at',{ascending:false}),
+  sb.from('class_posts').select('*').eq('class_id',c.id).eq('topic_id',topicId).order('created_at',{ascending:false})
  ]);
  $('teacherContent').innerHTML=`<div class="previewBanner"><b>👁 Mokinio vaizdo peržiūra</b><span>Veiksmai, kurie kurtų mokinio rezultatą ar pateiktų darbą, yra išjungti.</span></div>
  <div class="pageHero"><button class="back" id="backPreviewTopic">← Mokinio klasės vaizdas</button><span class="kicker">${t.code}</span><h1>${esc(t.title)}</h1><p>${esc(t.area)} · rekomenduojama ${t.hours} val.</p></div>
  <div class="contentGrid"><div class="stack">
+  ${(topicPosts||[]).length?`<div class="panel classPostsPanel">
+   <div class="sectionTitle"><div class="grow"><span class="kicker">IŠ MOKYTOJO</span><h2>Pranešimai ir nuorodos</h2></div><span class="badge">${(topicPosts||[]).length}</span></div>
+   ${(topicPosts||[]).map(p=>`<div class="classPost"><div class="postMeta">${fmtDate(p.created_at)}</div><h3>${esc(p.title)}</h3>${p.body?`<p>${esc(p.body)}</p>`:''}${p.url?`<a class="postLink" href="${esc(p.url)}" target="_blank" rel="noopener noreferrer">Atidaryti nuorodą ↗</a>`:''}</div>`).join('')}
+  </div>`:''}
   <div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">PRAKTIKA</span><h2>Žinių treniruotė</h2></div><span class="badge ${a.practice_open?'ok':''}">${a.practice_open?'Atidaryta':'Užrakinta'}</span></div>
    <p class="muted"><b>Praktikuotis galima neribotai.</b> Kiekvieną kartą parenkami atsitiktiniai klausimai ir sumaišomi atsakymai.</p><button class="primary" disabled>${a.practice_open?'Pradėti 10 klausimų praktiką':'Praktika užrakinta'}</button>
   </div>

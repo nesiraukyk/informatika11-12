@@ -48,3 +48,20 @@ Svarbiausi failai:
 - Skiltyje „Naujausi darbai“ prie kiekvieno failo pridėtas tik „Atsisiųsti“ mygtukas.
 - Failų trynimas paliktas klasės / užduoties valdymo vietose, kur yra patvirtinimas prieš trynimą.
 - Pridėtas `?v=3.4`, kad GitHub Pages greičiau užkrautų naują JavaScript/CSS versiją.
+
+
+## v3.5 pakeitimai
+- Klasėje pridėta skiltis „Skelbimai ir nuorodos“.
+- Mokytojas gali paskelbti pavadinimą, trumpą komentarą/pranešimą ir pasirinktinai interneto nuorodą.
+- Mokiniai skelbimus mato savo „Pradžia“ skiltyje ir nuorodas gali atidaryti naujame lange.
+- Mokytojas gali ištrinti skelbimą su patvirtinimu.
+- „Mokinio vaizdo“ peržiūroje mokytojas mato, kaip skelbimai atrodo mokiniui.
+
+
+## v3.6 pakeitimai
+- Bendras klasės „Skelbimai ir nuorodos“ skirtukas pašalintas.
+- Kiekviena tema dabar turi savo mygtuką „Pranešimai / nuorodos“ mokytojo temų valdyme.
+- Mokytojo pranešimai ir nuorodos saugomi su konkrečios temos ID.
+- Mokinys pranešimus mato tik atsidaręs atitinkamą temą.
+- „Mokinio vaizdo“ peržiūroje pranešimai taip pat rodomi tik konkrečioje temoje.
+- Seni v3.5 bendri skelbimai netrinami, bet naujoje sąsajoje nerodomi.
