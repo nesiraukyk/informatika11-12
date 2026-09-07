@@ -107,3 +107,7 @@ textarea{
 
 /* ===== v3.7 ===== */
 .postActions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+/* ===== v3.8 ===== */
+.assignmentActions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.editAssignmentToggle{margin-top:4px;justify-content:flex-start}

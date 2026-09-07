@@ -582,7 +582,7 @@ async function renderTeacherAssignments(c){
  <div class="stack">
   <div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">UŽDUOTYS</span><h2>Mokytojo sukurtos užduotys</h2></div><button class="primary" id="newAssignmentBtn">+ Nauja užduotis</button></div>
    <p class="muted">Čia gali sukurti konkrečią užduotį su instrukcija ir terminu. Mokinys prie vienos užduoties gali pateikti kelis failus.</p>
-   ${(rows||[]).length?(rows||[]).map(a=>`<div class="assignmentRow"><div class="grow"><b>${esc(a.title)}</b><div class="subtle">${esc(topicById(a.topic_id)?.title||a.topic_id)} · ${a.is_open?'Atidaryta':'Uždaryta'} · terminas ${a.due_at?fmtDate(a.due_at):'nenustatytas'}</div></div><span class="badge ${countFor(a.id)?'ok':''}">${countFor(a.id)} fail.</span><button class="smallBtn" data-assignment="${a.id}">Pateikti darbai</button></div>`).join(''):'<div class="emptyState"><b>Užduočių dar nėra.</b>Jei reikia, sukurk konkrečią užduotį.</div>'}
+   ${(rows||[]).length?(rows||[]).map(a=>`<div class="assignmentRow"><div class="grow"><b>${esc(a.title)}</b><div class="subtle">${esc(topicById(a.topic_id)?.title||a.topic_id)} · ${a.is_open?'Atidaryta':'Uždaryta'} · terminas ${a.due_at?fmtDate(a.due_at):'nenustatytas'}</div></div><span class="badge ${countFor(a.id)?'ok':''}">${countFor(a.id)} fail.</span><div class="assignmentActions"><button class="smallBtn" data-edit-assignment="${a.id}">Redaguoti</button><button class="smallBtn dangerMini" data-delete-assignment="${a.id}" data-file-count="${countFor(a.id)}">Ištrinti</button><button class="smallBtn" data-assignment="${a.id}">Pateikti darbai</button></div></div>`).join(''):'<div class="emptyState"><b>Užduočių dar nėra.</b>Jei reikia, sukurk konkrečią užduotį.</div>'}
   </div>
 
   <div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">MOKINIŲ FAILAI</span><h2>Mokinių savarankiškai pateikti darbai</h2></div><span class="badge ${direct?.length?'ok':''}">${(direct||[]).length}</span></div>
@@ -592,6 +592,8 @@ async function renderTeacherAssignments(c){
  </div>`;
 
  $('newAssignmentBtn').onclick=()=>newAssignmentModal(c);
+ document.querySelectorAll('[data-edit-assignment]').forEach(b=>b.onclick=()=>editAssignmentModal(b.dataset.editAssignment,c));
+ document.querySelectorAll('[data-delete-assignment]').forEach(b=>b.onclick=()=>deleteAssignment(b.dataset.deleteAssignment,c,Number(b.dataset.fileCount||0)));
  document.querySelectorAll('[data-assignment]').forEach(b=>b.onclick=()=>showSubmissions(b.dataset.assignment,c));
  document.querySelectorAll('[data-ddirect]').forEach(b=>b.onclick=()=>downloadDirectSubmission(b.dataset.ddirect));
  document.querySelectorAll('[data-del-direct]').forEach(b=>b.onclick=()=>deleteDirectSubmission(b.dataset.delDirect,c,'teacher'));
@@ -608,6 +610,86 @@ function newAssignmentModal(c){
   if(error)return toast(error.message);closeModal();toast('Užduotis sukurta.');renderTeacherAssignments(c);
  };
 }
+
+async function editAssignmentModal(id,c){
+ const {data:a,error}=await sb.from('assignments').select('*').eq('id',id).single();
+ if(error)return toast(error.message);
+
+ let dueLocal='';
+ if(a.due_at){
+  const d=new Date(a.due_at);
+  dueLocal=new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16);
+ }
+
+ modal(`<span class="kicker">REDAGUOTI UŽDUOTĮ</span><h2>${esc(a.title)}</h2>
+ <p class="muted">Pakeitimai iškart bus matomi mokiniams.</p>
+ <form id="editAssignmentForm" class="formGroup">
+  <label>Tema<select id="editATopic">${CFG.topics.map(t=>`<option value="${t.id}" ${t.id===a.topic_id?'selected':''}>${esc(t.title)}</option>`).join('')}</select></label>
+  <label>Pavadinimas<input id="editATitle" required maxlength="160"></label>
+  <label>Instrukcija<textarea id="editAInstructions" rows="5"></textarea></label>
+  <label>Terminas<input type="datetime-local" id="editADue"></label>
+  <label class="toggle editAssignmentToggle"><input type="checkbox" id="editAOpen" ${a.is_open?'checked':''}> Užduotis atidaryta mokiniams</label>
+  <button class="primary" type="submit" style="margin-top:14px">Išsaugoti pakeitimus</button>
+ </form>`);
+
+ $('editATitle').value=a.title||'';
+ $('editAInstructions').value=a.instructions||'';
+ $('editADue').value=dueLocal;
+
+ $('editAssignmentForm').onsubmit=async e=>{
+  e.preventDefault();
+
+  const title=$('editATitle').value.trim();
+  if(!title)return toast('Įrašyk užduoties pavadinimą.');
+
+  const due=$('editADue').value?new Date($('editADue').value).toISOString():null;
+  const {error:updateError}=await sb.from('assignments').update({
+   topic_id:$('editATopic').value,
+   title,
+   instructions:$('editAInstructions').value.trim(),
+   due_at:due,
+   is_open:$('editAOpen').checked
+  }).eq('id',id);
+
+  if(updateError)return toast(updateError.message);
+
+  closeModal();
+  toast('Užduotis atnaujinta.');
+  renderTeacherAssignments(c);
+ };
+}
+
+async function deleteAssignment(id,c,fileCount=0){
+ const {data:a,error}=await sb.from('assignments').select('id,title').eq('id',id).single();
+ if(error)return toast(error.message);
+
+ const warning=fileCount>0
+  ?`Užduotis „${a.title}“ turi ${fileCount} pateiktą(-us) mokinių failą(-us). Ištrynus užduotį bus negrįžtamai ištrinti ir visi prie jos pateikti failai. Ar tikrai tęsti?`
+  :`Ar tikrai ištrinti užduotį „${a.title}“? Šio veiksmo atšaukti nepavyks.`;
+
+ if(!confirm(warning))return;
+
+ // Pirmiausia iš Storage pašaliname prie šios užduoties pateiktus failus.
+ const {data:subs,error:subsErr}=await sb.from('submissions')
+  .select('id,storage_path')
+  .eq('assignment_id',id);
+
+ if(subsErr)return toast(subsErr.message);
+
+ const paths=(subs||[]).map(s=>s.storage_path).filter(Boolean);
+ if(paths.length){
+  const {error:storageErr}=await sb.storage.from('student-submissions').remove(paths);
+  if(storageErr)return toast(`Užduotis neištrinta, nes nepavyko pašalinti mokinių failų: ${storageErr.message}`);
+ }
+
+ // DB submissions išsitrins per ON DELETE CASCADE.
+ const {error:deleteErr}=await sb.from('assignments').delete().eq('id',id);
+ if(deleteErr)return toast(deleteErr.message);
+
+ toast('Užduotis ištrinta.');
+ renderTeacherAssignments(c);
+}
+
 async function showSubmissions(assignmentId,c){
  const {data:a}=await sb.from('assignments').select('*').eq('id',assignmentId).single();
  const {data:subs}=await sb.from('submissions').select('*').eq('assignment_id',assignmentId).order('submitted_at',{ascending:false});

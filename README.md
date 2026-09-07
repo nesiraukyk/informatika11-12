@@ -72,3 +72,12 @@ Svarbiausi failai:
 - Galima keisti pavadinimą, komentarą ir nuorodą.
 - Redaguoti leidžiama tik savo sukurtus pranešimus.
 - `PATCH_v3_7_FULL.sql` apima ir v3.6 temos pranešimų struktūrą, todėl atskirai v3.6 SQL paleisti nereikia.
+
+
+## v3.8 pakeitimai
+- Mokytojas gali redaguoti savo sukurtas užduotis.
+- Galima keisti temą, pavadinimą, instrukciją, terminą ir užduoties atidarymo būseną.
+- Mokytojas gali ištrinti užduotį.
+- Prieš trinant visada prašoma patvirtinimo.
+- Jei prie užduoties yra mokinių failų, rodomas aiškus papildomas perspėjimas; patvirtinus pašalinami ir susiję failai iš Storage.
+- Papildomo Supabase SQL šiai versijai nereikia, nes užduočių UPDATE/DELETE teisės jau buvo sukurtos bazinėje schemoje.
