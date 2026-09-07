@@ -343,12 +343,16 @@ async function renderTeacherTopicPosts(c,topicId,access){
      ${p.body?`<p>${esc(p.body)}</p>`:''}
      ${p.url?`<a class="postLink" href="${esc(p.url)}" target="_blank" rel="noopener noreferrer">Atidaryti nuorodą ↗</a>`:''}
     </div>
-    <button class="smallBtn dangerSoft" data-delete-topic-post="${p.id}">Ištrinti</button>
+    <div class="postActions">
+     ${p.author_id===me.id?`<button class="smallBtn" data-edit-topic-post="${p.id}">Redaguoti</button>`:''}
+     <button class="smallBtn dangerSoft" data-delete-topic-post="${p.id}">Ištrinti</button>
+    </div>
    </div>`).join(''):'<div class="emptyState"><b>Šiai temai pranešimų dar nėra.</b>Gali pridėti komentarą, instrukciją arba nuorodą.</div>'}
  </div>`;
 
  $('backToTopicsPosts').onclick=()=>renderTeacherClassPanel('topics',c,[],[],[],[],access);
  $('newTopicPostBtn').onclick=()=>openTopicPostModal(c,topicId,access);
+ document.querySelectorAll('[data-edit-topic-post]').forEach(b=>b.onclick=()=>openEditTopicPostModal(b.dataset.editTopicPost,c,topicId,access));
  document.querySelectorAll('[data-delete-topic-post]').forEach(b=>b.onclick=()=>deleteTopicPost(b.dataset.deleteTopicPost,c,topicId,access));
 }
 
@@ -386,6 +390,60 @@ function openTopicPostModal(c,topicId,access){
 
   closeModal();
   toast('Pranešimas paskelbtas temoje.');
+  renderTeacherTopicPosts(c,topicId,access);
+ };
+}
+
+
+async function openEditTopicPostModal(id,c,topicId,access){
+ const {data:p,error}=await sb.from('class_posts')
+  .select('*')
+  .eq('id',id)
+  .eq('author_id',me.id)
+  .single();
+
+ if(error)return toast(error.message);
+
+ const t=topicById(topicId);
+ modal(`<span class="kicker">REDAGUOTI TEMOS PRANEŠIMĄ</span><h2>${esc(t?.title||topicId)}</h2>
+ <p class="muted">Pakeitimai iškart bus matomi mokiniams.</p>
+ <form id="editTopicPostForm" class="formGroup">
+  <label>Pavadinimas<input id="editTopicPostTitle" required maxlength="120"></label>
+  <label>Pranešimas<textarea id="editTopicPostBody" rows="4" maxlength="1500"></textarea></label>
+  <label>Nuoroda <span class="subtle">(nebūtina)</span><input id="editTopicPostUrl" type="url" placeholder="https://..."></label>
+  <button class="primary" type="submit" style="margin-top:14px">Išsaugoti pakeitimus</button>
+ </form>`);
+
+ $('editTopicPostTitle').value=p.title||'';
+ $('editTopicPostBody').value=p.body||'';
+ $('editTopicPostUrl').value=p.url||'';
+
+ $('editTopicPostForm').onsubmit=async e=>{
+  e.preventDefault();
+
+  const title=$('editTopicPostTitle').value.trim();
+  const body=$('editTopicPostBody').value.trim();
+  const rawUrl=$('editTopicPostUrl').value.trim();
+  const url=normalizeHttpUrl(rawUrl);
+
+  if(!title)return toast('Įrašyk pavadinimą.');
+  if(!body&&!rawUrl)return toast('Įrašyk pranešimą arba pridėk nuorodą.');
+  if(rawUrl&&url===null)return toast('Nuoroda turi prasidėti http:// arba https://');
+
+  const {error:updateError}=await sb.from('class_posts')
+   .update({
+    title,
+    body:body||null,
+    url:url||null,
+    updated_at:new Date().toISOString()
+   })
+   .eq('id',id)
+   .eq('author_id',me.id);
+
+  if(updateError)return toast(updateError.message);
+
+  closeModal();
+  toast('Pranešimas atnaujintas.');
   renderTeacherTopicPosts(c,topicId,access);
  };
 }

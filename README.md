@@ -65,3 +65,10 @@ Svarbiausi failai:
 - Mokinys pranešimus mato tik atsidaręs atitinkamą temą.
 - „Mokinio vaizdo“ peržiūroje pranešimai taip pat rodomi tik konkrečioje temoje.
 - Seni v3.5 bendri skelbimai netrinami, bet naujoje sąsajoje nerodomi.
+
+
+## v3.7 pakeitimai
+- Mokytojas prie savo temos pranešimo mato mygtuką „Redaguoti“.
+- Galima keisti pavadinimą, komentarą ir nuorodą.
+- Redaguoti leidžiama tik savo sukurtus pranešimus.
+- `PATCH_v3_7_FULL.sql` apima ir v3.6 temos pranešimų struktūrą, todėl atskirai v3.6 SQL paleisti nereikia.

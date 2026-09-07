@@ -104,3 +104,6 @@ textarea{
   resize:vertical;
 }
 .dangerSoft{white-space:nowrap}
+
+/* ===== v3.7 ===== */
+.postActions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
