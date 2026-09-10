@@ -127,3 +127,27 @@ Temos pavadinimą, kodą, valandų skaičių, sritį ir emoji galima redaguoti n
 Diegimo tvarka:
 1. Supabase SQL Editor paleisti `supabase/PATCH_v4_0_CLASS_TOPICS_SAFE.sql`.
 2. Tik gavus sėkmingą rezultatą į GitHub įkelti v4.0 failus.
+
+
+## v4.1 – 10 klasės temų šablonas
+
+10 klasė dabar automatiškai gauna šias šešias temas:
+1. Skaitmeninio turinio kūrimas
+2. Algoritmai ir programavimas
+3. Duomenų tyryba ir informacija
+4. Technologinių problemų sprendimas
+5. Virtualioji komunikacija ir bendradarbiavimas
+6. Saugus elgesys
+
+Temų aprašymai sukelti pagal vartotojo pateiktą turinį. 11 klasės klasės, mokiniai, failai, užduotys, prisijungimai, aktyvumo istorija ir bandymų rezultatai nėra trinami. 11 klasės temoms išlaikomi tie patys `topic_id`.
+
+`PATCH_v4_1_10_CLASS_TEMPLATE_SAFE.sql` yra pilnas, idempotentinis patchas: jį galima paleisti ir vietoje v4.0, ir po v4.0.
+
+
+## v4.2 – klasės kūrimo RLS pataisymas
+
+Klasė nebekuriama tiesioginiu `INSERT` iš naršyklės. Vietoje to naudojama `public.create_class(...)` SECURITY DEFINER funkcija, kuri pati patikrina, kad prisijungęs vartotojas yra mokytojas arba administratorius.
+
+Tai pašalina `new row violates row-level security policy for table "classes"` klaidą, bet neatskleidžia papildomų teisių mokiniams.
+
+`PATCH_v4_2_FULL_SAFE.sql` apima ir v4.1 10 klasės temų šabloną, todėl jį galima paleisti kaip vienintelį dabartinį patchą.

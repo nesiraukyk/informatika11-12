@@ -17,6 +17,7 @@ const topicMeta=t=>{
 };
 const topicDescription=t=>{
  if(!t)return '';
+ if(t.description)return t.description;
  const bits=[];
  if(t.area)bits.push(t.area);
  if(Number(t.hours)>0)bits.push(`rekomenduojama ${Number(t.hours)} val.`);
@@ -41,6 +42,7 @@ async function loadClassTopics(classId){
   hours:Number(r.hours||0),
   icon:r.icon||'💻',
   area:r.area||'',
+  description:r.description||'',
   sort_order:Number(r.sort_order||0)
  }));
  return activeClassTopics;
@@ -270,11 +272,11 @@ function storageFileName(originalName){
 function randomCode(){return Math.random().toString(36).slice(2,8).toUpperCase()}
 function openNewClassModal(){
  modal(`<span class="kicker">NAUJA KLASĖ</span><h2>Sukurti klasę</h2>
- <p class="muted">Kiekviena klasė dabar turi savo atskirą temų sąrašą. 11 klasės šablonas išlaiko dabartines temas, o 10 ir 12 klasėms temas gali susikurti pats.</p>
+ <p class="muted">Kiekviena klasė dabar turi savo atskirą temų sąrašą. 10 ir 11 klasės turi paruoštus temų šablonus. 12 klasei ar kitai programai temas gali susikurti pats.</p>
  <form id="newClassForm" class="formGroup">
   <label>Klasė / programa
    <select id="newClassGrade">
-    <option value="10" selected>10 klasė</option>
+    <option value="10" selected>10 klasė – naudoti paruoštą 10 klasės temų šabloną</option>
     <option value="11">11 klasė – naudoti dabartinį III gimnazijos temų šabloną</option>
     <option value="12">12 klasė</option>
     <option value="custom">Kita / tuščia programa</option>
@@ -286,17 +288,18 @@ function openNewClassModal(){
  </form>`);
  $('newClassForm').onsubmit=async e=>{
   e.preventDefault();
-  const payload={
-   name:$('newClassName').value.trim(),
-   teacher_id:me.id,
-   join_code:$('newClassCode').value.trim().toUpperCase(),
-   grade_level:$('newClassGrade').value
-  };
-  const {data,error}=await sb.from('classes').insert(payload).select('*').single();
+  const name=$('newClassName').value.trim();
+  const joinCode=$('newClassCode').value.trim().toUpperCase();
+  const gradeLevel=$('newClassGrade').value;
+  const {data,error}=await sb.rpc('create_class',{
+   p_name:name,
+   p_join_code:joinCode,
+   p_grade_level:gradeLevel
+  });
   if(error)return toast(error.message);
   closeModal();
   toast('Klasė sukurta.');
-  openTeacherClass(data.id);
+  openTeacherClass(data);
  };
 }
 async function openTeacherClass(classId){
@@ -510,6 +513,7 @@ function openNewClassTopicModal(c){
   <label>Temos kodas <span class="subtle">(nebūtina)</span><input id="classTopicCode" maxlength="40" placeholder="Pvz., 28.1.1"></label>
   <label>Valandų skaičius <span class="subtle">(nebūtina)</span><input id="classTopicHours" type="number" min="0" max="500" step="1" placeholder="Pvz., 6"></label>
   <label>Sritis <span class="subtle">(nebūtina)</span><input id="classTopicArea" maxlength="160" placeholder="Pvz., Skaitmeninio turinio kūrimas"></label>
+  <label>Aprašymas <span class="subtle">(nebūtina)</span><textarea id="classTopicDescription" rows="5" maxlength="4000" placeholder="Ką mokiniai mokysis šioje temoje?"></textarea></label>
   <label>Ženkliukas / emoji <span class="subtle">(nebūtina)</span><input id="classTopicIcon" maxlength="12" placeholder="💻"></label>
   <button class="primary" type="submit" style="margin-top:14px">Sukurti temą</button>
  </form>`);
@@ -526,6 +530,7 @@ function openNewClassTopicModal(c){
    code:$('classTopicCode').value.trim(),
    hours:Number.isFinite(hours)?hours:0,
    area:$('classTopicArea').value.trim(),
+   description:$('classTopicDescription').value.trim(),
    icon:$('classTopicIcon').value.trim()||'💻',
    sort_order:nextOrder,
    is_archived:false,
@@ -556,6 +561,7 @@ function openEditClassTopicModal(c,topicId){
   <label>Temos kodas <span class="subtle">(nebūtina)</span><input id="editClassTopicCode" maxlength="40"></label>
   <label>Valandų skaičius <span class="subtle">(nebūtina)</span><input id="editClassTopicHours" type="number" min="0" max="500" step="1"></label>
   <label>Sritis <span class="subtle">(nebūtina)</span><input id="editClassTopicArea" maxlength="160"></label>
+  <label>Aprašymas <span class="subtle">(nebūtina)</span><textarea id="editClassTopicDescription" rows="5" maxlength="4000"></textarea></label>
   <label>Ženkliukas / emoji <span class="subtle">(nebūtina)</span><input id="editClassTopicIcon" maxlength="12"></label>
   <button class="primary" type="submit" style="margin-top:14px">Išsaugoti pakeitimus</button>
  </form>`);
@@ -563,6 +569,7 @@ function openEditClassTopicModal(c,topicId){
  $('editClassTopicCode').value=t.code||'';
  $('editClassTopicHours').value=Number(t.hours||0)||'';
  $('editClassTopicArea').value=t.area||'';
+ $('editClassTopicDescription').value=t.description||'';
  $('editClassTopicIcon').value=t.icon||'💻';
 
  $('editClassTopicForm').onsubmit=async e=>{
@@ -575,6 +582,7 @@ function openEditClassTopicModal(c,topicId){
    code:$('editClassTopicCode').value.trim(),
    hours:Number.isFinite(hours)?hours:0,
    area:$('editClassTopicArea').value.trim(),
+   description:$('editClassTopicDescription').value.trim(),
    icon:$('editClassTopicIcon').value.trim()||'💻',
    updated_at:new Date().toISOString()
   }).eq('class_id',c.id).eq('topic_id',topicId);
