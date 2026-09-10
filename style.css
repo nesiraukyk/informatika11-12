@@ -111,3 +111,71 @@ textarea{
 /* ===== v3.8 ===== */
 .assignmentActions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .editAssignmentToggle{margin-top:4px;justify-content:flex-start}
+
+
+/* ===== v3.10 · Klausimų bankas ===== */
+.questionBankTools{margin-bottom:18px}
+.questionFilters{
+  display:grid;
+  grid-template-columns:minmax(220px,2fr) repeat(3,minmax(160px,1fr));
+  gap:12px;
+  align-items:end;
+}
+.questionFilters label{margin:0}
+.questionBankCount{margin-top:14px;color:var(--muted)}
+.questionBankList{display:grid;gap:14px;padding-bottom:34px}
+.bankQuestion{margin:0}
+.bankQuestionHeader{display:flex;gap:14px;align-items:flex-start}
+.bankQuestionHeader h3{margin:10px 0 5px;font-size:20px;line-height:1.35}
+.bankQuestionMeta{display:flex;gap:7px;flex-wrap:wrap}
+.bankNumber{
+  min-width:38px;height:38px;border-radius:12px;
+  display:grid;place-items:center;font-weight:900;
+  border:1px solid var(--line);color:var(--muted)
+}
+.bankOptions{display:grid;gap:8px;margin-top:16px}
+.bankOption{
+  display:flex;gap:10px;align-items:center;
+  border:1px solid var(--line);border-radius:13px;padding:11px 13px
+}
+.optionLetter{
+  width:28px;height:28px;flex:0 0 28px;border-radius:9px;
+  display:grid;place-items:center;font-weight:900;
+  border:1px solid var(--line)
+}
+.correctOption{font-weight:700}
+.correctMark{margin-left:auto;white-space:nowrap}
+.bankExplanation{
+  margin-top:14px;padding:13px 15px;border-radius:14px;
+  background:var(--soft);line-height:1.55
+}
+.bankExplanation p{margin:7px 0 0}
+@media (max-width:900px){
+  .questionFilters{grid-template-columns:1fr 1fr}
+}
+@media (max-width:580px){
+  .questionFilters{grid-template-columns:1fr}
+  .bankOption{align-items:flex-start}
+  .correctMark{display:block;margin-left:0}
+}
+
+/* ===== v3.11 · Klausimų bankas prie kiekvienos temos ===== */
+.topicQuestionFilters{
+  grid-template-columns:minmax(240px,2fr) minmax(170px,1fr) minmax(170px,1fr) auto;
+}
+.topicFilterReset{align-self:end;margin-bottom:1px}
+@media (max-width:900px){
+  .topicQuestionFilters{grid-template-columns:1fr 1fr}
+  .topicFilterReset{align-self:stretch}
+}
+@media (max-width:580px){
+  .topicQuestionFilters{grid-template-columns:1fr}
+}
+
+/* ===== v4.0 · Kiekviena klasė turi savo temas ===== */
+.topicToggleRow{align-items:center}
+.topicToggleRow .actions{flex-wrap:wrap}
+.classProgramHint{margin-top:5px}
+@media (max-width:980px){
+  .topicToggleRow{align-items:flex-start}
+}

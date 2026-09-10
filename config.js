@@ -9,8 +9,8 @@ gali juos rasti šaltinio faile. Todėl assessment.js laikomas tuščias,
 kol atsiskaitymo nereikia atidaryti.
 */
 window.SITE_CONFIG = {
-  "siteTitle": "Informatika 11",
-  "classLabel": "III gimnazijos klasė",
+  "siteTitle": "Informatika 10–12",
+  "classLabel": "10–12 klasės",
   "subtitle": "Mokymosi ir praktikos platforma",
   "practiceQuestionCount": 10,
   "practicePassPercent": 80,

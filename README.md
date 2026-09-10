@@ -90,3 +90,40 @@ Svarbiausi failai:
 - Originalus failo pavadinimas vis tiek saugomas duomenų bazėje ir rodomas mokytojui / mokiniui.
 - Pataisymas pritaikytas mokymosi failams, mokytojo privačiai bibliotekai ir mokinių pateikiamiems darbams.
 - Papildomo Supabase SQL šiai versijai nereikia.
+
+
+## v3.10 pakeitimai
+- Mokytojo ir administratoriaus viršutiniame meniu pridėta „Klausimų bankas“ skiltis.
+- Joje rodomi visi `questions.js` praktikos klausimai.
+- Matomi visi atsakymų variantai, teisingas atsakymas ir paaiškinimas.
+- Galima filtruoti pagal temą, kategoriją ir sudėtingumą.
+- Galima ieškoti pagal klausimo tekstą, atsakymus, ID ar paaiškinimą.
+- Mokiniai šios skilties meniu nemato.
+- Supabase SQL pakeitimų nereikia.
+
+
+## v3.11 pakeitimai
+- Bendras viršutinio meniu „Klausimų bankas“ pašalintas.
+- Kiekviena tema mokytojo skiltyje dabar turi savo mygtuką „Klausimų bankas“.
+- Prie mygtuko rodomas tos temos klausimų skaičius, kai klausimų yra.
+- Atidarius banką rodomi tik konkrečios temos klausimai.
+- Mokytojas / administratorius mato klausimą, visus atsakymų variantus, teisingą atsakymą, paaiškinimą, kategoriją ir sudėtingumą.
+- Galima ieškoti ir filtruoti konkrečios temos banką.
+- Temos be klausimų rodo aiškią tuščio banko būseną.
+- Mokiniai šio valdymo mygtuko ir banko UI nemato.
+- Supabase SQL pakeitimų nereikia.
+
+
+## v4.0 – skirtingos temos kiekvienai klasei
+
+Ši versija pakeičia temų architektūrą taip, kad kiekviena klasė gali turėti savo mokymosi temas.
+
+Svarbiausia migracijos savybė: esama 11 klasės informacija nėra trinama ir nėra perkeliama į kitus ID. Dabartinėms klasėms į `class_topics` nukopijuojamas 11 klasės temų katalogas naudojant tuos pačius `topic_id`, todėl esami mokinių failai, užduotys, bandymai, pranešimai ir rezultatai lieka susieti kaip anksčiau.
+
+Naujos klasės kūrime galima pasirinkti 10, 11, 12 klasę arba kitą programą. 11 klasė automatiškai gauna dabartinį temų šabloną. 10 ir 12 klasės pradeda nuo tuščio temų sąrašo; mokytojas klasėje per `Temos → + Nauja tema` susikuria reikalingas temas.
+
+Temos pavadinimą, kodą, valandų skaičių, sritį ir emoji galima redaguoti nekeičiant techninio `topic_id`, todėl jau susieti duomenys išlieka.
+
+Diegimo tvarka:
+1. Supabase SQL Editor paleisti `supabase/PATCH_v4_0_CLASS_TOPICS_SAFE.sql`.
+2. Tik gavus sėkmingą rezultatą į GitHub įkelti v4.0 failus.
