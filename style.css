@@ -191,3 +191,94 @@ textarea{
 .topicMessageRow{display:flex;align-items:center;gap:10px;padding:11px 0;border-top:1px solid var(--line)}
 .topicMessageRow:first-of-type{border-top:0}
 @media (max-width:760px){.topicMessageRow{align-items:flex-start;flex-wrap:wrap}}
+
+
+/* ===== v4.4 · grupavimas ir išdėstymo patobulinimai ===== */
+.classCardActions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+
+.latestWorkIdentity{display:flex;flex-direction:column;gap:3px}
+.latestWorkTitle{color:var(--p);font-weight:850;line-height:1.35}
+
+.topicToggleRow{
+  display:grid;
+  grid-template-columns:minmax(260px,1fr) minmax(520px,auto);
+  gap:18px;
+  align-items:center;
+  padding:14px 0;
+  border-bottom:1px solid var(--line);
+}
+.topicInfo{min-width:0}
+.topicInfo>b{display:block;line-height:1.35}
+.topicControls{display:flex;align-items:center;justify-content:flex-end;gap:14px;flex-wrap:wrap}
+.topicActionButtons{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.topicAccessToggles{
+  display:flex;
+  align-items:center;
+  gap:4px;
+  flex-wrap:wrap;
+  background:var(--surface2);
+  border:1px solid var(--line);
+  border-radius:13px;
+  padding:6px 8px;
+}
+.topicAccessToggles .toggle{
+  padding:4px 6px;
+  white-space:nowrap;
+  color:var(--ink);
+}
+
+.topicContentGroup{
+  border:1px solid var(--line);
+  border-radius:16px;
+  overflow:hidden;
+  margin-top:12px;
+  background:var(--surface2);
+}
+.topicContentGroup>summary{
+  list-style:none;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  padding:15px 16px;
+}
+.topicContentGroup>summary::-webkit-details-marker{display:none}
+.topicContentGroup>summary::after{
+  content:'▾';
+  color:var(--muted);
+  font-size:15px;
+  margin-left:4px;
+  transition:transform .18s ease;
+}
+.topicContentGroup[open]>summary::after{transform:rotate(180deg)}
+.topicContentBody{
+  border-top:1px solid var(--line);
+  padding:12px;
+  background:var(--surface);
+}
+.topicContentBody .resourceRow,
+.topicContentBody .assignmentRow,
+.topicContentBody .submissionRow{margin-top:8px}
+.topicContentBody .resourceRow:first-child,
+.topicContentBody .assignmentRow:first-child,
+.topicContentBody .submissionRow:first-child{margin-top:0}
+
+.topicSummaryCounts{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-left:auto}
+.topicGroupToolbar{display:flex;justify-content:flex-end;gap:8px;margin-bottom:12px}
+.topicSubsection{padding-top:12px;margin-top:12px;border-top:1px solid var(--line)}
+.topicSubsection:first-of-type{margin-top:0}
+.topicSubsection h3{margin:0 0 9px;font-size:15px}
+.topicEmptyLine{color:var(--muted);font-size:13px;padding:10px 2px}
+
+@media(max-width:1050px){
+  .topicToggleRow{grid-template-columns:1fr}
+  .topicControls{justify-content:flex-start}
+}
+@media(max-width:700px){
+  .topicControls{align-items:flex-start;flex-direction:column}
+  .topicAccessToggles{width:100%}
+  .topicContentGroup>summary{align-items:flex-start;flex-wrap:wrap}
+  .topicSummaryCounts{margin-left:0}
+  .classCardActions{width:100%;justify-content:flex-start}
+}

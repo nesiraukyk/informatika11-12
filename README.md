@@ -164,3 +164,12 @@ Tai pašalina `new row violates row-level security policy for table "classes"` k
 - „Pranešimai / nuorodos“ perkelti iš „Temos“ į „Užduotys ir darbai“.
 - Prisijungimo forma neprašo naršyklės automatiškai pildyti prisijungimo duomenų, o laukų reikšmės po prisijungimo išvalomos.
 - Supabase SQL pakeitimų šiai versijai nereikia.
+
+
+## v4.4 – Mokytojo aplinkos grupavimas
+- „Naujausiuose darbuose“ mokinio vardas ir užduoties / darbo pavadinimas vizualiai atskirti; darbo pavadinimas rodomas akcentine spalva.
+- Sutvarkytas temų valdymo išdėstymas, kad mygtukai ir Tema / Praktika / Atsiskaitymas jungikliai nebesimėtytų į kelias atsitiktines eilutes.
+- „Mokymosi failai“ sugrupuoti pagal temas ir išskleidžiami / suskleidžiami.
+- „Užduotys ir darbai“ sugrupuoti pagal temas. Kiekvienos temos viduje yra pranešimai / nuorodos, mokytojo užduotys ir mokinių savarankiškai pateikti darbai.
+- Pagrindiniame Mokytojo aplinkos lange prie kiekvienos klasės pridėtas „Mokinio vaizdas“ mygtukas.
+- Supabase SQL pakeitimų šiai versijai nereikia.
