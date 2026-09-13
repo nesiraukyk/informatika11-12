@@ -82,7 +82,7 @@ function setHeader(){
  $('homeNav').classList.toggle('hidden',isTeacher);
  $('homeNav').dataset.route='student';
  $('teacherNav').classList.toggle('hidden',!isTeacher);
- $('teacherNav').textContent=profile.role==='admin'?'Administratoriaus skydelis':'Mokytojo skydelis';
+ $('teacherNav').textContent=profile.role==='admin'?'Administratoriaus skydelis':'Mokytojo aplinka';
  $('studentNav').classList.add('hidden');
 
  // Logotipas taip pat grąžina į tinkamą pagrindinį ekraną.
@@ -90,7 +90,7 @@ function setHeader(){
 }
 
 $('themeToggle').onclick=()=>{const n=(document.documentElement.dataset.theme||'light')==='dark'?'light':'dark';document.documentElement.dataset.theme=n;localStorage.setItem('inf11v3_theme',n)};
-$('logoutBtn').onclick=async()=>{stopHeartbeat();await sb.auth.signOut();me=null;profile=null;currentClass=null;setHeader();show('auth')};
+$('logoutBtn').onclick=async()=>{stopHeartbeat();await sb.auth.signOut();me=null;profile=null;currentClass=null;if($('loginEmail'))$('loginEmail').value='';if($('loginPassword'))$('loginPassword').value='';setHeader();show('auth')};
 
 $('tabLogin').onclick=()=>{$('tabLogin').classList.add('active');$('tabSignup').classList.remove('active');$('loginForm').classList.remove('hidden');$('signupForm').classList.add('hidden')};
 $('tabSignup').onclick=()=>{$('tabSignup').classList.add('active');$('tabLogin').classList.remove('active');$('signupForm').classList.remove('hidden');$('loginForm').classList.add('hidden')};
@@ -99,6 +99,8 @@ $('loginForm').onsubmit=async e=>{
  e.preventDefault();authMsg('Jungiamasi...');
  const {error}=await sb.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPassword').value});
  if(error)return authMsg(error.message,true);
+ $('loginEmail').value='';
+ $('loginPassword').value='';
  authMsg('Prisijungta.');
 };
 $('signupForm').onsubmit=async e=>{
@@ -167,12 +169,17 @@ async function renderTeacher(){
   teachers=teachers||[];
  }
 
+ const latestSubmitted=allSubmitted.slice(0,24);
+ const latestGroups=(classes||[]).map(c=>({
+  classInfo:c,
+  items:latestSubmitted.filter(x=>x.class_id===c.id)
+ })).filter(g=>g.items.length);
+
  $('teacherContent').innerHTML=`
- <div class="pageHero"><span class="kicker">${isAdmin?'ADMINISTRATORIAUS SKYDELIS':'MOKYTOJO SKYDELIS'}</span><h1>Sveiki, ${esc(profile.full_name||'mokytojau')}.</h1><p>${isAdmin?'Matote visas platformos klases ir jų mokymosi statistiką.':'Čia matote tik savo klases, savo mokinius, jų rezultatus ir pateiktus darbus.'}</p></div>
+ <div class="pageHero"><span class="kicker">${isAdmin?'ADMINISTRATORIAUS SKYDELIS':'MOKYTOJO APLINKA'}</span><h1>${isAdmin?'Sveiki, Administratoriau.':'Sveiki, Mokytojau.'}</h1><p>${isAdmin?'Matote visas platformos klases ir jų mokymosi statistiką.':'Čia matote tik savo klases, savo mokinius, jų rezultatus ir pateiktus darbus.'}</p></div>
  <div class="dashboardGrid">
-  <div class="metric"><strong>${classes?.length||0}</strong><span>klasių</span></div>
   <div class="metric"><strong>${totalStudents}</strong><span>mokinių</span></div>
-  <div class="metric"><strong>${totalAttempts}</strong><span>praktikos / testų bandymų</span></div>
+  <div class="metric"><strong>${totalAttempts}</strong><span>žinių treniruočių / atsiskaitymų bandymų</span></div>
   <div class="metric"><strong>${totalSubmissions}</strong><span>pateiktų failų</span></div>
   <div class="metric"><strong>${fmtSec(totalSeconds)}</strong><span>bendras aktyvus laikas</span></div>
  </div>
@@ -186,7 +193,13 @@ async function renderTeacher(){
  </div>
  <div class="stack">
   <div class="panel"><span class="kicker">NAUJAUSI DARBAI</span><h3>Pateikti mokinių failai</h3>
-   ${allSubmitted.length?allSubmitted.slice(0,7).map(x=>{const st=students.find(s=>s.id===x.student_id),cl=classes.find(c=>c.id===x.class_id);return `<div class="studentRow"><div class="grow"><b>${esc(st?.full_name||'Mokinys')} · ${esc(x.title||x.name)}</b><div class="subtle">${esc(cl?.name||'Klasė')} · ${esc(x.name)} · ${fmtDate(x.at)}</div></div><button class="smallBtn" ${x.kind==='direct'?`data-latest-direct="${x.id}"`:`data-latest-assignment="${x.id}"`}>Atsisiųsti</button></div>`}).join(''):'<div class="emptyState">Pateiktų darbų dar nėra.</div>'}
+   <p class="muted">Paspausk klasę, kad išskleistum arba suskleistum jos naujausius darbus.</p>
+   ${latestGroups.length?latestGroups.map(g=>`<details class="latestClassGroup">
+    <summary><span>${esc(g.classInfo.name)}</span><span class="badge ${g.items.length?'ok':''}">${g.items.length}</span></summary>
+    <div class="latestClassItems">
+     ${g.items.map(x=>{const st=students.find(s=>s.id===x.student_id);return `<div class="studentRow"><div class="grow"><b>${esc(st?.full_name||'Mokinys')} · ${esc(x.title||x.name)}</b></div><button class="smallBtn" ${x.kind==='direct'?`data-latest-direct="${x.id}"`:`data-latest-assignment="${x.id}"`}>Atsisiųsti</button></div>`}).join('')}
+    </div>
+   </details>`).join(''):'<div class="emptyState">Pateiktų darbų dar nėra.</div>'}
   </div>
   ${isAdmin?'':`<div class="panel" id="teacherLibrary"><span class="kicker">MANO FAILAI</span><h3>Kraunama mokytojo biblioteka...</h3></div>`}
  </div></div>`;
@@ -326,7 +339,16 @@ async function openTeacherClass(classId){
  let students=[];if(ids.length)({data:students}=await sb.from('profiles').select('id,full_name,last_login_at,last_seen_at,created_at').in('id',ids));students=students||[];
  let assignmentSubs=[];
  const aIds=(classAssignments||[]).map(a=>a.id);
- if(aIds.length)({data:assignmentSubs}=await sb.from('submissions').select('id').in('assignment_id',aIds));
+ if(aIds.length)({data:assignmentSubs}=await sb.from('submissions').select('id,student_id,grade').in('assignment_id',aIds));
+
+ students=students.map(s=>{
+  const grades=(assignmentSubs||[])
+   .filter(x=>x.student_id===s.id)
+   .map(x=>Number(String(x.grade??'').replace(',','.')))
+   .filter(n=>Number.isFinite(n)&&n>=1&&n<=10);
+  return {...s,_gradeAvg:grades.length?grades.reduce((sum,n)=>sum+n,0)/grades.length:null};
+ });
+
  const submissionCount=(direct||[]).length+(assignmentSubs||[]).length;
 
  $('teacherContent').innerHTML=`
@@ -348,11 +370,13 @@ function renderTeacherClassPanel(panel,c,students,members,attempts,sessions,acce
  if(panel==='students'){
   const rows=students.map(s=>{
    const a=attempts.filter(x=>x.student_id===s.id),ss=sessions.filter(x=>x.user_id===s.id),secs=ss.reduce((n,x)=>n+(x.duration_seconds||0),0);
-   const avg=a.length?Math.round(a.reduce((n,x)=>n+(x.score_percent||0),0)/a.length):0,best=a.length?Math.max(...a.map(x=>x.score_percent||0)):0;
-   return `<tr><td><b>${esc(s.full_name||'Mokinys')}</b></td><td>${fmtDate(s.last_seen_at||s.last_login_at)}</td><td>${a.length}</td><td>${fmtSec(secs)}</td><td>${a.length?avg+'%':'–'}</td><td>${a.length?best+'%':'–'}</td><td><button class="smallBtn" data-student="${s.id}">Detaliau</button></td></tr>`
+   const practiceCount=a.filter(x=>(x.mode||'practice')==='practice').length;
+   const assessmentCount=a.filter(x=>x.mode==='assessment').length;
+   const gradeAvg=s._gradeAvg==null?'–':s._gradeAvg.toFixed(1).replace('.',',');
+   return `<tr><td><b>${esc(s.full_name||'Mokinys')}</b></td><td>${fmtDate(s.last_seen_at||s.last_login_at)}</td><td><span title="Žinių treniruotės">${practiceCount} tren.</span> / <span title="Atsiskaitymai">${assessmentCount} ats.</span></td><td>${fmtSec(secs)}</td><td>${gradeAvg}</td><td><button class="smallBtn" data-student="${s.id}">Detaliau</button></td></tr>`
   }).join('');
   host.innerHTML=`<div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">MOKINIAI</span><h2>${students.length} mok.</h2></div></div>
-   ${students.length?`<div class="tableWrap"><table class="dataTable"><thead><tr><th>Mokinys</th><th>Paskutinis aktyvumas</th><th>Bandymų</th><th>Laikas</th><th>Vidurkis</th><th>Geriausias</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`:'<div class="emptyState"><b>Mokinių dar nėra.</b>Duokite mokiniams klasės kodą '+esc(c.join_code)+'.</div>'}</div>`;
+   ${students.length?`<div class="tableWrap"><table class="dataTable"><thead><tr><th>Mokinys</th><th>Paskutinis aktyvumas</th><th>Žinių treniruotės / atsiskaitymai</th><th>Aktyvus laikas</th><th>Pažymių vidurkis</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`:'<div class="emptyState"><b>Mokinių dar nėra.</b>Duokite mokiniams klasės kodą '+esc(c.join_code)+'.</div>'}</div>`;
   document.querySelectorAll('[data-student]').forEach(b=>b.onclick=()=>showStudentDetail(b.dataset.student,c.id));
  }
  if(panel==='topics'){
@@ -360,7 +384,6 @@ function renderTeacherClassPanel(panel,c,students,members,attempts,sessions,acce
    ${activeClassTopics.length?activeClassTopics.map(t=>{const a=access.find(x=>x.topic_id===t.id)||{};const qCount=PRACTICE.filter(q=>q.topic===t.id).length;return `<div class="topicToggleRow"><div class="grow"><b>${esc(t.title)}</b><div class="subtle">${esc(topicMeta(t)||'Klasės tema')}</div></div>
     <button class="smallBtn" data-edit-class-topic="${t.id}">Redaguoti temą</button>
     <button class="smallBtn" data-topic-bank="${t.id}">Klausimų bankas${qCount?` (${qCount})`:''}</button>
-    <button class="smallBtn" data-topic-posts="${t.id}">Pranešimai / nuorodos</button>
     <label class="toggle"><input type="checkbox" data-access="${t.id}" data-field="is_open" ${a.is_open?'checked':''}> Tema</label>
     <label class="toggle"><input type="checkbox" data-access="${t.id}" data-field="practice_open" ${a.practice_open?'checked':''}> Praktika</label>
     <label class="toggle"><input type="checkbox" data-access="${t.id}" data-field="assessment_open" ${a.assessment_open?'checked':''}> Atsiskaitymas</label></div>`}).join(''):'<div class="emptyState"><b>Ši klasė dar neturi temų.</b>Paspausk „+ Nauja tema“ ir sukurk pirmąją 10 klasės mokymosi temą.</div>'}</div>`;
@@ -372,7 +395,6 @@ function renderTeacherClassPanel(panel,c,students,members,attempts,sessions,acce
    if(row)row[ch.dataset.field]=ch.checked;
   });
   document.querySelectorAll('[data-topic-bank]').forEach(b=>b.onclick=()=>renderTeacherTopicQuestionBank(c,b.dataset.topicBank,access));
-  document.querySelectorAll('[data-topic-posts]').forEach(b=>b.onclick=()=>renderTeacherTopicPosts(c,b.dataset.topicPosts,access));
   $('previewTopicsBtn').onclick=()=>renderTeacherStudentPreview(c);
  }
  if(panel==='resources')renderTeacherResources(c);
@@ -607,7 +629,7 @@ function normalizeHttpUrl(value){
 }
 
 
-async function renderTeacherTopicPosts(c,topicId,access){
+async function renderTeacherTopicPosts(c,topicId){
  const host=$('teacherClassPanel');
  if(!host)return;
  const t=topicById(topicId);
@@ -620,14 +642,14 @@ async function renderTeacherTopicPosts(c,topicId,access){
    .order('created_at',{ascending:false});
 
  if(error){
-  host.innerHTML=`<div class="panel"><button class="back" id="backToTopicsPosts">← Grįžti į temas</button><span class="kicker">TEMOS PRANEŠIMAI</span><h2>${esc(t?.title||topicId)}</h2><div class="notice">${esc(error.message)}</div></div>`;
-  if($('backToTopicsPosts'))$('backToTopicsPosts').onclick=()=>renderTeacherClassPanel('topics',c,[],[],[],[],access);
+  host.innerHTML=`<div class="panel"><button class="back" id="backToTopicsPosts">← Grįžti į užduotis ir darbus</button><span class="kicker">TEMOS PRANEŠIMAI</span><h2>${esc(t?.title||topicId)}</h2><div class="notice">${esc(error.message)}</div></div>`;
+  if($('backToTopicsPosts'))$('backToTopicsPosts').onclick=()=>renderTeacherAssignments(c);
   return;
  }
 
  host.innerHTML=`<div class="panel">
   <div class="sectionTitle">
-   <div class="grow"><button class="back" id="backToTopicsPosts">← Grįžti į temas</button><span class="kicker">TEMOS PRANEŠIMAI</span><h2>${esc(t?.title||topicId)}</h2></div>
+   <div class="grow"><button class="back" id="backToTopicsPosts">← Grįžti į užduotis ir darbus</button><span class="kicker">TEMOS PRANEŠIMAI</span><h2>${esc(t?.title||topicId)}</h2></div>
    <button class="primary" id="newTopicPostBtn">+ Naujas pranešimas</button>
   </div>
   <p class="muted">Šie pranešimai ir nuorodos bus rodomi tik šioje temoje, todėl nesimaišys su kitų temų medžiaga.</p>
@@ -646,13 +668,13 @@ async function renderTeacherTopicPosts(c,topicId,access){
    </div>`).join(''):'<div class="emptyState"><b>Šiai temai pranešimų dar nėra.</b>Gali pridėti komentarą, instrukciją arba nuorodą.</div>'}
  </div>`;
 
- $('backToTopicsPosts').onclick=()=>renderTeacherClassPanel('topics',c,[],[],[],[],access);
- $('newTopicPostBtn').onclick=()=>openTopicPostModal(c,topicId,access);
- document.querySelectorAll('[data-edit-topic-post]').forEach(b=>b.onclick=()=>openEditTopicPostModal(b.dataset.editTopicPost,c,topicId,access));
- document.querySelectorAll('[data-delete-topic-post]').forEach(b=>b.onclick=()=>deleteTopicPost(b.dataset.deleteTopicPost,c,topicId,access));
+ $('backToTopicsPosts').onclick=()=>renderTeacherAssignments(c);
+ $('newTopicPostBtn').onclick=()=>openTopicPostModal(c,topicId);
+ document.querySelectorAll('[data-edit-topic-post]').forEach(b=>b.onclick=()=>openEditTopicPostModal(b.dataset.editTopicPost,c,topicId));
+ document.querySelectorAll('[data-delete-topic-post]').forEach(b=>b.onclick=()=>deleteTopicPost(b.dataset.deleteTopicPost,c,topicId));
 }
 
-function openTopicPostModal(c,topicId,access){
+function openTopicPostModal(c,topicId){
  const t=topicById(topicId);
  modal(`<span class="kicker">NAUJAS TEMOS PRANEŠIMAS</span><h2>${esc(t?.title||topicId)}</h2>
  <p class="muted">Gali įrašyti tik pranešimą, tik nuorodą arba abu.</p>
@@ -686,12 +708,12 @@ function openTopicPostModal(c,topicId,access){
 
   closeModal();
   toast('Pranešimas paskelbtas temoje.');
-  renderTeacherTopicPosts(c,topicId,access);
+  renderTeacherTopicPosts(c,topicId);
  };
 }
 
 
-async function openEditTopicPostModal(id,c,topicId,access){
+async function openEditTopicPostModal(id,c,topicId){
  const {data:p,error}=await sb.from('class_posts')
   .select('*')
   .eq('id',id)
@@ -740,16 +762,16 @@ async function openEditTopicPostModal(id,c,topicId,access){
 
   closeModal();
   toast('Pranešimas atnaujintas.');
-  renderTeacherTopicPosts(c,topicId,access);
+  renderTeacherTopicPosts(c,topicId);
  };
 }
 
-async function deleteTopicPost(id,c,topicId,access){
+async function deleteTopicPost(id,c,topicId){
  if(!confirm('Ar tikrai ištrinti šį temos pranešimą? Mokiniai jo nebematys.'))return;
  const {error}=await sb.from('class_posts').delete().eq('id',id);
  if(error)return toast(error.message);
  toast('Pranešimas ištrintas.');
- renderTeacherTopicPosts(c,topicId,access);
+ renderTeacherTopicPosts(c,topicId);
 }
 
 
@@ -859,12 +881,21 @@ async function deleteResource(id,c){
  await sb.storage.from('teacher-resources').remove([r.storage_path]);await sb.from('learning_resources').delete().eq('id',id);renderTeacherResources(c);
 }
 async function renderTeacherAssignments(c){
- const [{data:rows,error:assignErr},{data:direct,error:directErr}]=await Promise.all([
+ const [
+  {data:rows,error:assignErr},
+  {data:direct,error:directErr},
+  {data:access,error:accessErr},
+  {data:topicPosts,error:postsErr}
+ ]=await Promise.all([
   sb.from('assignments').select('*').eq('class_id',c.id).order('created_at',{ascending:false}),
-  sb.from('direct_submissions').select('*').eq('class_id',c.id).order('submitted_at',{ascending:false})
+  sb.from('direct_submissions').select('*').eq('class_id',c.id).order('submitted_at',{ascending:false}),
+  sb.from('topic_access').select('*').eq('class_id',c.id),
+  sb.from('class_posts').select('id,topic_id').eq('class_id',c.id)
  ]);
  if(assignErr)return toast(assignErr.message);
  if(directErr)return toast(directErr.message);
+ if(accessErr)return toast(accessErr.message);
+ if(postsErr)return toast(postsErr.message);
 
  const ids=[...new Set((direct||[]).map(s=>s.student_id))];
  let studs=[];if(ids.length)({data:studs}=await sb.from('profiles').select('id,full_name').in('id',ids));
@@ -874,9 +905,16 @@ async function renderTeacherAssignments(c){
  const aIds=(rows||[]).map(a=>a.id);
  if(aIds.length)({data:assignmentSubs}=await sb.from('submissions').select('id,assignment_id').in('assignment_id',aIds));
  const countFor=id=>(assignmentSubs||[]).filter(s=>s.assignment_id===id).length;
+ const postCountFor=topicId=>(topicPosts||[]).filter(p=>p.topic_id===topicId).length;
 
  $('teacherClassPanel').innerHTML=`
  <div class="stack">
+  <div class="panel">
+   <div class="sectionTitle"><div class="grow"><span class="kicker">PRANEŠIMAI / NUORODOS</span><h2>Pranešimai, komentarai ir nuorodos mokiniams</h2></div></div>
+   <p class="muted">Pasirink temą. Čia gali parašyti mokiniams komentarą, instrukciją arba pridėti nuorodą prie tos temos.</p>
+   ${activeClassTopics.length?activeClassTopics.map(t=>`<div class="topicMessageRow"><div class="grow"><b>${esc(t.title)}</b><div class="subtle">${esc(topicMeta(t)||'Klasės tema')}</div></div><span class="badge ${postCountFor(t.id)?'ok':''}">${postCountFor(t.id)}</span><button class="smallBtn" data-assignment-topic-posts="${t.id}">Pranešimai / nuorodos</button></div>`).join(''):'<div class="emptyState">Pirmiausia sukurk klasės temą.</div>'}
+  </div>
+
   <div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">UŽDUOTYS</span><h2>Mokytojo sukurtos užduotys</h2></div><button class="primary" id="newAssignmentBtn" ${activeClassTopics.length?'':'disabled'}>+ Nauja užduotis</button></div>
    <p class="muted">Čia gali sukurti konkrečią užduotį su instrukcija ir terminu. Mokinys prie vienos užduoties gali pateikti kelis failus.</p>
    ${(rows||[]).length?(rows||[]).map(a=>`<div class="assignmentRow"><div class="grow"><b>${esc(a.title)}</b><div class="subtle">${esc(topicById(a.topic_id)?.title||a.topic_id)} · ${a.is_open?'Atidaryta':'Uždaryta'} · terminas ${a.due_at?fmtDate(a.due_at):'nenustatytas'}</div></div><span class="badge ${countFor(a.id)?'ok':''}">${countFor(a.id)} fail.</span><div class="assignmentActions"><button class="smallBtn" data-edit-assignment="${a.id}">Redaguoti</button><button class="smallBtn dangerMini" data-delete-assignment="${a.id}" data-file-count="${countFor(a.id)}">Ištrinti</button><button class="smallBtn" data-assignment="${a.id}">Pateikti darbai</button></div></div>`).join(''):'<div class="emptyState"><b>Užduočių dar nėra.</b>Jei reikia, sukurk konkrečią užduotį.</div>'}
@@ -889,6 +927,7 @@ async function renderTeacherAssignments(c){
  </div>`;
 
  $('newAssignmentBtn').onclick=()=>newAssignmentModal(c);
+ document.querySelectorAll('[data-assignment-topic-posts]').forEach(b=>b.onclick=()=>renderTeacherTopicPosts(c,b.dataset.assignmentTopicPosts));
  document.querySelectorAll('[data-edit-assignment]').forEach(b=>b.onclick=()=>editAssignmentModal(b.dataset.editAssignment,c));
  document.querySelectorAll('[data-delete-assignment]').forEach(b=>b.onclick=()=>deleteAssignment(b.dataset.deleteAssignment,c,Number(b.dataset.fileCount||0)));
  document.querySelectorAll('[data-assignment]').forEach(b=>b.onclick=()=>showSubmissions(b.dataset.assignment,c));

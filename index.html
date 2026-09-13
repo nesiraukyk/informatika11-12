@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Informatika 10–12</title>
-<link rel="stylesheet" href="style.css?v=4.2">
+<link rel="stylesheet" href="style.css?v=4.3">
 </head>
 <body>
 <header class="topbar hidden" id="appHeader">
@@ -12,7 +12,7 @@
     <button class="brand" id="brandHome" data-route="dashboard"><span class="brandMark">IT</span><span><b>Informatika</b><small id="headerRole">Mokymosi platforma</small></span></button>
     <div class="navRight">
       <button class="navBtn" id="homeNav" data-route="student">Pradžia</button>
-      <button class="navBtn" id="teacherNav" data-route="teacher">Mokytojo skydelis</button>
+      <button class="navBtn" id="teacherNav" data-route="teacher">Mokytojo aplinka</button>
       <button class="navBtn" id="studentNav" data-route="student">Mano klasė</button>
       <button class="navBtn" data-route="profile">Paskyra</button>
       <button class="iconBtn" id="themeToggle">◐</button>
@@ -51,9 +51,9 @@
         <button class="tab active" id="tabLogin">Prisijungti</button>
         <button class="tab" id="tabSignup">Mokinio registracija</button>
       </div>
-      <form id="loginForm">
-        <label>El. paštas<input type="email" id="loginEmail" required autocomplete="email"></label>
-        <label>Slaptažodis<input type="password" id="loginPassword" required autocomplete="current-password"></label>
+      <form id="loginForm" autocomplete="off">
+        <label>El. paštas<input type="email" id="loginEmail" name="login_user_identifier" required autocomplete="off" autocapitalize="none" spellcheck="false"></label>
+        <label>Slaptažodis<input type="password" id="loginPassword" name="login_secret" required autocomplete="new-password"></label>
         <button class="primary wide" type="submit">Prisijungti</button>
       </form>
       <form id="signupForm" class="hidden">
@@ -126,10 +126,10 @@
 <div id="toast" class="toast hidden"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase-config.js?v=4.2"></script>
-<script src="config.js?v=4.2"></script>
-<script src="questions.js?v=4.2"></script>
-<script src="assessment.js?v=4.2"></script>
-<script src="app.js?v=4.2"></script>
+<script src="supabase-config.js?v=4.3"></script>
+<script src="config.js?v=4.3"></script>
+<script src="questions.js?v=4.3"></script>
+<script src="assessment.js?v=4.3"></script>
+<script src="app.js?v=4.3"></script>
 </body>
 </html>

@@ -35,7 +35,7 @@ Svarbiausi failai:
 - Administratoriaus paskyra gali matyti visas klases ir išsamią mokinių statistiką.
 - Pridėta prisijungimų istorija (kaupiama nuo v3.3 įdiegimo).
 - Mokinio detalėse: aktyvus laikas, sesijų skaičius, vidutinė sesija, bandymų istorija, vidurkis, geriausias rezultatas, atsakymų tikslumas, pateiktų failų skaičius.
-- Mokytojo skydelyje matomas bendras pateiktų failų skaičius ir naujausi darbai.
+- Mokytojo aplinkoje matomas bendras pateiktų failų skaičius ir naujausi darbai.
 - Klasės skirtuke „Užduotys ir darbai“ rodomas pateiktų failų skaičius.
 - Mokytojas gali ištrinti mokinio failą tik po patvirtinimo.
 - Mokinys gali įkelti kelis failus vienu metu, vėliau pridėti daugiau ir ištrinti savo failus.
@@ -151,3 +151,16 @@ Klasė nebekuriama tiesioginiu `INSERT` iš naršyklės. Vietoje to naudojama `p
 Tai pašalina `new row violates row-level security policy for table "classes"` klaidą, bet neatskleidžia papildomų teisių mokiniams.
 
 `PATCH_v4_2_FULL_SAFE.sql` apima ir v4.1 10 klasės temų šabloną, todėl jį galima paleisti kaip vienintelį dabartinį patchą.
+
+
+## v4.3 – Mokytojo aplinkos UI pakeitimai
+- Mokytojo navigacija ir pagrindinis puslapis vadinasi „Mokytojo aplinka“.
+- Pasveikinimas: „Sveiki, Mokytojau.“.
+- Pašalinta atskira klasių skaičiaus metrika.
+- „Naujausi darbai“ sugrupuoti pagal klases ir išskleidžiami / suskleidžiami.
+- Naujausių darbų eilutėse nebekartojamas klasės pavadinimas, failo pavadinimas ir data.
+- Klasės mokinių lentelėje aiškiai atskiriami žinių treniruočių ir atsiskaitymų bandymai.
+- Pašalinti neaiškūs rezultatų „Vidurkis“ ir „Geriausias“ stulpeliai; rodomas realių įvestų 1–10 pažymių vidurkis.
+- „Pranešimai / nuorodos“ perkelti iš „Temos“ į „Užduotys ir darbai“.
+- Prisijungimo forma neprašo naršyklės automatiškai pildyti prisijungimo duomenų, o laukų reikšmės po prisijungimo išvalomos.
+- Supabase SQL pakeitimų šiai versijai nereikia.

@@ -60,13 +60,13 @@ set role='teacher'
 where id=(select id from auth.users where email='TAVO_EL_PASTAS');
 ```
 
-Atsijunk ir prisijunk iš naujo. Dabar matysi **Mokytojo skydelį**.
+Atsijunk ir prisijunk iš naujo. Dabar matysi **Mokytojo aplinką**.
 
 Kito mokytojo paskyrai padaryk tą patį su jo el. paštu.
 
 ## 5. Mokytojas sukuria klasę
 
-Mokytojo skydelyje:
+Mokytojo aplinkoje:
 - „+ Nauja klasė“
 - įrašo pavadinimą, pvz. `III A`
 - sistema pasiūlo 6 simbolių kodą.
