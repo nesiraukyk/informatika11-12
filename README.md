@@ -181,3 +181,12 @@ Tai pašalina `new row violates row-level security policy for table "classes"` k
 - Faile yra klausimo ID, tema, kategorija, sudėtingumas, visi atsakymo variantai, teisingas variantas, teisingas atsakymas ir paaiškinimas.
 - Mokinys šio mygtuko nemato.
 - Supabase SQL pakeitimų nereikia.
+
+
+## v4.6 – grupės pavadinimo keitimas ir naršyklės „Atgal“
+- Mokytojo aplinkos klasių / grupių sąraše prie pavadinimo yra tik pieštuko ikonėlė `✎`.
+- Paspaudus ikonėlę galima pakeisti grupės pavadinimą.
+- Naršyklės mygtukas „Atgal“ dabar grąžina ankstesnį veiksmą platformoje, o ne iškart išeina iš svetainės.
+- Istorija veikia pagrindiniame mokytojo lange, klasės skirtukuose, klausimų banke, pranešimuose, mokinio vaizdo peržiūroje ir mokinio temose.
+- Pagrindiniame platformos lange paspaudus „Atgal“ vartotojas nebeišmetamas iš svetainės.
+- Supabase SQL pakeitimų šiai versijai nereikia.

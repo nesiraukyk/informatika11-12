@@ -294,3 +294,20 @@ textarea{
 @media(max-width:700px){
   .questionBankHeaderActions{justify-content:flex-start;width:100%}
 }
+
+/* ===== v4.6 · grupės pavadinimas + naršyklės Back ===== */
+.classNameLine{display:flex;align-items:center;gap:7px;min-width:0}
+.classNameLine h3{margin:0}
+.classEditIcon{
+  width:30px;height:30px;
+  display:inline-grid;place-items:center;
+  border:1px solid var(--line);
+  border-radius:9px;
+  background:transparent;
+  color:var(--muted);
+  cursor:pointer;
+  font-size:17px;
+  line-height:1;
+  flex:0 0 auto;
+}
+.classEditIcon:hover{color:var(--ink);background:var(--surface2)}
