@@ -412,6 +412,65 @@ function renderTeacherClassPanel(panel,c,students,members,attempts,sessions,acce
 
 
 
+
+function csvCell(value){
+ const s=String(value??'').replace(/\r?\n/g,' ');
+ return `"${s.replace(/"/g,'""')}"`;
+}
+
+function safeDownloadName(value){
+ return String(value||'klausimai')
+  .normalize('NFD')
+  .replace(/[\u0300-\u036f]/g,'')
+  .replace(/[^a-zA-Z0-9_-]+/g,'_')
+  .replace(/^_+|_+$/g,'')
+  .slice(0,80)||'klausimai';
+}
+
+function downloadTopicQuestionsCsv(topic,questions){
+ if(!['teacher','admin'].includes(profile?.role))return toast('Ši funkcija skirta tik mokytojui.');
+
+ const header=[
+  'Nr.','ID','Tema','Kategorija','Sudėtingumas','Klausimas',
+  'A','B','C','D','Teisingas variantas','Teisingas atsakymas','Paaiškinimas'
+ ];
+
+ const rows=(questions||[]).map((q,i)=>{
+  const opts=q.options||[];
+  const correctIndex=Number(q.correct);
+  return [
+   i+1,
+   q.id||'',
+   topic?.title||q.topic||'',
+   q.category||'',
+   q.difficulty||'',
+   q.question||'',
+   opts[0]||'',
+   opts[1]||'',
+   opts[2]||'',
+   opts[3]||'',
+   Number.isInteger(correctIndex)&&correctIndex>=0?String.fromCharCode(65+correctIndex):'',
+   opts[correctIndex]||'',
+   q.explanation||''
+  ];
+ });
+
+ const csv='\uFEFF'+[header,...rows]
+  .map(row=>row.map(csvCell).join(';'))
+  .join('\r\n');
+
+ const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement('a');
+ a.href=url;
+ a.download=`${safeDownloadName(topic?.title||topic?.id||'klausimai')}_klausimu_bankas.csv`;
+ document.body.appendChild(a);
+ a.click();
+ a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+ toast(`Atsisiunčiami ${rows.length} klausimai.`);
+}
+
 function renderTeacherTopicQuestionBank(c,topicId,access){
  if(!['teacher','admin'].includes(profile?.role))return renderStudent();
 
@@ -432,7 +491,10 @@ function renderTeacherTopicQuestionBank(c,topicId,access){
     <h2>${esc(t?.title||topicId)}</h2>
     <p class="muted">Čia matai visus šios temos klausimus, iš kurių generuojama mokinių „Žinių treniruotė“.</p>
    </div>
-   <span class="badge ok">${all.length} klaus.</span>
+   <div class="questionBankHeaderActions">
+    <span class="badge ok">${all.length} klaus.</span>
+    ${all.length?'<button class="primary" id="downloadTopicQuestionsBtn">↓ Atsisiųsti visus klausimus</button>':''}
+   </div>
   </div>
 
   ${all.length?`
@@ -457,6 +519,7 @@ function renderTeacherTopicQuestionBank(c,topicId,access){
  </div>`;
 
  $('backFromTopicBank').onclick=()=>renderTeacherClassPanel('topics',c,[],[],[],[],access);
+ if($('downloadTopicQuestionsBtn'))$('downloadTopicQuestionsBtn').onclick=()=>downloadTopicQuestionsCsv(t,all);
 
  if(!all.length)return;
 

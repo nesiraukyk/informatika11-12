@@ -173,3 +173,11 @@ Tai pašalina `new row violates row-level security policy for table "classes"` k
 - „Užduotys ir darbai“ sugrupuoti pagal temas. Kiekvienos temos viduje yra pranešimai / nuorodos, mokytojo užduotys ir mokinių savarankiškai pateikti darbai.
 - Pagrindiniame Mokytojo aplinkos lange prie kiekvienos klasės pridėtas „Mokinio vaizdas“ mygtukas.
 - Supabase SQL pakeitimų šiai versijai nereikia.
+
+
+## v4.5 – klausimų banko atsisiuntimas
+- Temos klausimų banke mokytojas / administratorius turi mygtuką „Atsisiųsti visus klausimus“.
+- Atsisiunčiamas UTF-8 CSV failas, tinkamas atidaryti su Excel / Google Sheets.
+- Faile yra klausimo ID, tema, kategorija, sudėtingumas, visi atsakymo variantai, teisingas variantas, teisingas atsakymas ir paaiškinimas.
+- Mokinys šio mygtuko nemato.
+- Supabase SQL pakeitimų nereikia.

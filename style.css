@@ -282,3 +282,15 @@ textarea{
   .topicSummaryCounts{margin-left:0}
   .classCardActions{width:100%;justify-content:flex-start}
 }
+
+/* ===== v4.5 · Klausimų banko eksportas ===== */
+.questionBankHeaderActions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:10px;
+  flex-wrap:wrap;
+}
+@media(max-width:700px){
+  .questionBankHeaderActions{justify-content:flex-start;width:100%}
+}
