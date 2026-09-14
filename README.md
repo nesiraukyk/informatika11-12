@@ -190,3 +190,12 @@ Tai pašalina `new row violates row-level security policy for table "classes"` k
 - Istorija veikia pagrindiniame mokytojo lange, klasės skirtukuose, klausimų banke, pranešimuose, mokinio vaizdo peržiūroje ir mokinio temose.
 - Pagrindiniame platformos lange paspaudus „Atgal“ vartotojas nebeišmetamas iš svetainės.
 - Supabase SQL pakeitimų šiai versijai nereikia.
+
+
+## v4.7 – užduoties kūrimas tiesiai temos grupėje
+- Kiekvienoje išskleistoje temos grupėje pridėtas aiškus „+ Nauja užduotis“ mygtukas.
+- Paspaudus jį tema parenkama automatiškai.
+- Nauja užduotis iškart sukuriama kaip atidaryta mokiniams (`is_open=true`).
+- Mokiniai prie užduoties gali įkelti vieną ar kelis failus.
+- Bendras viršutinis „+ Nauja užduotis“ mygtukas paliktas.
+- Supabase SQL pakeitimų nereikia.

@@ -1117,6 +1117,7 @@ async function renderTeacherAssignments(c){
     <div class="topicContentBody">
      <div class="topicGroupToolbar">
       <button class="smallBtn" data-assignment-topic-posts="${t.id}">Pranešimai / nuorodos ${postCount?`(${postCount})`:''}</button>
+      <button class="primary smallPrimary" data-new-topic-assignment="${t.id}">+ Nauja užduotis</button>
      </div>
 
      <div class="topicSubsection">
@@ -1134,6 +1135,7 @@ async function renderTeacherAssignments(c){
  </div>`;
 
  $('newAssignmentBtn').onclick=()=>newAssignmentModal(c);
+ document.querySelectorAll('[data-new-topic-assignment]').forEach(b=>b.onclick=()=>newAssignmentModal(c,b.dataset.newTopicAssignment));
  document.querySelectorAll('[data-assignment-topic-posts]').forEach(b=>b.onclick=()=>navigateTo(()=>renderTeacherTopicPosts(c,b.dataset.assignmentTopicPosts)));
  document.querySelectorAll('[data-edit-assignment]').forEach(b=>b.onclick=()=>editAssignmentModal(b.dataset.editAssignment,c));
  document.querySelectorAll('[data-delete-assignment]').forEach(b=>b.onclick=()=>deleteAssignment(b.dataset.deleteAssignment,c,Number(b.dataset.fileCount||0)));
@@ -1141,17 +1143,30 @@ async function renderTeacherAssignments(c){
  document.querySelectorAll('[data-ddirect]').forEach(b=>b.onclick=()=>downloadDirectSubmission(b.dataset.ddirect));
  document.querySelectorAll('[data-del-direct]').forEach(b=>b.onclick=()=>deleteDirectSubmission(b.dataset.delDirect,c,'teacher'));
 }
-function newAssignmentModal(c){
+function newAssignmentModal(c,presetTopicId=null){
  if(!activeClassTopics.length)return toast('Pirmiausia klasėje sukurk bent vieną temą.');
- modal(`<span class="kicker">NAUJA UŽDUOTIS</span><h2>Sukurti darbų pateikimą</h2><form id="assignmentForm" class="formGroup">
- <label>Tema<select id="aTopic">${activeClassTopics.map(t=>`<option value="${t.id}">${esc(t.title)}</option>`).join('')}</select></label>
+ const presetTopic=activeClassTopics.find(t=>t.id===presetTopicId);
+ modal(`<span class="kicker">NAUJA UŽDUOTIS</span><h2>${presetTopic?`Nauja užduotis · ${esc(presetTopic.title)}`:'Sukurti darbų pateikimą'}</h2><form id="assignmentForm" class="formGroup">
+ <label>Tema<select id="aTopic">${activeClassTopics.map(t=>`<option value="${t.id}" ${t.id===presetTopicId?'selected':''}>${esc(t.title)}</option>`).join('')}</select></label>
  <label>Pavadinimas<input id="aTitle" required></label>
  <label>Instrukcija<textarea id="aInstructions"></textarea></label>
  <label>Terminas<input type="datetime-local" id="aDue"></label>
- <button class="primary" type="submit" style="margin-top:14px">Sukurti</button></form>`);
+ <p class="formHint">Sukūrus užduotį ji bus iškart atidaryta mokiniams ir jie galės prie jos įkelti vieną ar kelis failus.</p>
+ <button class="primary" type="submit" style="margin-top:14px">Sukurti ir atidaryti mokiniams</button></form>`);
  $('assignmentForm').onsubmit=async e=>{e.preventDefault();const due=$('aDue').value?new Date($('aDue').value).toISOString():null;
-  const {error}=await sb.from('assignments').insert({class_id:c.id,topic_id:$('aTopic').value,title:$('aTitle').value.trim(),instructions:$('aInstructions').value.trim(),due_at:due,created_by:me.id});
-  if(error)return toast(error.message);closeModal();toast('Užduotis sukurta.');renderTeacherAssignments(c);
+  const {error}=await sb.from('assignments').insert({
+   class_id:c.id,
+   topic_id:$('aTopic').value,
+   title:$('aTitle').value.trim(),
+   instructions:$('aInstructions').value.trim(),
+   due_at:due,
+   is_open:true,
+   created_by:me.id
+  });
+  if(error)return toast(error.message);
+  closeModal();
+  toast('Užduotis sukurta ir atidaryta mokiniams.');
+  renderTeacherAssignments(c);
  };
 }
 

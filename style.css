@@ -311,3 +311,15 @@ textarea{
   flex:0 0 auto;
 }
 .classEditIcon:hover{color:var(--ink);background:var(--surface2)}
+
+/* ===== v4.7 · nauja užduotis tiesiai temos grupėje ===== */
+.smallPrimary{
+  padding:9px 13px;
+  min-height:38px;
+}
+.topicGroupToolbar{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  flex-wrap:wrap;
+}
