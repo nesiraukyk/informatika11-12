@@ -58,44 +58,95 @@ let uiBackStack=[],restoringBack=false,historyGuardReady=false,currentRestore=nu
 
 const IDLE_LOGOUT_MS=30*60*1000;
 const IDLE_WARNING_MS=25*60*1000;
-let idleLastActivity=Date.now(),idleCheckTimer=null,idleWarningShown=false,idleListenersReady=false,idleSigningOut=false;
+const IDLE_STORAGE_KEY='informatika_last_activity_at';
+let idleLastActivity=0,idleCheckTimer=null,idleWarningShown=false,idleListenersReady=false,idleSigningOut=false,lastActivityPersistAt=0;
+
+function readIdleActivity(){
+ const saved=Number(localStorage.getItem(IDLE_STORAGE_KEY)||0);
+ idleLastActivity=Number.isFinite(saved)&&saved>0?saved:0;
+ return idleLastActivity;
+}
+
+function persistIdleActivity(ts=Date.now(),force=false){
+ idleLastActivity=ts;
+ idleWarningShown=false;
+ if(force||ts-lastActivityPersistAt>=5000){
+  localStorage.setItem(IDLE_STORAGE_KEY,String(ts));
+  lastActivityPersistAt=ts;
+ }
+}
 
 function markUserActivity(){
- idleLastActivity=Date.now();
- idleWarningShown=false;
+ if(!me)return;
+ persistIdleActivity(Date.now(),false);
+}
+
+function resetIdleClock(){
+ persistIdleActivity(Date.now(),true);
+}
+
+function clearIdleClock(){
+ localStorage.removeItem(IDLE_STORAGE_KEY);
+ idleLastActivity=0;
+ lastActivityPersistAt=0;
+}
+
+function idleSessionExpired(){
+ const last=readIdleActivity();
+ return last>0&&(Date.now()-last)>=IDLE_LOGOUT_MS;
+}
+
+async function forceIdleLogout(message='Dėl saugumo atsijungta po 30 min. neaktyvumo.'){
+ if(idleSigningOut)return;
+ idleSigningOut=true;
+ stopHeartbeat();
+ if(idleCheckTimer)clearInterval(idleCheckTimer);
+ idleCheckTimer=null;
+ try{await sb.auth.signOut()}finally{
+  clearIdleClock();
+  me=null;profile=null;currentClass=null;uiBackStack=[];currentRestore=null;
+  idleSigningOut=false;
+  setHeader();
+  show('auth');
+  authMsg(message);
+ }
 }
 
 function startIdleLogout(){
- markUserActivity();
+ const last=readIdleActivity();
+ if(!last)resetIdleClock();
+
  if(!idleListenersReady){
   idleListenersReady=true;
   ['pointerdown','keydown','touchstart','input','scroll'].forEach(evt=>{
    window.addEventListener(evt,markUserActivity,{passive:true});
   });
+  window.addEventListener('storage',e=>{
+   if(e.key===IDLE_STORAGE_KEY&&e.newValue){
+    const ts=Number(e.newValue);
+    if(Number.isFinite(ts)&&ts>idleLastActivity)idleLastActivity=ts;
+   }
+  });
  }
+
  if(idleCheckTimer)clearInterval(idleCheckTimer);
  idleCheckTimer=setInterval(async()=>{
   if(!me||idleSigningOut)return;
+
+  // Visada perskaitome localStorage, kad keli skirtukai naudotų tą patį neaktyvumo laiką.
+  const stored=Number(localStorage.getItem(IDLE_STORAGE_KEY)||0);
+  if(Number.isFinite(stored)&&stored>idleLastActivity)idleLastActivity=stored;
+
   const idleFor=Date.now()-idleLastActivity;
   if(idleFor>=IDLE_LOGOUT_MS){
-   idleSigningOut=true;
-   stopHeartbeat();
-   clearInterval(idleCheckTimer);
-   idleCheckTimer=null;
-   try{await sb.auth.signOut()}finally{
-    me=null;profile=null;currentClass=null;uiBackStack=[];currentRestore=null;
-    idleSigningOut=false;
-    setHeader();
-    show('auth');
-    authMsg('Dėl saugumo atsijungta po 30 min. neaktyvumo.');
-   }
+   await forceIdleLogout();
    return;
   }
   if(idleFor>=IDLE_WARNING_MS&&!idleWarningShown){
    idleWarningShown=true;
    toast('Dėl saugumo po 5 min. neaktyvumo būsite automatiškai atjungti.');
   }
- },30000);
+ },15000);
 }
 
 function stopIdleLogout(){
@@ -176,13 +227,13 @@ function setHeader(){
 }
 
 $('themeToggle').onclick=()=>{const n=(document.documentElement.dataset.theme||'light')==='dark'?'light':'dark';document.documentElement.dataset.theme=n;localStorage.setItem('inf11v3_theme',n)};
-$('logoutBtn').onclick=async()=>{stopHeartbeat();stopIdleLogout();await sb.auth.signOut();me=null;profile=null;currentClass=null;uiBackStack=[];currentRestore=null;historyGuardReady=false;if($('loginEmail'))$('loginEmail').value='';if($('loginPassword'))$('loginPassword').value='';setHeader();show('auth')};
+$('logoutBtn').onclick=async()=>{stopHeartbeat();stopIdleLogout();clearIdleClock();await sb.auth.signOut();me=null;profile=null;currentClass=null;uiBackStack=[];currentRestore=null;historyGuardReady=false;if($('loginEmail'))$('loginEmail').value='';if($('loginPassword'))$('loginPassword').value='';setHeader();show('auth')};
 
 $('tabLogin').onclick=()=>{$('tabLogin').classList.add('active');$('tabSignup').classList.remove('active');$('loginForm').classList.remove('hidden');$('signupForm').classList.add('hidden')};
 $('tabSignup').onclick=()=>{$('tabSignup').classList.add('active');$('tabLogin').classList.remove('active');$('signupForm').classList.remove('hidden');$('loginForm').classList.add('hidden')};
 
 $('loginForm').onsubmit=async e=>{
- e.preventDefault();authMsg('Jungiamasi...');
+ e.preventDefault();resetIdleClock();authMsg('Jungiamasi...');
  const {error}=await sb.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPassword').value});
  if(error)return authMsg(error.message,true);
  $('loginEmail').value='';
@@ -190,7 +241,7 @@ $('loginForm').onsubmit=async e=>{
  authMsg('Prisijungta.');
 };
 $('signupForm').onsubmit=async e=>{
- e.preventDefault();authMsg('Kuriama paskyra...');
+ e.preventDefault();resetIdleClock();authMsg('Kuriama paskyra...');
  const {data,error}=await sb.auth.signUp({
   email:$('signupEmail').value.trim(),password:$('signupPassword').value,
   options:{data:{full_name:$('signupName').value.trim()}}
@@ -1629,10 +1680,44 @@ async function boot(){
  document.documentElement.dataset.theme=localStorage.getItem('inf11v3_theme')||'light';
  if(!configured){show('setup');return}
  const {data:{session}}=await sb.auth.getSession();
- if(session){me=session.user;await loadProfile();setHeader();route('dashboard')}else show('auth');
+
+ if(session){
+  if(idleSessionExpired()){
+   clearIdleClock();
+   await sb.auth.signOut();
+   show('auth');
+   authMsg('Dėl saugumo ankstesnė sesija užbaigta po 30 min. neaktyvumo.');
+  }else{
+   if(!readIdleActivity())resetIdleClock();
+   me=session.user;
+   await loadProfile();
+   setHeader();
+   route('dashboard');
+  }
+ }else{
+  clearIdleClock();
+  show('auth');
+ }
+
  sb.auth.onAuthStateChange(async(event,session)=>{
-  if(session&&!me){me=session.user;await loadProfile();setHeader();route('dashboard')}
-  if(!session){stopIdleLogout();me=null;profile=null;setHeader();show('auth')}
+  if(session&&!me){
+   if(event==='SIGNED_IN')resetIdleClock();
+   else if(idleSessionExpired()){
+    await forceIdleLogout('Dėl saugumo ankstesnė sesija užbaigta po 30 min. neaktyvumo.');
+    return;
+   }else if(!readIdleActivity())resetIdleClock();
+
+   me=session.user;
+   await loadProfile();
+   setHeader();
+   route('dashboard');
+  }
+  if(!session){
+   stopIdleLogout();
+   me=null;profile=null;
+   setHeader();
+   show('auth');
+  }
  });
 }
 boot();

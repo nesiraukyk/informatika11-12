@@ -209,3 +209,12 @@ Tai pašalina `new row violates row-level security policy for table "classes"` k
 - Failams, kurių naršyklė neatpažįsta, priskiriamas saugus `application/octet-stream` MIME tipas.
 - Reikia paleisti `PATCH_v4_8_VECTOR_UPLOAD.sql`, kad `student-submissions` bucket neturėtų MIME whitelist, bet liktų privatus.
 - Vieno failo limitas lieka 25 MB.
+
+
+## v4.9 – neaktyvumo laikas išlieka po puslapio perkrovimo
+- 30 min. neaktyvumo terminas dabar saugomas naršyklėje ir nenusinulina paspaudus Refresh / F5.
+- Uždarius skirtuką ir vėliau vėl atidarius svetainę, ankstesnė sesija taip pat bus užbaigta, jei nuo paskutinio realaus veiksmo praėjo 30 min.
+- Keli tos pačios svetainės skirtukai naudoja bendrą paskutinio aktyvumo laiką.
+- Tik realus vartotojo veiksmas (paspaudimas, klaviatūra, lietimas, įvedimas, slinkimas) pratęsia neaktyvumo laiką.
+- Po 25 min. lieka 5 min. perspėjimas.
+- Supabase SQL pakeitimų nereikia.
