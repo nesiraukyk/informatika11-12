@@ -323,3 +323,18 @@ textarea{
   gap:8px;
   flex-wrap:wrap;
 }
+
+/* ===== v5.1 · 10 klasės klausimų blokai ===== */
+.questionBlockCard{border:1px solid var(--line);border-radius:16px;margin-top:12px;overflow:hidden;background:var(--surface2)}
+.questionBlockCard>summary{list-style:none;cursor:pointer;display:flex;gap:16px;align-items:center;justify-content:space-between;padding:15px 16px}
+.questionBlockCard>summary::-webkit-details-marker{display:none}
+.questionBlockTitle{display:flex;align-items:center;gap:14px;min-width:0}
+.blockEnableToggle{display:flex;align-items:center;gap:7px;padding:8px 10px;border:1px solid var(--line);border-radius:11px;white-space:nowrap;background:var(--surface)}
+.questionBlockBody{border-top:1px solid var(--line);padding:12px;background:var(--surface)}
+.questionBlockToolbar{display:flex;justify-content:flex-end;margin-bottom:10px}
+.compactBankQuestion{margin-top:10px}
+.bankQuestionActions{display:flex;justify-content:flex-end;gap:7px;margin-top:12px}
+.practiceBlockPicker{display:grid;gap:8px;margin:12px 0 14px}
+.practiceAllBlocks,.practiceBlockChoice,.practiceBlockSingle{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:13px;padding:11px 12px;background:var(--surface2)}
+.practiceBlockChoice small{display:block;color:var(--muted);margin-top:3px}
+@media(max-width:720px){.questionBlockTitle{align-items:flex-start;flex-direction:column}}

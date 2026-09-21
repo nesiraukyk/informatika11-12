@@ -218,3 +218,10 @@ Tai pašalina `new row violates row-level security policy for table "classes"` k
 - Tik realus vartotojo veiksmas (paspaudimas, klaviatūra, lietimas, įvedimas, slinkimas) pratęsia neaktyvumo laiką.
 - Po 25 min. lieka 5 min. perspėjimas.
 - Supabase SQL pakeitimų nereikia.
+
+## v5.1 – 10 klasės BP klausimų blokai
+- v5.0 diegti nereikia; ši versija skirta tiesiai po v4.9.
+- 10 klasės „Skaitmeninio turinio kūrimas“ temoje įdiegiami 4 klausimų blokai ir 100 pradinių klausimų.
+- Mokytojas savo klasėje atskirai įjungia / išjungia blokus bei gali pridėti, redaguoti ir trinti klausimus.
+- Mokinys mato tik mokytojo įjungtus blokus. Jei įjungtas vienas – gauna vieną treniruotės pasirinkimą; jei keli – gali pasirinkti vieną, kelis arba „Visas skyrius“.
+- 11 klasės dabartinis klausimų bankas neliečiamas.
