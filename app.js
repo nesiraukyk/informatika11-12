@@ -56,6 +56,54 @@ let quiz={topicId:null,classId:null,mode:null,items:[],index:0,answers:[],attemp
 
 let uiBackStack=[],restoringBack=false,historyGuardReady=false,currentRestore=null;
 
+const IDLE_LOGOUT_MS=30*60*1000;
+const IDLE_WARNING_MS=25*60*1000;
+let idleLastActivity=Date.now(),idleCheckTimer=null,idleWarningShown=false,idleListenersReady=false,idleSigningOut=false;
+
+function markUserActivity(){
+ idleLastActivity=Date.now();
+ idleWarningShown=false;
+}
+
+function startIdleLogout(){
+ markUserActivity();
+ if(!idleListenersReady){
+  idleListenersReady=true;
+  ['pointerdown','keydown','touchstart','input','scroll'].forEach(evt=>{
+   window.addEventListener(evt,markUserActivity,{passive:true});
+  });
+ }
+ if(idleCheckTimer)clearInterval(idleCheckTimer);
+ idleCheckTimer=setInterval(async()=>{
+  if(!me||idleSigningOut)return;
+  const idleFor=Date.now()-idleLastActivity;
+  if(idleFor>=IDLE_LOGOUT_MS){
+   idleSigningOut=true;
+   stopHeartbeat();
+   clearInterval(idleCheckTimer);
+   idleCheckTimer=null;
+   try{await sb.auth.signOut()}finally{
+    me=null;profile=null;currentClass=null;uiBackStack=[];currentRestore=null;
+    idleSigningOut=false;
+    setHeader();
+    show('auth');
+    authMsg('Dėl saugumo atsijungta po 30 min. neaktyvumo.');
+   }
+   return;
+  }
+  if(idleFor>=IDLE_WARNING_MS&&!idleWarningShown){
+   idleWarningShown=true;
+   toast('Dėl saugumo po 5 min. neaktyvumo būsite automatiškai atjungti.');
+  }
+ },30000);
+}
+
+function stopIdleLogout(){
+ if(idleCheckTimer)clearInterval(idleCheckTimer);
+ idleCheckTimer=null;
+ idleWarningShown=false;
+}
+
 function setCurrentRestore(fn){
  currentRestore=typeof fn==='function'?fn:null;
 }
@@ -128,7 +176,7 @@ function setHeader(){
 }
 
 $('themeToggle').onclick=()=>{const n=(document.documentElement.dataset.theme||'light')==='dark'?'light':'dark';document.documentElement.dataset.theme=n;localStorage.setItem('inf11v3_theme',n)};
-$('logoutBtn').onclick=async()=>{stopHeartbeat();await sb.auth.signOut();me=null;profile=null;currentClass=null;uiBackStack=[];currentRestore=null;historyGuardReady=false;if($('loginEmail'))$('loginEmail').value='';if($('loginPassword'))$('loginPassword').value='';setHeader();show('auth')};
+$('logoutBtn').onclick=async()=>{stopHeartbeat();stopIdleLogout();await sb.auth.signOut();me=null;profile=null;currentClass=null;uiBackStack=[];currentRestore=null;historyGuardReady=false;if($('loginEmail'))$('loginEmail').value='';if($('loginPassword'))$('loginPassword').value='';setHeader();show('auth')};
 
 $('tabLogin').onclick=()=>{$('tabLogin').classList.add('active');$('tabSignup').classList.remove('active');$('loginForm').classList.remove('hidden');$('signupForm').classList.add('hidden')};
 $('tabSignup').onclick=()=>{$('tabSignup').classList.add('active');$('tabLogin').classList.remove('active');$('signupForm').classList.remove('hidden');$('loginForm').classList.add('hidden')};
@@ -153,7 +201,7 @@ $('signupForm').onsubmit=async e=>{
 
 async function loadProfile(){
  const {data,error}=await sb.from('profiles').select('*').eq('id',me.id).single();
- if(error)throw error;profile=data;await sb.rpc('mark_login');setHeader();ensureAppHistoryGuard();
+ if(error)throw error;profile=data;await sb.rpc('mark_login');setHeader();ensureAppHistoryGuard();startIdleLogout();
 }
 async function startHeartbeat(classId=null){
  stopHeartbeat();
@@ -282,10 +330,10 @@ function openTeacherFileUploadModal(){
   const title=$('teacherFileTitle').value.trim()||f.name;
   const path=`${me.id}/${storageFileName(f.name)}`;
   toast('Įkeliamas failas...');
-  const {error:upErr}=await sb.storage.from('teacher-library').upload(path,f);
+  const {error:upErr}=await sb.storage.from('teacher-library').upload(path,f,storageUploadOptions(f));
   if(upErr)return toast(upErr.message);
   const {error}=await sb.from('teacher_files').insert({
-   owner_id:me.id,title,storage_path:path,original_name:f.name,mime_type:f.type,size_bytes:f.size
+   owner_id:me.id,title,storage_path:path,original_name:f.name,mime_type:uploadContentType(f),size_bytes:f.size
   });
   if(error){
    await sb.storage.from('teacher-library').remove([path]);
@@ -314,6 +362,38 @@ async function deleteTeacherFile(id){
  toast('Failas ištrintas.');renderTeacherLibrary();
 }
 
+
+function fileExtension(name){
+ const s=String(name||'');
+ const dot=s.lastIndexOf('.');
+ return dot>=0?s.slice(dot+1).toLowerCase():'';
+}
+
+function uploadContentType(file){
+ const ext=fileExtension(file?.name);
+ const vectorTypes={
+  svg:'image/svg+xml',
+  ai:'application/postscript',
+  eps:'application/postscript',
+  cdr:'application/octet-stream',
+  dxf:'image/vnd.dxf',
+  wmf:'image/wmf',
+  emf:'image/emf',
+  afdesign:'application/octet-stream',
+  sketch:'application/octet-stream',
+  fig:'application/octet-stream',
+  xd:'application/octet-stream'
+ };
+ return vectorTypes[ext]||file?.type||'application/octet-stream';
+}
+
+function storageUploadOptions(file){
+ return {
+  cacheControl:'3600',
+  upsert:false,
+  contentType:uploadContentType(file)
+ };
+}
 
 function storageFileName(originalName){
  const name=String(originalName||'');
@@ -1038,9 +1118,9 @@ function resourceUploadModal(c){
   e.preventDefault();const f=$('resourceFile').files[0];if(!f)return;
   const topic=$('resourceTopic').value,path=`${c.id}/${topic}/${storageFileName(f.name)}`;
   toast('Įkeliamas failas...');
-  const {error:upErr}=await sb.storage.from('teacher-resources').upload(path,f);
+  const {error:upErr}=await sb.storage.from('teacher-resources').upload(path,f,storageUploadOptions(f));
   if(upErr)return toast(upErr.message);
-  const {error}=await sb.from('learning_resources').insert({class_id:c.id,topic_id:topic,title:$('resourceTitle').value.trim(),storage_path:path,original_name:f.name,mime_type:f.type,size_bytes:f.size,uploaded_by:me.id});
+  const {error}=await sb.from('learning_resources').insert({class_id:c.id,topic_id:topic,title:$('resourceTitle').value.trim(),storage_path:path,original_name:f.name,mime_type:uploadContentType(f),size_bytes:f.size,uploaded_by:me.id});
   if(error){await sb.storage.from('teacher-resources').remove([path]);return toast(error.message)}
   closeModal();toast('Failas įkeltas.');renderTeacherResources(c);
  };
@@ -1348,7 +1428,7 @@ function openDirectSubmissionModal(c,openTopics){
   <label>Tema<select id="directTopic" required>${openTopics.map(t=>`<option value="${t.id}">${esc(t.title)}</option>`).join('')}</select></label>
   <label>Darbo pavadinimas<input id="directTitle" required maxlength="120" placeholder="Pvz., Logotipo kūrimo užduotis"></label>
   <label>Failai<input class="fileInput" type="file" id="directFile" multiple required></label>
-  <p class="formHint">Galima pasirinkti kelis failus. Vieno failo maksimalus dydis – 25 MB.</p>
+  <p class="formHint">Galima pasirinkti kelis failus. Vieno failo maksimalus dydis – 25 MB. Palaikomi ir vektoriniai failai: SVG, AI, EPS, CDR, DXF, WMF, EMF.</p>
   <button class="primary" type="submit" style="margin-top:14px">Pateikti mokytojui</button>
  </form>`);
  $('directSubmissionForm').onsubmit=async e=>{
@@ -1361,11 +1441,11 @@ function openDirectSubmissionModal(c,openTopics){
   let uploaded=0;
   for(const f of files){
    const path=`${c.id}/direct/${me.id}/${storageFileName(f.name)}`;
-   const {error:upErr}=await sb.storage.from('student-submissions').upload(path,f);
+   const {error:upErr}=await sb.storage.from('student-submissions').upload(path,f,storageUploadOptions(f));
    if(upErr){toast(`Nepavyko įkelti ${f.name}: ${upErr.message}`);continue}
    const {error}=await sb.from('direct_submissions').insert({
     class_id:c.id,topic_id:topicId,student_id:me.id,title,
-    storage_path:path,original_name:f.name,mime_type:f.type,size_bytes:f.size
+    storage_path:path,original_name:f.name,mime_type:uploadContentType(f),size_bytes:f.size
    });
    if(error){await sb.storage.from('student-submissions').remove([path]);toast(`Nepavyko išsaugoti ${f.name}: ${error.message}`);continue}
    uploaded++;
@@ -1415,15 +1495,15 @@ async function openStudentTopic(topicId,c,access){
  document.querySelectorAll('[data-own-assignment-delete]').forEach(b=>b.onclick=()=>deleteAssignmentSubmission(b.dataset.ownAssignmentDelete,c,b.dataset.assignmentId,'student',topicId,access));
 }
 function submissionModal(assignmentId,c,topicId,access){
- modal(`<span class="kicker">PATEIKTI DARBĄ</span><h2>Įkelti failus</h2><form id="submissionForm" class="formGroup"><label>Failai<input class="fileInput" type="file" id="submissionFile" multiple required></label><p class="formHint">Gali pasirinkti kelis failus ir vėliau pridėti dar.</p><button class="primary" type="submit" style="margin-top:14px">Pateikti</button></form>`);
+ modal(`<span class="kicker">PATEIKTI DARBĄ</span><h2>Įkelti failus</h2><form id="submissionForm" class="formGroup"><label>Failai<input class="fileInput" type="file" id="submissionFile" multiple required></label><p class="formHint">Gali pasirinkti kelis failus ir vėliau pridėti dar. Palaikomi ir vektoriniai failai: SVG, AI, EPS, CDR, DXF, WMF, EMF. Vieno failo maksimalus dydis – 25 MB.</p><button class="primary" type="submit" style="margin-top:14px">Pateikti</button></form>`);
  $('submissionForm').onsubmit=async e=>{e.preventDefault();const files=[...$('submissionFile').files];if(!files.length)return;
   if(files.some(f=>f.size>25*1024*1024))return toast('Vienas iš failų per didelis. Maksimalus dydis – 25 MB vienam failui.');
   toast(`Įkeliama: ${files.length} fail.`);
   let uploaded=0;
   for(const f of files){
    const path=`${c.id}/${assignmentId}/${me.id}/${storageFileName(f.name)}`;
-   const {error:upErr}=await sb.storage.from('student-submissions').upload(path,f);if(upErr){toast(`Nepavyko įkelti ${f.name}: ${upErr.message}`);continue}
-   const {error}=await sb.from('submissions').insert({assignment_id:assignmentId,student_id:me.id,storage_path:path,original_name:f.name,mime_type:f.type,size_bytes:f.size});
+   const {error:upErr}=await sb.storage.from('student-submissions').upload(path,f,storageUploadOptions(f));if(upErr){toast(`Nepavyko įkelti ${f.name}: ${upErr.message}`);continue}
+   const {error}=await sb.from('submissions').insert({assignment_id:assignmentId,student_id:me.id,storage_path:path,original_name:f.name,mime_type:uploadContentType(f),size_bytes:f.size});
    if(error){await sb.storage.from('student-submissions').remove([path]);toast(`Nepavyko išsaugoti ${f.name}: ${error.message}`);continue}
    uploaded++;
   }
@@ -1552,7 +1632,7 @@ async function boot(){
  if(session){me=session.user;await loadProfile();setHeader();route('dashboard')}else show('auth');
  sb.auth.onAuthStateChange(async(event,session)=>{
   if(session&&!me){me=session.user;await loadProfile();setHeader();route('dashboard')}
-  if(!session){me=null;profile=null;setHeader();show('auth')}
+  if(!session){stopIdleLogout();me=null;profile=null;setHeader();show('auth')}
  });
 }
 boot();

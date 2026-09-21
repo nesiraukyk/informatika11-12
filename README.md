@@ -199,3 +199,13 @@ Tai pašalina `new row violates row-level security policy for table "classes"` k
 - Mokiniai prie užduoties gali įkelti vieną ar kelis failus.
 - Bendras viršutinis „+ Nauja užduotis“ mygtukas paliktas.
 - Supabase SQL pakeitimų nereikia.
+
+
+## v4.8 – automatinis atsijungimas ir vektorinių failų pateikimas
+- Visi vartotojai automatiškai atjungiami po 30 min. neaktyvumo.
+- Po 25 min. neaktyvumo parodomas perspėjimas, kad liko 5 min.
+- Pelės paspaudimas, klaviatūra, lietimas, įvedimas ar slinkimas pratęsia sesiją.
+- Studentų failų įkėlimui aiškiai palaikomi SVG, AI, EPS, CDR, DXF, WMF ir EMF.
+- Failams, kurių naršyklė neatpažįsta, priskiriamas saugus `application/octet-stream` MIME tipas.
+- Reikia paleisti `PATCH_v4_8_VECTOR_UPLOAD.sql`, kad `student-submissions` bucket neturėtų MIME whitelist, bet liktų privatus.
+- Vieno failo limitas lieka 25 MB.
