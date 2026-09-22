@@ -230,3 +230,14 @@ Tai pašalina `new row violates row-level security policy for table "classes"` k
 - 11 klasės „Vektorinės grafikos ypatumai, vektorinės grafikos failų formatai“ praktikos bankas padidintas nuo 65 iki 90 klausimų.
 - Papildyta BP rekomendacijose aiškiai minimais aspektais: PS, WMF, EPS, fono permatomumas, grynos spalvos ir gradientai, teksto panaudojimas, importas / eksportas, kompozicija, forma ir erdvė, simetrija / asimetrija, maketo tankis, kontrastas ir objektų tarpusavio derinimas.
 - Supabase SQL pakeitimų nereikia.
+
+
+## v5.3 – subalansuota 11 klasės praktika ir saugus atsiskaitymas
+- 11 klasės vektorinės grafikos praktikos bankas: 120 klausimų (90 vieno pasirinkimo + 30 kelių tipų).
+- 10 klausimų praktika parenkama subalansuotai pagal kategorijas, sunkumą ir klausimo tipą.
+- Saugus 11 klasės atsiskaitymo bankas laikomas Supabase: 100 klausimų, 4 tipai (vienas atsakymas, keli atsakymai, „kuris netinka“, sujungimas).
+- Mokytojas prieš atidarydamas atsiskaitymą pasirenka 5–40 klausimų (numatyta 20).
+- Atsiskaitymo trukmę skaičiuoja serveris; fiksuojami skirtuko/langų paslėpimo, fokuso praradimo, puslapio išėjimo ir nebaigto uždarymo įvykiai.
+- Mokytojo mokinio detalėse atsiskaitymo eilutė turi mygtuką „Peržiūrėti“ su trukme, rezultatu, išėjimų laiku ir visais atsakymais.
+- Atsiskaitymo teisingi atsakymai pradžioje į naršyklę nesiunčiami; vertinimas vyksta serverio RPC.
+- REIKIA paleisti `PATCH_v5_3_BALANCED_PRACTICE_SECURE_ASSESSMENT.sql` ir tada įkelti v5.3 GitHub failus.

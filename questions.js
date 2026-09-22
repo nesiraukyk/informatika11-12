@@ -1348,5 +1348,655 @@ window.PRACTICE_QUESTIONS = [
     "explanation": "Tema apima sąvokų supratimą, praktinį vektorinių objektų kūrimą bei tinkamą formatų ir eksporto pasirinkimą.",
     "difficulty": "Sunkesnis",
     "category": "Praktinis taikymas"
+  },
+  {
+    "id": "vg-091",
+    "topic": "vektorine-grafika",
+    "type": "multi",
+    "question": "Pasirinkite VISUS teisingus teiginius apie vektorinę grafiką.",
+    "options": [
+      "Objektai aprašomi matematiškai",
+      "Didinant kokybė paprastai neprarandama",
+      "Ji visada sudaryta tik iš pikselių",
+      "Tinka logotipams ir schemoms"
+    ],
+    "correct": [
+      0,
+      1,
+      3
+    ],
+    "explanation": "Vektoriniai objektai aprašomi matematiškai, todėl juos patogu keisti ir mastelį didinti neprarandant ryškumo.",
+    "difficulty": "Vidutinis",
+    "category": "Bendrosios sąvokos"
+  },
+  {
+    "id": "vg-092",
+    "topic": "vektorine-grafika",
+    "type": "multi",
+    "question": "Pasirinkite VISUS taškinės grafikos požymius.",
+    "options": [
+      "Vaizdas sudarytas iš pikselių",
+      "Didinant gali išryškėti pikseliai",
+      "Puikiai tinka fotografijoms",
+      "Mastelis visiškai nepriklauso nuo raiškos"
+    ],
+    "correct": [
+      0,
+      1,
+      2
+    ],
+    "explanation": "Taškinė grafika sudaryta iš pikselių, priklauso nuo raiškos ir dažnai tinka fotografijoms.",
+    "difficulty": "Lengvas",
+    "category": "Bendrosios sąvokos"
+  },
+  {
+    "id": "vg-093",
+    "topic": "vektorine-grafika",
+    "type": "multi",
+    "question": "Kurie teiginiai apie RGB yra teisingi?",
+    "options": [
+      "Naudojamas ekranams",
+      "Sudarytas iš raudonos, žalios ir mėlynos",
+      "Tai adityvus spalvų modelis",
+      "Tai pagrindinis keturių dažų spaudos modelis"
+    ],
+    "correct": [
+      0,
+      1,
+      2
+    ],
+    "explanation": "RGB naudojamas šviesą skleidžiančiuose ekranuose ir remiasi raudona, žalia bei mėlyna spalvomis.",
+    "difficulty": "Vidutinis",
+    "category": "Spalvos"
+  },
+  {
+    "id": "vg-094",
+    "topic": "vektorine-grafika",
+    "type": "multi",
+    "question": "Kurie teiginiai apie CMYK yra teisingi?",
+    "options": [
+      "Dažniausiai siejamas su spauda",
+      "Naudoja žydrą, purpurinę, geltoną ir juodą",
+      "Turi keturis kanalus",
+      "Skirtas tik monitorių pikseliams valdyti"
+    ],
+    "correct": [
+      0,
+      1,
+      2
+    ],
+    "explanation": "CMYK yra keturių spalvų modelis, dažniausiai naudojamas spaudos procesuose.",
+    "difficulty": "Vidutinis",
+    "category": "Spalvos"
+  },
+  {
+    "id": "vg-095",
+    "topic": "vektorine-grafika",
+    "type": "multi",
+    "question": "Kokias galimybes įvadiniame vektorinės grafikos kurse svarbu išbandyti?",
+    "options": [
+      "Objektų spalvinimą",
+      "Teksto panaudojimą",
+      "Objektų importavimą ir eksportavimą",
+      "Tik garso įrašų montavimą"
+    ],
+    "correct": [
+      0,
+      1,
+      2
+    ],
+    "explanation": "Programoje akcentuojami objektų kūrimas, spalvinimas, tekstas, importas ir eksportas.",
+    "difficulty": "Vidutinis",
+    "category": "Darbo eiga"
+  },
+  {
+    "id": "vg-096",
+    "topic": "vektorine-grafika",
+    "type": "multi",
+    "question": "Kurie formatai yra vektorinės grafikos ar vektorinius duomenis palaikantys formatai?",
+    "options": [
+      "SVG",
+      "EPS",
+      "WMF",
+      "MP3"
+    ],
+    "correct": [
+      0,
+      1,
+      2
+    ],
+    "explanation": "SVG, EPS ir WMF naudojami vektorinei grafikai; MP3 yra garso formatas.",
+    "difficulty": "Vidutinis",
+    "category": "Failų formatai"
+  },
+  {
+    "id": "vg-097",
+    "topic": "vektorine-grafika",
+    "type": "multi",
+    "question": "Kokie sprendimai paprastai gerina plakato kompoziciją?",
+    "options": [
+      "Aiški vizualinė hierarchija",
+      "Pakankami tarpai tarp elementų",
+      "Tikslingas kontrastas",
+      "Atsitiktinis visų objektų sukrovimas vienoje vietoje"
+    ],
+    "correct": [
+      0,
+      1,
+      2
+    ],
+    "explanation": "Kompozicijai svarbūs tarpai, kontrastas, hierarchija ir objektų tarpusavio dermė.",
+    "difficulty": "Vidutinis",
+    "category": "Dizaino principai"
+  },
+  {
+    "id": "vg-098",
+    "topic": "vektorine-grafika",
+    "type": "multi",
+    "question": "Pasirinkite teisingus teiginius apie eksportą.",
+    "options": [
+      "Vektorinį originalą galima eksportuoti į PNG",
+      "Eksportuojant parenkamas galutinei paskirčiai tinkamas formatas",
+      "Po eksporto originalą visada būtina ištrinti",
+      "Eksportas gali būti reikalingas internetui ar kitai programai"
+    ],
+    "correct": [
+      0,
+      1,
+      3
+    ],
+    "explanation": "Eksportas paruošia darbo kopiją konkrečiai paskirčiai, o redaguojamą originalą verta pasilikti.",
+    "difficulty": "Vidutinis",
+    "category": "Raiška ir eksportas"
+  },
+  {
+    "id": "vg-099",
+    "topic": "vektorine-grafika",
+    "type": "multi",
+    "question": "Kurie teiginiai apie Bezjė kreives teisingi?",
+    "options": [
+      "Jų forma valdoma kontroliniais taškais ir rankenėlėmis",
+      "Jos tinka lygioms vektorinėms kreivėms",
+      "Jos yra tik nuotraukų glaudinimo metodas",
+      "Jos naudojamos sudėtingoms formoms kurti"
+    ],
+    "correct": [
+      0,
+      1,
+      3
+    ],
+    "explanation": "Bezjė kreivės leidžia tiksliai valdyti vektorinių kreivių formą.",
+    "difficulty": "Sunkesnis",
+    "category": "Bezjė kreivės"
+  },
+  {
+    "id": "vg-100",
+    "topic": "vektorine-grafika",
+    "type": "multi",
+    "question": "Kada pravartu naudoti permatomą foną?",
+    "options": [
+      "Kai logotipas dedamas ant skirtingų fonų",
+      "Kai reikia išvengti nereikalingo stačiakampio fono",
+      "Kai norime elementą lanksčiai komponuoti leidinyje",
+      "Kai norime failą paversti garso įrašu"
+    ],
+    "correct": [
+      0,
+      1,
+      2
+    ],
+    "explanation": "Permatomumas leidžia objektą patogiai dėti ant skirtingų fonų.",
+    "difficulty": "Lengvas",
+    "category": "Raiška ir eksportas"
+  },
+  {
+    "id": "vg-101",
+    "topic": "vektorine-grafika",
+    "type": "odd",
+    "question": "Kuris iš šių formatų NETINKA į vektorinės grafikos formatų grupę?",
+    "options": [
+      "SVG",
+      "EPS",
+      "WMF",
+      "MP3"
+    ],
+    "correct": 3,
+    "explanation": "MP3 yra garso formatas, o kiti pateikti variantai naudojami grafikai.",
+    "difficulty": "Lengvas",
+    "category": "Failų formatai"
+  },
+  {
+    "id": "vg-102",
+    "topic": "vektorine-grafika",
+    "type": "odd",
+    "question": "Kuris teiginys NETINKA vektorinei grafikai apibūdinti?",
+    "options": [
+      "Objektai aprašomi matematiškai",
+      "Galima keisti mastelį neprarandant kokybės",
+      "Tinka logotipams",
+      "Vaizdą visada sudaro fiksuotas pikselių tinklelis"
+    ],
+    "correct": 3,
+    "explanation": "Fiksuotas pikselių tinklelis būdingas taškinei, ne vektorinei grafikai.",
+    "difficulty": "Lengvas",
+    "category": "Bendrosios sąvokos"
+  },
+  {
+    "id": "vg-103",
+    "topic": "vektorine-grafika",
+    "type": "odd",
+    "question": "Kuris elementas NETINKA RGB spalvų modelio sudedamosioms dalims?",
+    "options": [
+      "Raudona",
+      "Žalia",
+      "Mėlyna",
+      "Geltona"
+    ],
+    "correct": 3,
+    "explanation": "RGB sudaro raudona, žalia ir mėlyna.",
+    "difficulty": "Lengvas",
+    "category": "Spalvos"
+  },
+  {
+    "id": "vg-104",
+    "topic": "vektorine-grafika",
+    "type": "odd",
+    "question": "Kuris elementas NETINKA CMYK modelio sudedamosioms dalims?",
+    "options": [
+      "Žydra",
+      "Purpurinė",
+      "Geltona",
+      "Žalia"
+    ],
+    "correct": 3,
+    "explanation": "CMYK sudaro žydra, purpurinė, geltona ir juoda.",
+    "difficulty": "Lengvas",
+    "category": "Spalvos"
+  },
+  {
+    "id": "vg-105",
+    "topic": "vektorine-grafika",
+    "type": "odd",
+    "question": "Kuris veiksmas mažiausiai susijęs su vektorinės grafikos darbo eiga?",
+    "options": [
+      "Importuoti papildomą objektą",
+      "Pritaikyti gradientą",
+      "Eksportuoti į kitą grafikos formatą",
+      "Montuoti garso takelį"
+    ],
+    "correct": 3,
+    "explanation": "Garso takelio montavimas nėra šios vektorinės grafikos temos dalis.",
+    "difficulty": "Lengvas",
+    "category": "Darbo eiga"
+  },
+  {
+    "id": "vg-106",
+    "topic": "vektorine-grafika",
+    "type": "odd",
+    "question": "Kuris pasirinkimas NETINKA gerai plakato kompozicijai?",
+    "options": [
+      "Kontrastas",
+      "Tarpai ir erdvė",
+      "Objektų tarpusavio derinimas",
+      "Atsitiktinis elementų perkrovimas"
+    ],
+    "correct": 3,
+    "explanation": "Atsitiktinis perkrovimas paprastai blogina aiškumą ir kompoziciją.",
+    "difficulty": "Vidutinis",
+    "category": "Dizaino principai"
+  },
+  {
+    "id": "vg-107",
+    "topic": "vektorine-grafika",
+    "type": "odd",
+    "question": "Kuris formatas NETINKA, jei reikia taškinio paveikslėlio su skaidriu fonu?",
+    "options": [
+      "PNG",
+      "PNG su alfa kanalu",
+      "Skaidrumą palaikantis PNG",
+      "JPEG"
+    ],
+    "correct": 3,
+    "explanation": "JPEG įprastai nepalaiko permatomo fono.",
+    "difficulty": "Lengvas",
+    "category": "Raiška ir eksportas"
+  },
+  {
+    "id": "vg-108",
+    "topic": "vektorine-grafika",
+    "type": "odd",
+    "question": "Kuris teiginys apie raišką NETINKA?",
+    "options": [
+      "Taškinė grafika priklauso nuo pikselių skaičiaus",
+      "Didinant mažos raiškos rastrą gali prastėti kokybė",
+      "Vektorinė grafika masteliui yra daug lankstesnė",
+      "Vektorinį objektą visada būtina kurti tik 300 PPI raiška"
+    ],
+    "correct": 3,
+    "explanation": "Vektoriniai objektai nėra apibrėžiami fiksuotu PPI taip, kaip taškiniai vaizdai.",
+    "difficulty": "Sunkesnis",
+    "category": "Raiška ir eksportas"
+  },
+  {
+    "id": "vg-109",
+    "topic": "vektorine-grafika",
+    "type": "odd",
+    "question": "Kuris teiginys apie tekstą vektoriniame darbe NETINKA?",
+    "options": [
+      "Tekstas gali būti kompozicijos dalis",
+      "Tekstas gali perduoti informaciją",
+      "Tekstas gali būti derinamas su formomis",
+      "Tekstas vektorinėje grafikoje apskritai negalimas"
+    ],
+    "correct": 3,
+    "explanation": "Tekstas gali būti naudojamas vektoriniuose projektuose.",
+    "difficulty": "Lengvas",
+    "category": "Tekstas ir tipografija"
+  },
+  {
+    "id": "vg-110",
+    "topic": "vektorine-grafika",
+    "type": "odd",
+    "question": "Kuris veiksmas NETINKA kuriant logotipą?",
+    "options": [
+      "Naudoti aiškias formas",
+      "Įvertinti mastelio keitimą",
+      "Derinti spalvas ir tekstą",
+      "Būtinai naudoti kuo daugiau smulkių detalių"
+    ],
+    "correct": 3,
+    "explanation": "Logotipui paprastai svarbus aiškumas ir pritaikomumas įvairiems dydžiams.",
+    "difficulty": "Vidutinis",
+    "category": "Praktinis taikymas"
+  },
+  {
+    "id": "vg-111",
+    "topic": "vektorine-grafika",
+    "type": "matching",
+    "question": "Sujunkite grafikos rūšį su jai būdingiausiu požymiu.",
+    "options": {
+      "left": [
+        "Vektorinė grafika",
+        "Taškinė grafika",
+        "Logotipas",
+        "Fotografija"
+      ],
+      "right": [
+        "Dažnai tinkamiausia vektorinė grafika",
+        "Dažnai tinkamiausia taškinė grafika",
+        "Aprašoma objektais ir matematinėmis kreivėmis",
+        "Sudaryta iš pikselių"
+      ]
+    },
+    "correct": {
+      "0": 2,
+      "1": 3,
+      "2": 0,
+      "3": 1
+    },
+    "explanation": "Vektorinė grafika remiasi objektais, taškinė – pikseliais; logotipams dažnai tinka vektorius, fotografijoms – rastras.",
+    "difficulty": "Vidutinis",
+    "category": "Bendrosios sąvokos"
+  },
+  {
+    "id": "vg-112",
+    "topic": "vektorine-grafika",
+    "type": "matching",
+    "question": "Sujunkite spalvų modelį ar spalvą su apibūdinimu.",
+    "options": {
+      "left": [
+        "RGB",
+        "CMYK",
+        "R",
+        "K"
+      ],
+      "right": [
+        "Juoda spaudos spalva",
+        "Ekranams dažnas modelis",
+        "Raudonos spalvos kanalas",
+        "Spaudai dažnas modelis"
+      ]
+    },
+    "correct": {
+      "0": 1,
+      "1": 3,
+      "2": 2,
+      "3": 0
+    },
+    "explanation": "RGB siejamas su ekranais, CMYK – su spauda; R reiškia raudoną, K – juodą.",
+    "difficulty": "Lengvas",
+    "category": "Spalvos"
+  },
+  {
+    "id": "vg-113",
+    "topic": "vektorine-grafika",
+    "type": "matching",
+    "question": "Sujunkite formatą su tinkamiausiu apibūdinimu.",
+    "options": {
+      "left": [
+        "SVG",
+        "EPS",
+        "WMF",
+        "PNG"
+      ],
+      "right": [
+        "Taškinis formatas, galintis turėti skaidrų foną",
+        "Atvirasis vektorinės grafikos formatas",
+        "Windows metafailo formatas",
+        "PostScript pagrindu naudojamas grafinių duomenų mainams"
+      ]
+    },
+    "correct": {
+      "0": 1,
+      "1": 3,
+      "2": 2,
+      "3": 0
+    },
+    "explanation": "SVG yra atvirasis vektoriaus formatas, EPS – mainams/leidyboje, WMF – Windows metafailas, PNG – taškinis.",
+    "difficulty": "Sunkesnis",
+    "category": "Failų formatai"
+  },
+  {
+    "id": "vg-114",
+    "topic": "vektorine-grafika",
+    "type": "matching",
+    "question": "Sujunkite sąvoką su jos paskirtimi.",
+    "options": {
+      "left": [
+        "Užpildas",
+        "Kontūras",
+        "Gradientas",
+        "Permatomumas"
+      ],
+      "right": [
+        "Objekto ribos linija",
+        "Laipsniškas spalvų perėjimas",
+        "Objekto vidaus spalvinimas",
+        "Leidžia matyti foną per objektą"
+      ]
+    },
+    "correct": {
+      "0": 2,
+      "1": 0,
+      "2": 1,
+      "3": 3
+    },
+    "explanation": "Užpildas spalvina vidų, kontūras apibrėžia ribą, gradientas kuria perėjimą, permatomumas praleidžia foną.",
+    "difficulty": "Vidutinis",
+    "category": "Objektai ir įrankiai"
+  },
+  {
+    "id": "vg-115",
+    "topic": "vektorine-grafika",
+    "type": "matching",
+    "question": "Sujunkite dizaino principą su jo reikšme.",
+    "options": {
+      "left": [
+        "Kontrastas",
+        "Lygiavimas",
+        "Erdvė",
+        "Simetrija"
+      ],
+      "right": [
+        "Elementai išdėstyti pagal bendras linijas",
+        "Padeda išryškinti skirtumus ir svarbią informaciją",
+        "Subalansuotas elementų išdėstymas aplink ašį",
+        "Tarpai, padedantys neperkrauti maketo"
+      ]
+    },
+    "correct": {
+      "0": 1,
+      "1": 0,
+      "2": 3,
+      "3": 2
+    },
+    "explanation": "Šie principai padeda kurti aiškią, tvarkingą ir lengvai suvokiamą kompoziciją.",
+    "difficulty": "Sunkesnis",
+    "category": "Dizaino principai"
+  },
+  {
+    "id": "vg-116",
+    "topic": "vektorine-grafika",
+    "type": "matching",
+    "question": "Sujunkite darbo veiksmą su jo paskirtimi.",
+    "options": {
+      "left": [
+        "Importuoti",
+        "Eksportuoti",
+        "Grupuoti",
+        "Lygiuoti"
+      ],
+      "right": [
+        "Parengti darbo kopiją kitam formatui ar paskirčiai",
+        "Įtraukti išorinį elementą į projektą",
+        "Tvarkingai išdėstyti objektus pagal bendrą liniją",
+        "Valdyti kelis objektus kaip vieną grupę"
+      ]
+    },
+    "correct": {
+      "0": 1,
+      "1": 0,
+      "2": 3,
+      "3": 2
+    },
+    "explanation": "Importas įtraukia turinį, eksportas parengia išvestį, grupavimas sujungia valdymą, lygiavimas tvarko padėtis.",
+    "difficulty": "Vidutinis",
+    "category": "Darbo eiga"
+  },
+  {
+    "id": "vg-117",
+    "topic": "vektorine-grafika",
+    "type": "matching",
+    "question": "Sujunkite Bezjė kreivės elementą ar veiksmą su apibūdinimu.",
+    "options": {
+      "left": [
+        "Mazgas",
+        "Valdymo rankenėlė",
+        "Kreivė",
+        "Mastelio keitimas"
+      ],
+      "right": [
+        "Keičia objekto dydį",
+        "Taškas, per kurį valdomas kelias",
+        "Vektorinė linija tarp taškų",
+        "Padeda valdyti kreivės kryptį ir lenkimą"
+      ]
+    },
+    "correct": {
+      "0": 1,
+      "1": 3,
+      "2": 2,
+      "3": 0
+    },
+    "explanation": "Bezjė kreives sudaro kelias su mazgais ir valdymo rankenėlėmis, o vektorių galima laisvai masteliuoti.",
+    "difficulty": "Sunkesnis",
+    "category": "Bezjė kreivės"
+  },
+  {
+    "id": "vg-118",
+    "topic": "vektorine-grafika",
+    "type": "matching",
+    "question": "Sujunkite situaciją su tinkamesniu sprendimu.",
+    "options": {
+      "left": [
+        "Logotipas įvairiems dydžiams",
+        "Nuotrauka tinklalapiui",
+        "Spaudos maketas",
+        "Skaidrus logotipas ant fono"
+      ],
+      "right": [
+        "CMYK darbo eiga",
+        "PNG su skaidrumu",
+        "Vektorinis originalas",
+        "Taškinis fotografijos formatas"
+      ]
+    },
+    "correct": {
+      "0": 2,
+      "1": 3,
+      "2": 0,
+      "3": 1
+    },
+    "explanation": "Sprendimas priklauso nuo paskirties: logotipui svarbus mastelis, nuotraukai – rastras, spaudai – CMYK, skaidrumui – PNG.",
+    "difficulty": "Sunkesnis",
+    "category": "Situacijos"
+  },
+  {
+    "id": "vg-119",
+    "topic": "vektorine-grafika",
+    "type": "matching",
+    "question": "Sujunkite raiškos sąvoką su apibūdinimu.",
+    "options": {
+      "left": [
+        "Pikselis",
+        "PPI",
+        "DPI",
+        "Vektorius"
+      ],
+      "right": [
+        "Matematiškai aprašomas grafikos elementas",
+        "Vaizdo taškas",
+        "Pikseliai colyje",
+        "Spaudos taškai colyje"
+      ]
+    },
+    "correct": {
+      "0": 1,
+      "1": 2,
+      "2": 3,
+      "3": 0
+    },
+    "explanation": "PPI siejamas su pikseliais, DPI – spaudos taškais, o vektorius aprašomas matematiškai.",
+    "difficulty": "Sunkesnis",
+    "category": "Raiška ir eksportas"
+  },
+  {
+    "id": "vg-120",
+    "topic": "vektorine-grafika",
+    "type": "matching",
+    "question": "Sujunkite maketo savybę su galimu rezultatu.",
+    "options": {
+      "left": [
+        "Per didelis tankis",
+        "Pakankama erdvė",
+        "Aiškus kontrastas",
+        "Nuoseklus objektų derinimas"
+      ],
+      "right": [
+        "Lengviau išskirti svarbią informaciją",
+        "Kompozicija gali atrodyti perkrauta",
+        "Maketas atrodo vientisas",
+        "Turinį lengviau suvokti"
+      ]
+    },
+    "correct": {
+      "0": 1,
+      "1": 3,
+      "2": 0,
+      "3": 2
+    },
+    "explanation": "Maketo tankis, erdvė, kontrastas ir elementų derinimas tiesiogiai veikia aiškumą bei vizualinį vientisumą.",
+    "difficulty": "Sunkesnis",
+    "category": "Dizaino principai"
   }
 ];

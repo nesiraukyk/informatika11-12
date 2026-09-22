@@ -338,3 +338,22 @@ textarea{
 .practiceAllBlocks,.practiceBlockChoice,.practiceBlockSingle{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:13px;padding:11px 12px;background:var(--surface2)}
 .practiceBlockChoice small{display:block;color:var(--muted);margin-top:3px}
 @media(max-width:720px){.questionBlockTitle{align-items:flex-start;flex-direction:column}}
+
+
+/* ===== v5.3 · Subalansuota praktika ir saugus atsiskaitymas ===== */
+.multiHint{color:var(--muted);font-size:13px;margin-bottom:10px}
+.multiAnswer{display:flex;align-items:flex-start;gap:10px;border:1px solid var(--line);border-radius:13px;padding:12px 13px;background:var(--surface2);cursor:pointer}
+.multiAnswer input{margin-top:3px;transform:scale(1.15)}
+.confirmAnswerBtn{margin-top:12px}
+.matchingGrid{display:grid;gap:10px}
+.matchingRow{display:grid;grid-template-columns:minmax(180px,1fr) minmax(220px,1.3fr);gap:12px;align-items:center;border:1px solid var(--line);border-radius:13px;padding:12px;background:var(--surface2);font-weight:750}
+.matchingRow select{width:100%;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.neutralFeedback{border-color:color-mix(in srgb,var(--p) 28%,var(--line));background:color-mix(in srgb,var(--p) 7%,var(--surface))}
+.attemptHistoryRow{display:flex;align-items:center;gap:10px;margin-top:8px}
+.assessmentMetrics{grid-template-columns:repeat(4,minmax(0,1fr))}
+.assessmentFocusPanel{margin:16px 0}
+.assessmentQuestionDetail{border:1px solid var(--line);border-radius:15px;padding:14px;margin-top:10px;background:var(--surface2)}
+.assessmentQuestionDetail.isCorrect{border-left:4px solid var(--ok)}
+.assessmentQuestionDetail.isWrong{border-left:4px solid var(--bad)}
+.assessmentQuestionDetail p{line-height:1.55}
+@media(max-width:700px){.matchingRow{grid-template-columns:1fr}.assessmentMetrics{grid-template-columns:1fr 1fr}}
