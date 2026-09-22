@@ -267,3 +267,14 @@ Tai pašalina `new row violates row-level security policy for table "classes"` k
 - Kiekvienai pozicijai yra 8 lygiaverčiai variantai: 30 × 8 = 240 saugių atsiskaitymo klausimų.
 - 30 klausimų struktūra: 12 vieno atsakymo, 8 kelių atsakymų, 6 „kuris netinka“, 4 sujungimo; 9 lengvi, 15 vidutinių ir 6 sunkesni.
 - Ankstesnė vieno bandymo taisyklė, uždelstas rezultatų rodymas, laiko / išėjimų fiksavimas ir prisijungusių mokinių stebėjimas išlieka.
+
+
+## v5.7 – mokytojo leidžiamas pakartotinis atsiskaitymas
+- Pagal nutylėjimą mokinys vis dar turi vieną atsiskaitymo bandymą.
+- Skiltyje „Atsiskaitymų rezultatai“ mokytojas gali konkrečiam mokiniui paspausti „Leisti pakartoti“.
+- Vienu paspaudimu atrakinamas tik vienas kitas bandymas; pakartotinis paspaudimas prieš jį atliekant papildomo limito neprideda.
+- Ankstesni bandymai ir jų rezultatai lieka istorijoje.
+- Naujam bandymui pirmiausia parenkami anksčiau tam mokiniui nerodyti to paties balanso slotų klausimų variantai.
+- Mokinio kortelėje aiškiai rodoma, kai mokytojas leido pakartotinį bandymą.
+- Mokinį pašalinant iš klasės nauju mygtuku, ištrinami visi jo tos klasės praktikos ir atsiskaitymų bandymai (kartu su atsakymais, laiku ir fokuso įvykiais). Pateikti failai ir Auth paskyra lieka.
+- Reikia paleisti `PATCH_v5_7_RETRY_AND_STUDENT_CLEANUP.sql` po v5.6.

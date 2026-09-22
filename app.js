@@ -1302,12 +1302,15 @@ async function deleteTopicPost(id,c,topicId){
 async function renderTeacherAssessments(c,students,attempts){
  const host=$('teacherClassPanel');
  const rows=(attempts||[]).filter(x=>x.mode==='assessment').sort((a,b)=>new Date(b.started_at)-new Date(a.started_at));
- host.innerHTML=`<div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">ATSISKAITYMŲ REZULTATAI</span><h2>Mokinių atsiskaitymai</h2><p class="muted">Mokytojas rezultatą ir visus atsakymus mato iš karto. Mokiniams balai ir teisingi atsakymai parodomi tik tada, kai šios klasės visi mokiniai baigia tos temos atsiskaitymą.</p></div></div><div class="emptyState">Kraunama...</div></div>`;
+ host.innerHTML=`<div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">ATSISKAITYMŲ REZULTATAI</span><h2>Mokinių atsiskaitymai</h2><p class="muted">Mokytojas rezultatą ir visus atsakymus mato iš karto. Papildomą bandymą konkrečiam mokiniui galima suteikti tik iš čia.</p></div></div><div class="emptyState">Kraunama...</div></div>`;
  if(!rows.length){host.innerHTML=`<div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">ATSISKAITYMŲ REZULTATAI</span><h2>Mokinių atsiskaitymai</h2><p class="muted">Kai mokiniai pradės atsiskaitymą, rezultatai atsiras čia.</p></div></div><div class="emptyState">Atsiskaitymų dar nėra.</div></div>`;return}
- const ids=rows.map(x=>x.id);let events=[];
- const {data,error}=await sb.from('assessment_focus_events').select('attempt_id,event_type,occurred_at').in('attempt_id',ids);
- if(!error)events=data||[];
- const countBy={};events.forEach(e=>countBy[e.attempt_id]=(countBy[e.attempt_id]||0)+1);
+ const ids=rows.map(x=>x.id);
+ const [{data:events,error},{data:retryRows}]=await Promise.all([
+  sb.from('assessment_focus_events').select('attempt_id,event_type,occurred_at').in('attempt_id',ids),
+  sb.from('assessment_retry_permissions').select('class_id,student_id,topic_id,extra_attempts').eq('class_id',c.id)
+ ]);
+ const eventRows=error?[]:(events||[]);
+ const countBy={};eventRows.forEach(e=>countBy[e.attempt_id]=(countBy[e.attempt_id]||0)+1);
  const studentBy=Object.fromEntries((students||[]).map(x=>[x.id,x]));
  const totalStudents=(students||[]).length;
  const completedByTopic={};
@@ -1315,18 +1318,52 @@ async function renderTeacherAssessments(c,students,attempts){
   if(!completedByTopic[x.topic_id])completedByTopic[x.topic_id]=new Set();
   completedByTopic[x.topic_id].add(x.student_id);
  });
+ const keyOf=x=>`${x.student_id}::${x.topic_id}`;
+ const groups={};
+ [...rows].sort((a,b)=>new Date(a.started_at)-new Date(b.started_at)).forEach(x=>{
+  const k=keyOf(x);(groups[k]||(groups[k]=[])).push(x);
+ });
+ const attemptNoById={};
+ const latestByKey={};
+ Object.entries(groups).forEach(([k,list])=>{
+  list.forEach((x,i)=>attemptNoById[x.id]=i+1);
+  latestByKey[k]=list[list.length-1];
+ });
+ const retryByKey={};(retryRows||[]).forEach(r=>retryByKey[`${r.student_id}::${r.topic_id}`]=r);
  const body=rows.map(x=>{
-  const st=studentBy[x.student_id],done=!!x.completed_at;
+  const st=studentBy[x.student_id],done=!!x.completed_at,k=keyOf(x),group=groups[k]||[];
   const duration=done?fmtDurationDetailed(x.duration_seconds):fmtDurationDetailed(Math.max(1,Math.floor((Date.now()-new Date(x.started_at).getTime())/1000)));
   const result=done?`${x.correct_answers||0}/${x.total_questions||0} · ${x.score_percent||0}%`:'—';
   const completed=completedByTopic[x.topic_id]?.size||0;
   const released=totalStudents>0&&completed>=totalStudents;
   const studentVisibility=released?'<span class="badge ok">Rodoma</span>':`<span class="badge">Laukiama ${completed}/${totalStudents}</span>`;
-  return `<tr><td><b>${esc(st?.full_name||'Mokinys')}</b></td><td>${esc(topicById(x.topic_id)?.title||x.topic_id)}</td><td><span class="badge ${done?'ok':''}">${done?'Baigtas':'Vyksta / nebaigtas'}</span></td><td><b>${result}</b></td><td>${duration}${done?'':' (iki dabar)'}</td><td><b>${countBy[x.id]||0}</b></td><td>${studentVisibility}</td><td>${fmtDate(x.started_at)}</td><td><button class="smallBtn" data-assessment-result="${x.id}" data-assessment-student="${x.student_id}">Peržiūrėti atsakymus</button></td></tr>`;
+  const completedAttempts=group.filter(a=>a.completed_at).length;
+  const hasUnfinished=group.some(a=>!a.completed_at);
+  const allowedAttempts=1+Number(retryByKey[k]?.extra_attempts||0);
+  const retryAlreadyAvailable=!hasUnfinished&&completedAttempts<allowedAttempts;
+  const isLatest=latestByKey[k]?.id===x.id;
+  let retryAction='';
+  if(done&&isLatest){
+   retryAction=retryAlreadyAvailable
+    ? '<span class="badge ok">Pakartojimas leistas</span>'
+    : `<button class="smallBtn" data-grant-assessment-retry="${x.student_id}" data-retry-topic="${esc(x.topic_id)}" data-retry-name="${esc(st?.full_name||'Mokinys')}">Leisti pakartoti</button>`;
+  }
+  return `<tr><td><b>${esc(st?.full_name||'Mokinys')}</b></td><td>${esc(topicById(x.topic_id)?.title||x.topic_id)}</td><td><b>${attemptNoById[x.id]||1}</b></td><td><span class="badge ${done?'ok':''}">${done?'Baigtas':'Vyksta / nebaigtas'}</span></td><td><b>${result}</b></td><td>${duration}${done?'':' (iki dabar)'}</td><td><b>${countBy[x.id]||0}</b></td><td>${studentVisibility}</td><td>${fmtDate(x.started_at)}</td><td><div class="actions"><button class="smallBtn" data-assessment-result="${x.id}" data-assessment-student="${x.student_id}">Peržiūrėti atsakymus</button>${retryAction}</div></td></tr>`;
  }).join('');
- host.innerHTML=`<div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">ATSISKAITYMŲ REZULTATAI</span><h2>Mokinių atsiskaitymai</h2><p class="muted">Visi mokiniai gauna tą patį žinių, sunkumo ir klausimų tipų karkasą, tačiau skirtingus lygiaverčius klausimų variantus. Vienas mokinys vieną temos atsiskaitymą gali atlikti tik vieną kartą.</p></div><span class="badge">${rows.length}</span></div>
- <div class="tableWrap"><table class="dataTable"><thead><tr><th>Mokinys</th><th>Tema</th><th>Būsena</th><th>Rezultatas</th><th>Laikas</th><th>Išėjo iš lango</th><th>Mokiniams</th><th>Pradėta</th><th></th></tr></thead><tbody>${body}</tbody></table></div></div>`;
+ host.innerHTML=`<div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">ATSISKAITYMŲ REZULTATAI</span><h2>Mokinių atsiskaitymai</h2><p class="muted">Pagal nutylėjimą mokinys turi vieną bandymą. Paspaudus „Leisti pakartoti“ jam atrakinamas tik vienas kitas bandymas. Ankstesni rezultatai lieka istorijoje, o naujam bandymui sistema pirmiausia parenka anksčiau nematytus lygiaverčius klausimų variantus.</p></div><span class="badge">${rows.length} band.</span></div>
+ <div class="tableWrap"><table class="dataTable"><thead><tr><th>Mokinys</th><th>Tema</th><th>Bandymas</th><th>Būsena</th><th>Rezultatas</th><th>Laikas</th><th>Išėjo iš lango</th><th>Mokiniams</th><th>Pradėta</th><th></th></tr></thead><tbody>${body}</tbody></table></div></div>`;
  document.querySelectorAll('[data-assessment-result]').forEach(b=>b.onclick=()=>showAssessmentAttemptDetail(b.dataset.assessmentResult,b.dataset.assessmentStudent,c.id));
+ document.querySelectorAll('[data-grant-assessment-retry]').forEach(b=>b.onclick=()=>grantAssessmentRetry(c,b.dataset.grantAssessmentRetry,b.dataset.retryTopic,b.dataset.retryName,b));
+}
+
+async function grantAssessmentRetry(c,studentId,topicId,studentName,button=null){
+ if(!confirm(`Leisti mokiniui „${studentName||'Mokinys'}“ dar vieną šio atsiskaitymo bandymą? Ankstesnis rezultatas liks istorijoje, o naujam bandymui bus parenkami kiti lygiaverčiai klausimų variantai.`))return;
+ if(button)button.disabled=true;
+ const {data,error}=await sb.rpc('grant_assessment_retry',{p_class_id:c.id,p_student_id:studentId,p_topic_id:topicId});
+ if(error){if(button)button.disabled=false;return toast(error.message)}
+ const info=(typeof data==='object'&&data)||{};
+ toast(info.message||'Papildomas bandymas leistas.');
+ openTeacherClass(c.id,'assessments');
 }
 
 async function updateTopicAccess(classId,topicId,field,value){
@@ -1379,7 +1416,7 @@ async function showStudentDetail(studentId,classId){
  const avgSession=sessions.length?Math.round(secs/sessions.length):0,avgAttempt=attempts.length?Math.round(attempts.reduce((n,x)=>n+(x.duration_seconds||0),0)/attempts.length):0;
  const practiceCount=attempts.filter(x=>x.mode==='practice').length,assessmentCount=attempts.filter(x=>x.mode==='assessment').length;
  const fileCount=(direct||[]).length+(assignedSubs||[]).length;
- modal(`<span class="kicker">${profile.role==='admin'?'ADMINISTRATORIUS · ':''}MOKINIO INFORMACIJA</span><h2>${esc(s?.full_name||'Mokinys')}</h2>
+ modal(`<div class="sectionTitle"><div class="grow"><span class="kicker">${profile.role==='admin'?'ADMINISTRATORIUS · ':''}MOKINIO INFORMACIJA</span><h2>${esc(s?.full_name||'Mokinys')}</h2></div><button class="smallBtn dangerSoft" id="removeStudentFromClass">Pašalinti iš klasės</button></div>
  <p class="muted">Paskyra sukurta ${fmtDate(s?.created_at)} · paskutinis prisijungimas ${fmtDate(s?.last_login_at)} · paskutinis aktyvumas ${fmtDate(s?.last_seen_at)}</p>
  <div class="detailMetrics">
   <div class="metric"><strong>${attempts.length}</strong><span>bandymų</span></div><div class="metric"><strong>${avgScore||'–'}${attempts.length?'%':''}</strong><span>rezultatų vidurkis</span></div>
@@ -1392,6 +1429,16 @@ async function showStudentDetail(studentId,classId){
  <div><h3>Prisijungimų istorija</h3><p class="subtle">Istorija kaupiama nuo v3.3 įdiegimo.</p>${loginRows.length?loginRows.map(x=>`<div class="historyRow"><b>${fmtDate(x.logged_in_at)}</b></div>`).join(''):'<div class="emptyState">Naujų prisijungimų dar neužfiksuota.</div>'}
  <h3 style="margin-top:22px">Aktyvumo sesijos</h3>${sessions.length?sessions.slice(0,20).map(x=>`<div class="historyRow"><div><b>${fmtDate(x.started_at)}</b><div class="subtle">Paskutinis aktyvumas ${fmtDate(x.last_seen_at)}</div></div><strong>${fmtSec(x.duration_seconds)}</strong></div>`).join(''):'<div class="emptyState">Sesijų dar nėra.</div>'}</div></div>`);
  document.querySelectorAll('[data-assessment-attempt]').forEach(b=>b.onclick=()=>showAssessmentAttemptDetail(b.dataset.assessmentAttempt,studentId,classId));
+ if($('removeStudentFromClass'))$('removeStudentFromClass').onclick=()=>removeStudentFromClass(studentId,classId,s?.full_name||'Mokinys');
+}
+
+async function removeStudentFromClass(studentId,classId,studentName){
+ if(!confirm(`Pašalinti mokinį „${studentName}“ iš šios klasės?\n\nBus ištrinti VISI jo žinių treniruočių ir atsiskaitymų bandymai šioje klasėje, įskaitant testo atsakymus, laiką ir išėjimų iš lango istoriją. Pateikti failai ir pati prisijungimo paskyra nebus trinami.`))return;
+ const {error}=await sb.rpc('teacher_remove_student_from_class',{p_class_id:classId,p_student_id:studentId});
+ if(error)return toast(error.message);
+ closeModal();
+ toast('Mokinys pašalintas iš klasės, o jo testų ir treniruočių rezultatai ištrinti.');
+ openTeacherClass(classId,'students');
 }
 
 function formatStoredAnswer(q,answer){
@@ -1828,19 +1875,25 @@ function renderStudentAssessmentCard(c,a,assessmentSetting,status){
   return a.assessment_open?'<span class="badge ok">Atidaryta</span><p class="muted">Atsiskaitymas šiuo metu atidarytas.</p><button class="primary" id="startAssessmentTopic">Pradėti atsiskaitymą</button>':'<div class="lockedBox">🔒 Mokytojas atsiskaitymo dar neatidarė.</div>';
  }
  if(status?.completed_at){
+  const attemptNo=status.attempt_number||status.completed_attempts||1;
+  const retryAllowed=!!status.can_start_new;
+  const retryButton=(a.assessment_open&&retryAllowed)?`<button class="primary" id="startAssessmentTopic">Pradėti ${attemptNo+1} bandymą</button>`:'';
+  const retryNotice=retryAllowed?'<div class="notice"><b>Mokytojas leido dar vieną bandymą.</b> Ankstesnis rezultatas išliks istorijoje, o naujas variantas bus sugeneruotas iš lygiaverčių klausimų.</div>':'<p class="subtle">Papildomą bandymą gali atrakinti mokytojas.</p>';
   if(status.results_released){
-   return `<span class="badge ok">Atlikta · rezultatai paskelbti</span><p class="muted"><b>Šį atsiskaitymą jau atlikai.</b> Jį galima atlikti tik vieną kartą.</p>
+   return `<span class="badge ok">${attemptNo} bandymas atliktas · rezultatai paskelbti</span>
    <div class="detailMetrics"><div class="metric"><strong>${status.score_percent??0}%</strong><span>rezultatas</span></div><div class="metric"><strong>${status.correct_answers??0}/${status.total_questions||0}</strong><span>teisingai</span></div><div class="metric"><strong>${fmtDurationDetailed(status.duration_seconds)}</strong><span>trukmė</span></div></div>
-   <button class="ghost" id="studentAssessmentReview">Peržiūrėti savo atsakymus</button>`;
+   <div class="actions"><button class="ghost" id="studentAssessmentReview">Peržiūrėti savo atsakymus</button>${retryButton}</div>${retryNotice}`;
   }
-  return `<span class="badge ok">Atlikta</span><p class="muted"><b>Atsiskaitymas pateiktas.</b> Rezultatas ir teisingi atsakymai bus parodyti, kai visi klasės mokiniai baigs šios temos atsiskaitymą.</p>
-  <div class="detailMetrics"><div class="metric"><strong>${status.completed_students||0}/${status.total_students||0}</strong><span>jau baigė</span></div><div class="metric"><strong>${fmtDurationDetailed(status.duration_seconds)}</strong><span>tavo trukmė</span></div><div class="metric"><strong>${status.focus_events||0}</strong><span>išėjimų / fokuso įvykių</span></div></div>`;
+  return `<span class="badge ok">${attemptNo} bandymas atliktas</span><p class="muted"><b>Atsiskaitymas pateiktas.</b> Rezultatas ir teisingi atsakymai bus parodyti, kai visi klasės mokiniai baigs šios temos atsiskaitymą.</p>
+  <div class="detailMetrics"><div class="metric"><strong>${status.completed_students||0}/${status.total_students||0}</strong><span>jau baigė</span></div><div class="metric"><strong>${fmtDurationDetailed(status.duration_seconds)}</strong><span>tavo trukmė</span></div><div class="metric"><strong>${status.focus_events||0}</strong><span>išėjimų / fokuso įvykių</span></div></div>${retryNotice}${retryButton}`;
  }
  if(a.assessment_open){
-  return `<span class="badge ok">Atidaryta</span><p class="muted">${status?.attempt_id?`Atsiskaitymas jau pradėtas. <b>Naujas bandymas nebus kuriamas</b> – tęsi tą patį bandymą.`:`Atsiskaitymas šiuo metu atidarytas.`} Klausimų skaičius: <b>${assessmentSetting?.question_count||30}</b>. Atsiskaitymą galima atlikti tik vieną kartą. Visi mokiniai gauna lygiavertį sunkumo ir turinio karkasą. Fiksuojamas atlikimo laikas ir išėjimai iš lango / fokuso praradimai.</p><button class="primary" id="startAssessmentTopic">${status?.attempt_id?'Tęsti atsiskaitymą':'Pradėti atsiskaitymą'}</button>`;
+  const attemptNo=status?.attempt_number||1;
+  return `<span class="badge ok">Atidaryta</span><p class="muted">${status?.attempt_id?`Tęsiamas <b>${attemptNo} bandymas</b>. Naujas bandymas nebus kuriamas, kol šis nebaigtas.`:`Atsiskaitymas šiuo metu atidarytas.`} Klausimų skaičius: <b>${assessmentSetting?.question_count||30}</b>. Pagal nutylėjimą suteikiamas vienas bandymas, o papildomą gali atrakinti tik mokytojas. Fiksuojamas atlikimo laikas ir išėjimai iš lango / fokuso praradimai.</p><button class="primary" id="startAssessmentTopic">${status?.attempt_id?'Tęsti atsiskaitymą':'Pradėti atsiskaitymą'}</button>`;
  }
  return '<div class="lockedBox">🔒 Mokytojas atsiskaitymo dar neatidarė.</div>';
 }
+
 async function showMyAssessmentReview(attemptId){
  modal(`<span class="kicker">MANO ATSISKAITYMAS</span><h2>Kraunama...</h2>`);
  const {data,error}=await sb.rpc('get_my_assessment_review',{p_attempt_id:attemptId});
