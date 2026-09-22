@@ -57,6 +57,7 @@ const answerEquals=(a,b,type)=>JSON.stringify(normalizeAnswer(a,type))===JSON.st
 const qTypeLabel=t=>({single:'Vienas atsakymas',multi:'Keli atsakymai',odd:'Kuris netinka',matching:'Sujungimas'})[t]||'Klausimas';
 const fmtDate=d=>d?new Date(d).toLocaleString('lt-LT'):'–';
 let me=null,profile=null,currentClass=null,activitySessionId=null,heartbeatTimer=null;
+let presenceActivity='Platforma',presenceTopicId=null,presenceClassId=null,teacherPresenceTimer=null;
 let quiz={topicId:null,classId:null,mode:null,items:[],index:0,answers:[],attemptId:null,startMs:0,last:null,completed:false};
 let assessmentAccessToken=null,assessmentBlurTimer=null;
 
@@ -106,6 +107,7 @@ async function forceIdleLogout(message='Dėl saugumo atsijungta po 30 min. neakt
  if(idleSigningOut)return;
  idleSigningOut=true;
  stopHeartbeat();
+ stopTeacherPresenceRefresh();
  if(idleCheckTimer)clearInterval(idleCheckTimer);
  idleCheckTimer=null;
  try{await sb.auth.signOut()}finally{
@@ -233,7 +235,7 @@ function setHeader(){
 }
 
 $('themeToggle').onclick=()=>{const n=(document.documentElement.dataset.theme||'light')==='dark'?'light':'dark';document.documentElement.dataset.theme=n;localStorage.setItem('inf11v3_theme',n)};
-$('logoutBtn').onclick=async()=>{stopHeartbeat();stopIdleLogout();clearIdleClock();await sb.auth.signOut();me=null;profile=null;currentClass=null;uiBackStack=[];currentRestore=null;historyGuardReady=false;if($('loginEmail'))$('loginEmail').value='';if($('loginPassword'))$('loginPassword').value='';setHeader();show('auth')};
+$('logoutBtn').onclick=async()=>{stopHeartbeat();stopTeacherPresenceRefresh();stopIdleLogout();clearIdleClock();await sb.auth.signOut();me=null;profile=null;currentClass=null;uiBackStack=[];currentRestore=null;historyGuardReady=false;if($('loginEmail'))$('loginEmail').value='';if($('loginPassword'))$('loginPassword').value='';setHeader();show('auth')};
 
 $('tabLogin').onclick=()=>{$('tabLogin').classList.add('active');$('tabSignup').classList.remove('active');$('loginForm').classList.remove('hidden');$('signupForm').classList.add('hidden')};
 $('tabSignup').onclick=()=>{$('tabSignup').classList.add('active');$('tabLogin').classList.remove('active');$('signupForm').classList.remove('hidden');$('loginForm').classList.add('hidden')};
@@ -260,12 +262,93 @@ async function loadProfile(){
  const {data,error}=await sb.from('profiles').select('*').eq('id',me.id).single();
  if(error)throw error;profile=data;await sb.rpc('mark_login');setHeader();ensureAppHistoryGuard();startIdleLogout();
 }
+async function pushPresence(){
+ if(!me||!activitySessionId||document.visibilityState!=='visible')return;
+ try{
+  await sb.rpc('heartbeat_presence',{
+   p_session_id:activitySessionId,
+   p_activity:presenceActivity||'Platforma',
+   p_topic_id:presenceTopicId||null
+  });
+ }catch(_e){}
+}
+function setPresenceContext(activity,topicId=null){
+ presenceActivity=String(activity||'Platforma').slice(0,120);
+ presenceTopicId=topicId||null;
+ if(activitySessionId)pushPresence();
+}
 async function startHeartbeat(classId=null){
  stopHeartbeat();
- const {data,error}=await sb.from('activity_sessions').insert({user_id:me.id,class_id:classId}).select('id').single();
- if(!error){activitySessionId=data.id;heartbeatTimer=setInterval(async()=>{if(document.visibilityState==='visible'&&activitySessionId)await sb.rpc('heartbeat_activity',{p_session_id:activitySessionId})},30000)}
+ presenceClassId=classId||null;
+ presenceActivity=classId?'Klasės pradžia':'Platforma';
+ presenceTopicId=null;
+ const payload={user_id:me.id,class_id:classId,activity_label:presenceActivity,topic_id:null};
+ const {data,error}=await sb.from('activity_sessions').insert(payload).select('id').single();
+ if(!error){
+  activitySessionId=data.id;
+  await pushPresence();
+  heartbeatTimer=setInterval(pushPresence,30000);
+ }
 }
-function stopHeartbeat(){if(heartbeatTimer)clearInterval(heartbeatTimer);heartbeatTimer=null;activitySessionId=null}
+function stopHeartbeat(){
+ if(heartbeatTimer)clearInterval(heartbeatTimer);
+ heartbeatTimer=null;activitySessionId=null;presenceClassId=null;presenceTopicId=null;presenceActivity='Platforma';
+}
+function stopTeacherPresenceRefresh(){
+ if(teacherPresenceTimer)clearInterval(teacherPresenceTimer);
+ teacherPresenceTimer=null;
+}
+function latestPresenceByUser(rows){
+ const out={};
+ (rows||[]).forEach(r=>{if(!out[r.user_id]||new Date(r.last_seen_at)>new Date(out[r.user_id].last_seen_at))out[r.user_id]=r});
+ return out;
+}
+function presenceIsOnline(row){
+ return !!row&&Date.now()-new Date(row.last_seen_at).getTime()<=90000;
+}
+function presenceAgo(row){
+ if(!row)return '–';
+ const s=Math.max(0,Math.round((Date.now()-new Date(row.last_seen_at).getTime())/1000));
+ return s<10?'ką tik':s<60?`prieš ${s} s`:`prieš ${Math.floor(s/60)} min.`;
+}
+async function refreshTeacherOnlinePanel(classIds,classes,students){
+ const host=$('onlineNowPanel');if(!host)return;
+ if(!classIds.length){host.innerHTML='<span class="kicker">PRISIJUNGĘ DABAR</span><h3>Nėra klasių</h3>';return}
+ const cutoff=new Date(Date.now()-90000).toISOString();
+ const {data,error}=await sb.from('activity_sessions')
+  .select('user_id,class_id,last_seen_at,activity_label,topic_id')
+  .in('class_id',classIds).gte('last_seen_at',cutoff).order('last_seen_at',{ascending:false});
+ if(error){host.innerHTML=`<span class="kicker">PRISIJUNGĘ DABAR</span><h3>Aktyvūs mokiniai</h3><div class="notice">${esc(error.message)}</div>`;return}
+ const latest=latestPresenceByUser(data||[]);
+ const rows=Object.values(latest).filter(p=>presenceIsOnline(p));
+ rows.sort((a,b)=>new Date(b.last_seen_at)-new Date(a.last_seen_at));
+ host.innerHTML=`<div class="sectionTitle"><div class="grow"><span class="kicker">PRISIJUNGĘ DABAR</span><h3>Aktyvūs mokiniai</h3></div><span class="badge ${rows.length?'ok':''}">${rows.length}</span></div>
+ <p class="muted">Būsena atnaujinama kas 15 s. „Prisijungęs“ reiškia, kad mokinio naršyklė buvo aktyvi per paskutines 90 s.</p>
+ ${rows.length?rows.map(p=>{const st=students.find(s=>s.id===p.user_id),c=classes.find(x=>x.id===p.class_id);return `<div class="studentRow"><div class="grow"><b>● ${esc(st?.full_name||'Mokinys')}</b><div class="subtle">${esc(c?.name||'Klasė')} · ${esc(p.activity_label||'Platforma')}</div></div><span class="badge ok">${presenceAgo(p)}</span></div>`}).join(''):'<div class="emptyState">Šiuo metu aktyvių mokinių nėra.</div>'}`;
+}
+function startTeacherDashboardPresence(classIds,classes,students){
+ stopTeacherPresenceRefresh();
+ refreshTeacherOnlinePanel(classIds,classes,students);
+ teacherPresenceTimer=setInterval(()=>refreshTeacherOnlinePanel(classIds,classes,students),15000);
+}
+async function refreshClassPresence(classId){
+ const cutoff=new Date(Date.now()-90000).toISOString();
+ const {data}=await sb.from('activity_sessions')
+  .select('user_id,last_seen_at,activity_label,topic_id')
+  .eq('class_id',classId).gte('last_seen_at',cutoff).order('last_seen_at',{ascending:false});
+ const latest=latestPresenceByUser(data||[]);
+ document.querySelectorAll('[data-presence-user]').forEach(el=>{
+  const p=latest[el.dataset.presenceUser];
+  el.innerHTML=presenceIsOnline(p)
+   ?`<span class="badge ok">● Prisijungęs</span><div class="subtle">${esc(p.activity_label||'Platforma')} · ${presenceAgo(p)}</div>`
+   :'<span class="subtle">Neprisijungęs</span>';
+ });
+}
+function startClassPresenceRefresh(classId){
+ stopTeacherPresenceRefresh();
+ refreshClassPresence(classId);
+ teacherPresenceTimer=setInterval(()=>refreshClassPresence(classId),15000);
+}
 
 async function renderDashboard(){
  if(profile.role==='teacher'||profile.role==='admin')return renderTeacher();
@@ -274,6 +357,7 @@ async function renderDashboard(){
 
 /* ================= TEACHER ================= */
 async function renderTeacher(){
+ stopTeacherPresenceRefresh();
  setCurrentRestore(()=>renderTeacher());
  show('teacher');$('teacherContent').innerHTML='<div class="pageHero"><span class="kicker">VALDYMAS</span><h1>Kraunama...</h1></div>';
  const isAdmin=profile.role==='admin';
@@ -336,6 +420,7 @@ async function renderTeacher(){
   }).join(''):'<div class="emptyState"><b>Klasių dar nėra.</b></div>'}</div>
  </div>
  <div class="stack">
+  <div class="panel" id="onlineNowPanel"><span class="kicker">PRISIJUNGĘ DABAR</span><h3>Kraunama aktyvių mokinių būsena...</h3></div>
   <div class="panel"><span class="kicker">NAUJAUSI DARBAI</span><h3>Pateikti mokinių failai</h3>
    <p class="muted">Paspausk klasę, kad išskleistum arba suskleistum jos naujausius darbus.</p>
    ${latestGroups.length?latestGroups.map(g=>`<details class="latestClassGroup">
@@ -354,6 +439,7 @@ async function renderTeacher(){
  document.querySelectorAll('[data-latest-direct]').forEach(b=>b.onclick=()=>downloadDirectSubmission(b.dataset.latestDirect));
  document.querySelectorAll('[data-latest-assignment]').forEach(b=>b.onclick=()=>downloadSubmission(b.dataset.latestAssignment));
  if(!isAdmin)renderTeacherLibrary();
+ startTeacherDashboardPresence(classIds,classes||[],students);
 }
 
 
@@ -515,6 +601,7 @@ function openNewClassModal(){
  };
 }
 async function openTeacherClass(classId,initialPanel='students'){
+ stopTeacherPresenceRefresh();
  const {data:c,error}=await sb.from('classes').select('*').eq('id',classId).single();if(error)return toast(error.message);
  currentClass=c;
  await loadClassTopics(c.id);
@@ -556,6 +643,7 @@ async function openTeacherClass(classId,initialPanel='students'){
  <div class="pageHero"><button class="back" id="backTeacher">← ${profile.role==='admin'?'Visos klasės':'Mano klasės'}</button><div class="classHeader"><div class="grow"><span class="kicker">KLASĖ${c.grade_level?` · ${esc(gradeLabel(c.grade_level)||c.grade_level)}`:''}</span><h1>${esc(c.name)}</h1></div><div class="classHeaderActions"><div>Prisijungimo kodas <span class="joinCode">${esc(c.join_code)}</span></div><button class="ghost" id="studentPreviewBtn">👁 Mokinio vaizdas</button></div></div></div>
  <div class="tabsRow actions" style="margin-bottom:14px">
   <button class="smallBtn primaryLike" data-tpanel="students">Mokiniai</button>
+  <button class="smallBtn" data-tpanel="assessments">Atsiskaitymų rezultatai${(attempts||[]).filter(x=>x.mode==='assessment').length?` <span class="inlineCount">${(attempts||[]).filter(x=>x.mode==='assessment').length}</span>`:''}</button>
   <button class="smallBtn" data-tpanel="topics">Temos</button>
   <button class="smallBtn" data-tpanel="resources">Mokymosi failai</button>
   <button class="smallBtn" data-tpanel="assignments">Užduotys ir darbai${submissionCount?` <span class="inlineCount">${submissionCount}</span>`:''}</button>
@@ -577,6 +665,7 @@ async function openTeacherClass(classId,initialPanel='students'){
   navigateTo(()=>showClassPanel(next));
  });
  showClassPanel(activePanel);
+ startClassPresenceRefresh(c.id);
 }
 function renderTeacherClassPanel(panel,c,students,members,attempts,sessions,access,assessmentSettings=[]){
  const host=$('teacherClassPanel');
@@ -586,11 +675,14 @@ function renderTeacherClassPanel(panel,c,students,members,attempts,sessions,acce
    const practiceCount=a.filter(x=>(x.mode||'practice')==='practice').length;
    const assessmentCount=a.filter(x=>x.mode==='assessment').length;
    const gradeAvg=s._gradeAvg==null?'–':s._gradeAvg.toFixed(1).replace('.',',');
-   return `<tr><td><b>${esc(s.full_name||'Mokinys')}</b></td><td>${fmtDate(s.last_seen_at||s.last_login_at)}</td><td><span title="Žinių treniruotės">${practiceCount} tren.</span> / <span title="Atsiskaitymai">${assessmentCount} ats.</span></td><td>${fmtSec(secs)}</td><td>${gradeAvg}</td><td><button class="smallBtn" data-student="${s.id}">Detaliau</button></td></tr>`
+   return `<tr><td><b>${esc(s.full_name||'Mokinys')}</b></td><td data-presence-user="${s.id}"><span class="subtle">Tikrinama...</span></td><td>${fmtDate(s.last_seen_at||s.last_login_at)}</td><td><span title="Žinių treniruotės">${practiceCount} tren.</span> / <span title="Atsiskaitymai">${assessmentCount} ats.</span></td><td>${fmtSec(secs)}</td><td>${gradeAvg}</td><td><button class="smallBtn" data-student="${s.id}">Detaliau</button></td></tr>`
   }).join('');
   host.innerHTML=`<div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">MOKINIAI</span><h2>${students.length} mok.</h2></div></div>
-   ${students.length?`<div class="tableWrap"><table class="dataTable"><thead><tr><th>Mokinys</th><th>Paskutinis aktyvumas</th><th>Žinių treniruotės / atsiskaitymai</th><th>Aktyvus laikas</th><th>Pažymių vidurkis</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`:'<div class="emptyState"><b>Mokinių dar nėra.</b>Duokite mokiniams klasės kodą '+esc(c.join_code)+'.</div>'}</div>`;
+   ${students.length?`<div class="tableWrap"><table class="dataTable"><thead><tr><th>Mokinys</th><th>Būsena dabar</th><th>Paskutinis aktyvumas</th><th>Žinių treniruotės / atsiskaitymai</th><th>Aktyvus laikas</th><th>Pažymių vidurkis</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`:'<div class="emptyState"><b>Mokinių dar nėra.</b>Duokite mokiniams klasės kodą '+esc(c.join_code)+'.</div>'}</div>`;
   document.querySelectorAll('[data-student]').forEach(b=>b.onclick=()=>showStudentDetail(b.dataset.student,c.id));
+ }
+ if(panel==='assessments'){
+  renderTeacherAssessments(c,students,attempts);
  }
  if(panel==='topics'){
   host.innerHTML=`<div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">PRIEIGA</span><h2>Klasės temos ir jų atrakinimas</h2><p class="muted">Šios temos priklauso tik klasei <b>${esc(c.name)}</b>. Kitų klasių temos ir failai čia nesimaišo.</p></div><div class="actions"><button class="primary" id="newClassTopicBtn">+ Nauja tema</button><button class="ghost" id="previewTopicsBtn">👁 Peržiūrėti kaip mokiniui</button></div></div>
@@ -1207,6 +1299,36 @@ async function deleteTopicPost(id,c,topicId){
 }
 
 
+async function renderTeacherAssessments(c,students,attempts){
+ const host=$('teacherClassPanel');
+ const rows=(attempts||[]).filter(x=>x.mode==='assessment').sort((a,b)=>new Date(b.started_at)-new Date(a.started_at));
+ host.innerHTML=`<div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">ATSISKAITYMŲ REZULTATAI</span><h2>Mokinių atsiskaitymai</h2><p class="muted">Mokytojas rezultatą ir visus atsakymus mato iš karto. Mokiniams balai ir teisingi atsakymai parodomi tik tada, kai šios klasės visi mokiniai baigia tos temos atsiskaitymą.</p></div></div><div class="emptyState">Kraunama...</div></div>`;
+ if(!rows.length){host.innerHTML=`<div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">ATSISKAITYMŲ REZULTATAI</span><h2>Mokinių atsiskaitymai</h2><p class="muted">Kai mokiniai pradės atsiskaitymą, rezultatai atsiras čia.</p></div></div><div class="emptyState">Atsiskaitymų dar nėra.</div></div>`;return}
+ const ids=rows.map(x=>x.id);let events=[];
+ const {data,error}=await sb.from('assessment_focus_events').select('attempt_id,event_type,occurred_at').in('attempt_id',ids);
+ if(!error)events=data||[];
+ const countBy={};events.forEach(e=>countBy[e.attempt_id]=(countBy[e.attempt_id]||0)+1);
+ const studentBy=Object.fromEntries((students||[]).map(x=>[x.id,x]));
+ const totalStudents=(students||[]).length;
+ const completedByTopic={};
+ rows.filter(x=>x.completed_at).forEach(x=>{
+  if(!completedByTopic[x.topic_id])completedByTopic[x.topic_id]=new Set();
+  completedByTopic[x.topic_id].add(x.student_id);
+ });
+ const body=rows.map(x=>{
+  const st=studentBy[x.student_id],done=!!x.completed_at;
+  const duration=done?fmtDurationDetailed(x.duration_seconds):fmtDurationDetailed(Math.max(1,Math.floor((Date.now()-new Date(x.started_at).getTime())/1000)));
+  const result=done?`${x.correct_answers||0}/${x.total_questions||0} · ${x.score_percent||0}%`:'—';
+  const completed=completedByTopic[x.topic_id]?.size||0;
+  const released=totalStudents>0&&completed>=totalStudents;
+  const studentVisibility=released?'<span class="badge ok">Rodoma</span>':`<span class="badge">Laukiama ${completed}/${totalStudents}</span>`;
+  return `<tr><td><b>${esc(st?.full_name||'Mokinys')}</b></td><td>${esc(topicById(x.topic_id)?.title||x.topic_id)}</td><td><span class="badge ${done?'ok':''}">${done?'Baigtas':'Vyksta / nebaigtas'}</span></td><td><b>${result}</b></td><td>${duration}${done?'':' (iki dabar)'}</td><td><b>${countBy[x.id]||0}</b></td><td>${studentVisibility}</td><td>${fmtDate(x.started_at)}</td><td><button class="smallBtn" data-assessment-result="${x.id}" data-assessment-student="${x.student_id}">Peržiūrėti atsakymus</button></td></tr>`;
+ }).join('');
+ host.innerHTML=`<div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">ATSISKAITYMŲ REZULTATAI</span><h2>Mokinių atsiskaitymai</h2><p class="muted">Visi mokiniai gauna tą patį žinių, sunkumo ir klausimų tipų karkasą, tačiau skirtingus lygiaverčius klausimų variantus. Vienas mokinys vieną temos atsiskaitymą gali atlikti tik vieną kartą.</p></div><span class="badge">${rows.length}</span></div>
+ <div class="tableWrap"><table class="dataTable"><thead><tr><th>Mokinys</th><th>Tema</th><th>Būsena</th><th>Rezultatas</th><th>Laikas</th><th>Išėjo iš lango</th><th>Mokiniams</th><th>Pradėta</th><th></th></tr></thead><tbody>${body}</tbody></table></div></div>`;
+ document.querySelectorAll('[data-assessment-result]').forEach(b=>b.onclick=()=>showAssessmentAttemptDetail(b.dataset.assessmentResult,b.dataset.assessmentStudent,c.id));
+}
+
 async function updateTopicAccess(classId,topicId,field,value){
  const payload={[field]:value,updated_at:new Date().toISOString()};
  const {error}=await sb.from('topic_access').update(payload).eq('class_id',classId).eq('topic_id',topicId);
@@ -1215,7 +1337,7 @@ async function updateTopicAccess(classId,topicId,field,value){
 async function openAssessmentSettingsModal(c,topicId,checkbox,access,settings,openAfterSave=false){
  const current=settings.find(s=>s.topic_id===topicId)?.question_count||20;
  const t=topicById(topicId);
- modal(`<span class="kicker">ATSISKAITYMO NUSTATYMAI</span><h2>${esc(t?.title||topicId)}</h2><p class="muted">Pasirink, kiek klausimų gaus kiekvienas mokinys. Klausimai bus parenkami subalansuotai pagal temas, sunkumą ir klausimo tipą.</p><form id="assessmentSettingsForm" class="formGroup"><label>Klausimų skaičius<input id="assessmentQuestionCountInput" type="number" min="5" max="40" step="1" value="${current}" required></label><p class="formHint">Rekomenduojama: 20 klausimų. Galima rinktis nuo 5 iki 40.</p><button class="primary" type="submit">${openAfterSave?'Išsaugoti ir atidaryti atsiskaitymą':'Išsaugoti'}</button></form>`);
+ modal(`<span class="kicker">ATSISKAITYMO NUSTATYMAI</span><h2>${esc(t?.title||topicId)}</h2><p class="muted">Pasirink, kiek klausimų gaus kiekvienas mokinys. Sistema naudoja vienodą balanso karkasą: kiekvienam mokiniui tenka tokios pačios temos, tie patys sunkumo lygiai ir tie patys klausimų tipai, bet parenkami skirtingi lygiaverčiai klausimų variantai.</p><form id="assessmentSettingsForm" class="formGroup"><label>Klausimų skaičius<input id="assessmentQuestionCountInput" type="number" min="5" max="40" step="1" value="${current}" required></label><p class="formHint">Rekomenduojama: 20 klausimų. Galima rinktis nuo 5 iki 40.</p><button class="primary" type="submit">${openAfterSave?'Išsaugoti ir atidaryti atsiskaitymą':'Išsaugoti'}</button></form>`);
  $('assessmentSettingsForm').onsubmit=async e=>{
   e.preventDefault();
   const count=Math.max(5,Math.min(40,Number($('assessmentQuestionCountInput').value)||20));
@@ -1296,7 +1418,7 @@ async function showAssessmentAttemptDetail(attemptId,studentId,classId){
  <div class="detailMetrics assessmentMetrics"><div class="metric"><strong>${attempt.score_percent}%</strong><span>rezultatas</span></div><div class="metric"><strong>${attempt.correct_answers}/${attempt.total_questions}</strong><span>teisingai</span></div><div class="metric"><strong>${fmtDurationDetailed(attempt.duration_seconds)}</strong><span>trukmė</span></div><div class="metric"><strong>${(events||[]).length}</strong><span>išėjimų / fokuso įvykių</span></div></div>
  <p class="muted">Pradėta: <b>${fmtDate(attempt.started_at)}</b> · baigta: <b>${fmtDate(attempt.completed_at)}</b></p>
  <div class="panel assessmentFocusPanel"><h3>Išėjimai ir fokuso praradimai</h3>${eErr?`<div class="notice">${esc(eErr.message)}</div>`:(events||[]).length?(events||[]).map((e,i)=>`<div class="historyRow"><span>${i+1}. ${esc(focusEventLabel(e.event_type))}</span><b>${fmtDate(e.occurred_at)}</b></div>`).join(''):'<div class="emptyState">Neužfiksuota nė vieno išėjimo ar fokuso praradimo.</div>'}</div>
- <div class="panel"><h3>Klausimai ir atsakymai</h3>${hasDetails?(questions||[]).map(q=>`<div class="assessmentQuestionDetail ${q.is_correct?'isCorrect':'isWrong'}"><div class="bankQuestionMeta"><span class="badge">${q.question_order}</span><span class="badge">${esc(qTypeLabel(q.question_type))}</span><span class="badge">${esc(q.category)}</span></div><b>${esc(q.question_text)}</b><p>Mokinio atsakymas: <strong>${esc(formatStoredAnswer(q,q.student_answer))}</strong><br>Teisingas atsakymas: <strong>${esc(formatStoredAnswer(q,q.correct_answer))}</strong></p><div class="subtle">${q.is_correct?'✓ Teisingai':'✕ Neteisingai / neatsakyta'}${q.answered_at?' · atsakyta '+fmtDate(q.answered_at):''}</div></div>`).join(''):'<div class="emptyState">Šis bandymas atliktas iki v5.3, todėl klausimų ir fokuso įvykių detalizacija jam nebuvo kaupiama.</div>'}</div>`);
+ <div class="panel"><h3>Klausimai ir atsakymai</h3>${hasDetails?(questions||[]).map(q=>`<div class="assessmentQuestionDetail ${q.is_correct?'isCorrect':'isWrong'}"><div class="bankQuestionMeta"><span class="badge">${q.question_order}</span><span class="badge">${esc(qTypeLabel(q.question_type))}</span><span class="badge">${esc(q.category)}</span></div><b>${esc(q.question_text)}</b><p>Mokinio atsakymas: <strong>${esc(formatStoredAnswer(q,q.student_answer))}</strong><br>Teisingas atsakymas: <strong>${esc(formatStoredAnswer(q,q.correct_answer))}</strong></p><div class="subtle">${q.is_correct?'✓ Teisingai':'✕ Neteisingai / neatsakyta'}${q.answered_at?' · atsakyta '+fmtDate(q.answered_at):''}</div>${q.explanation?`<div class="subtle">${esc(q.explanation)}</div>`:''}</div>`).join(''):'<div class="emptyState">Šis bandymas atliktas iki v5.3, todėl klausimų ir fokuso įvykių detalizacija jam nebuvo kaupiama.</div>'}</div>`);
  $('backToStudentDetail').onclick=()=>showStudentDetail(studentId,classId);
 }
 
@@ -1613,6 +1735,7 @@ async function getStudentClass(){
  const {data:c}=await sb.from('classes').select('*').eq('id',mem[0].class_id).single();return c||null;
 }
 async function renderStudent(){
+ stopTeacherPresenceRefresh();
  setCurrentRestore(()=>renderStudent());
  show('student');$('studentContent').innerHTML='<div class="pageHero"><span class="kicker">MOKINYS</span><h1>Kraunama...</h1></div>';
  const c=await getStudentClass();currentClass=c;
@@ -1621,9 +1744,10 @@ async function renderStudent(){
  }
  await loadClassTopics(c.id);
  await startHeartbeat(c.id);
+ setPresenceContext('Klasės pradžia',null);
  const [{data:access},{data:attempts},{data:sessions},{data:direct,error:directErr}]=await Promise.all([
   sb.from('topic_access').select('*').eq('class_id',c.id),
-  sb.from('practice_attempts').select('*').eq('student_id',me.id).eq('class_id',c.id),
+  sb.from('practice_attempts').select('*').eq('student_id',me.id).eq('class_id',c.id).eq('mode','practice'),
   sb.from('activity_sessions').select('*').eq('user_id',me.id).eq('class_id',c.id),
   sb.from('direct_submissions').select('*').eq('student_id',me.id).eq('class_id',c.id).order('submitted_at',{ascending:false})
  ]);
@@ -1695,16 +1819,50 @@ function renderGrade10StudentPracticePicker(blocks,practiceOpen){
  </div><button class="primary" id="startGrade10Practice">Pradėti pasirinktą treniruotę</button>`;
 }
 
+
+function assessmentStatusRow(data){
+ return Array.isArray(data)?(data[0]||null):(data||null);
+}
+function renderStudentAssessmentCard(c,a,assessmentSetting,status){
+ if(c.grade_level!=='11'){
+  return a.assessment_open?'<span class="badge ok">Atidaryta</span><p class="muted">Atsiskaitymas šiuo metu atidarytas.</p><button class="primary" id="startAssessmentTopic">Pradėti atsiskaitymą</button>':'<div class="lockedBox">🔒 Mokytojas atsiskaitymo dar neatidarė.</div>';
+ }
+ if(status?.completed_at){
+  if(status.results_released){
+   return `<span class="badge ok">Atlikta · rezultatai paskelbti</span><p class="muted"><b>Šį atsiskaitymą jau atlikai.</b> Jį galima atlikti tik vieną kartą.</p>
+   <div class="detailMetrics"><div class="metric"><strong>${status.score_percent??0}%</strong><span>rezultatas</span></div><div class="metric"><strong>${status.correct_answers??0}/${status.total_questions||0}</strong><span>teisingai</span></div><div class="metric"><strong>${fmtDurationDetailed(status.duration_seconds)}</strong><span>trukmė</span></div></div>
+   <button class="ghost" id="studentAssessmentReview">Peržiūrėti savo atsakymus</button>`;
+  }
+  return `<span class="badge ok">Atlikta</span><p class="muted"><b>Atsiskaitymas pateiktas.</b> Rezultatas ir teisingi atsakymai bus parodyti, kai visi klasės mokiniai baigs šios temos atsiskaitymą.</p>
+  <div class="detailMetrics"><div class="metric"><strong>${status.completed_students||0}/${status.total_students||0}</strong><span>jau baigė</span></div><div class="metric"><strong>${fmtDurationDetailed(status.duration_seconds)}</strong><span>tavo trukmė</span></div><div class="metric"><strong>${status.focus_events||0}</strong><span>išėjimų / fokuso įvykių</span></div></div>`;
+ }
+ if(a.assessment_open){
+  return `<span class="badge ok">Atidaryta</span><p class="muted">${status?.attempt_id?`Atsiskaitymas jau pradėtas. <b>Naujas bandymas nebus kuriamas</b> – tęsi tą patį bandymą.`:`Atsiskaitymas šiuo metu atidarytas.`} Klausimų skaičius: <b>${assessmentSetting?.question_count||20}</b>. Atsiskaitymą galima atlikti tik vieną kartą. Visi mokiniai gauna lygiavertį sunkumo ir turinio karkasą. Fiksuojamas atlikimo laikas ir išėjimai iš lango / fokuso praradimai.</p><button class="primary" id="startAssessmentTopic">${status?.attempt_id?'Tęsti atsiskaitymą':'Pradėti atsiskaitymą'}</button>`;
+ }
+ return '<div class="lockedBox">🔒 Mokytojas atsiskaitymo dar neatidarė.</div>';
+}
+async function showMyAssessmentReview(attemptId){
+ modal(`<span class="kicker">MANO ATSISKAITYMAS</span><h2>Kraunama...</h2>`);
+ const {data,error}=await sb.rpc('get_my_assessment_review',{p_attempt_id:attemptId});
+ if(error)return modal(`<span class="kicker">MANO ATSISKAITYMAS</span><h2>Rezultatai dar užrakinti</h2><div class="notice">${esc(error.message)}</div>`);
+ const rows=data||[];
+ modal(`<span class="kicker">MANO ATSISKAITYMAS</span><h2>Klausimai ir atsakymai</h2><p class="muted">Ši peržiūra tapo prieinama tik tada, kai visi klasės mokiniai baigė atsiskaitymą.</p>
+ ${rows.length?rows.map(q=>`<div class="assessmentQuestionDetail ${q.is_correct?'isCorrect':'isWrong'}"><div class="bankQuestionMeta"><span class="badge">${q.question_order}</span><span class="badge">${esc(qTypeLabel(q.question_type))}</span><span class="badge">${esc(q.category)}</span></div><b>${esc(q.question_text)}</b><p>Tavo atsakymas: <strong>${esc(formatStoredAnswer(q,q.student_answer))}</strong><br>Teisingas atsakymas: <strong>${esc(formatStoredAnswer(q,q.correct_answer))}</strong></p>${q.explanation?`<div class="subtle">${esc(q.explanation)}</div>`:''}</div>`).join(''):'<div class="emptyState">Klausimų nėra.</div>'}`);
+}
+
 async function openStudentTopic(topicId,c,access){
  setCurrentRestore(()=>openStudentTopic(topicId,c,access));
  const t=topicById(topicId),a=access.find(x=>x.topic_id===topicId);if(!a?.is_open)return toast('Tema užrakinta.');
- const [{data:resources},{data:assignments},{data:topicPosts},{data:practiceBlocks},{data:assessmentSetting}]=await Promise.all([
+ setPresenceContext(`Tema: ${t?.title||topicId}`,topicId);
+ const [{data:resources},{data:assignments},{data:topicPosts},{data:practiceBlocks},{data:assessmentSetting},{data:assessmentStatusData}]=await Promise.all([
   sb.from('learning_resources').select('*').eq('class_id',c.id).eq('topic_id',topicId).order('created_at',{ascending:false}),
   sb.from('assignments').select('*').eq('class_id',c.id).eq('topic_id',topicId).eq('is_open',true).order('created_at',{ascending:false}),
   sb.from('class_posts').select('*').eq('class_id',c.id).eq('topic_id',topicId).order('created_at',{ascending:false}),
   c.grade_level==='10'?sb.from('class_question_blocks').select('id,title,description').eq('class_id',c.id).eq('parent_topic_id',topicId).eq('is_enabled',true).order('sort_order',{ascending:true}):Promise.resolve({data:[]}),
-  c.grade_level==='11'?sb.from('assessment_settings').select('question_count').eq('class_id',c.id).eq('topic_id',topicId).maybeSingle():Promise.resolve({data:null})
+  c.grade_level==='11'?sb.from('assessment_settings').select('question_count').eq('class_id',c.id).eq('topic_id',topicId).maybeSingle():Promise.resolve({data:null}),
+  c.grade_level==='11'?sb.rpc('get_my_assessment_status',{p_class_id:c.id,p_topic_id:topicId}):Promise.resolve({data:[]})
  ]);
+ const assessmentStatus=assessmentStatusRow(assessmentStatusData);
  let existing=[];if(assignments?.length)({data:existing}=await sb.from('submissions').select('*').eq('student_id',me.id).in('assignment_id',assignments.map(x=>x.id)).order('submitted_at',{ascending:false}));
  $('topicContent').innerHTML=`<div class="pageHero"><button class="back" id="backStudent">← Mano klasė</button><span class="kicker">${esc(t?.code||'TEMA')}</span><h1>${esc(t?.title||topicId)}</h1>${topicDescription(t)?`<p>${esc(topicDescription(t))}</p>`:''}</div>
  <div class="contentGrid"><div class="stack">
@@ -1726,7 +1884,7 @@ async function openStudentTopic(topicId,c,access){
    }).join(''):'<div class="emptyState">Atidarytų užduočių nėra.</div>'}
   </div>
  </div><div class="stack">
-  <div class="panel"><span class="kicker">ATSISKAITYMAS</span><h3>Temos testas</h3>${a.assessment_open?`<span class="badge ok">Atidaryta</span><p class="muted">Atsiskaitymas šiuo metu atidarytas.${c.grade_level==='11'?` Klausimų skaičius: <b>${assessmentSetting?.question_count||20}</b>. Atsiskaitymo metu fiksuojamas atlikimo laikas ir išėjimai iš lango / fokuso praradimai.`:''}</p><button class="primary" id="startAssessmentTopic">Pradėti atsiskaitymą</button>`:`<div class="lockedBox">🔒 Mokytojas atsiskaitymo dar neatidarė.</div>`}</div>
+  <div class="panel"><span class="kicker">ATSISKAITYMAS</span><h3>Temos testas</h3>${renderStudentAssessmentCard(c,a,assessmentSetting,assessmentStatus)}</div>
  </div></div>`;
  show('topic');$('backStudent').onclick=()=>appBack(()=>renderStudent());
  if(a.practice_open&&$('startPracticeTopic'))$('startPracticeTopic').onclick=()=>startQuiz(topicId,c.id,'practice',10);
@@ -1738,6 +1896,7 @@ async function openStudentTopic(topicId,c,access){
   startGrade10BlockQuiz(topicId,c.id,blockIds,10);
  };
  if(a.assessment_open&&$('startAssessmentTopic'))$('startAssessmentTopic').onclick=()=>c.grade_level==='11'?startSecureAssessment(topicId,c.id):startQuiz(topicId,c.id,'assessment',CFG.assessmentQuestionCount);
+ if($('studentAssessmentReview'))$('studentAssessmentReview').onclick=()=>showMyAssessmentReview(assessmentStatus.attempt_id);
  document.querySelectorAll('[data-sresource]').forEach(b=>b.onclick=()=>downloadResource(b.dataset.sresource));
  document.querySelectorAll('[data-submit]').forEach(b=>b.onclick=()=>submissionModal(b.dataset.submit,c,topicId,access));
  document.querySelectorAll('[data-own-assignment-download]').forEach(b=>b.onclick=()=>downloadSubmission(b.dataset.ownAssignmentDownload));
@@ -1872,21 +2031,32 @@ function formatClientAnswer(q,answer){
 }
 
 async function startGrade10BlockQuiz(topicId,classId,blockIds,count){
+ setPresenceContext(`Žinių treniruotė: ${topicById(topicId)?.title||topicId}`,topicId);
  const {data,error}=await sb.rpc('start_grade10_practice',{p_class_id:classId,p_parent_topic_id:topicId,p_block_ids:blockIds,p_count:Number(count)||10});
  if(error)return toast(error.message);const rows=data||[];if(!rows.length)return toast('Pasirinktuose blokuose klausimų nėra.');
  quiz={topicId,classId,mode:'practice-g10',blockIds:[...blockIds],items:rows.map(r=>prepareClientQuestion({id:r.attempt_question_id,question:r.question_text,options:Array.isArray(r.options)?r.options:[],correct:null,explanation:'',category:'',difficulty:'',type:'single'})),index:0,answers:Array(rows.length).fill(null),attemptId:rows[0].attempt_id,startMs:Date.now(),last:null,completed:false};
  $('quizMode').textContent='PRAKTIKA';$('quizTitle').textContent=topicById(topicId).title;show('quiz');renderQ();
 }
 
+let assessmentStartPending=false;
 async function startSecureAssessment(topicId,classId){
- const {data,error}=await sb.rpc('start_assessment',{p_class_id:classId,p_topic_id:topicId});if(error)return toast(error.message);
- const rows=data||[];if(!rows.length)return toast('Atsiskaitymo klausimų bankas tuščias.');
- const {data:sessionData}=await sb.auth.getSession();assessmentAccessToken=sessionData?.session?.access_token||null;
- quiz={topicId,classId,mode:'assessment-secure',items:rows.map(r=>prepareClientQuestion({id:r.attempt_question_id,question:r.question_text,options:r.options,correct:null,explanation:'',category:r.category||'',difficulty:r.difficulty||'',type:r.question_type||'single'})),index:0,answers:Array(rows.length).fill(null),attemptId:rows[0].attempt_id,startMs:Date.now(),last:null,completed:false};
- $('quizMode').textContent='ATSISKAITYMAS';$('quizTitle').textContent=topicById(topicId).title;show('quiz');renderQ();
+ setPresenceContext(`Atsiskaitymas: ${topicById(topicId)?.title||topicId}`,topicId);
+ if(assessmentStartPending)return;assessmentStartPending=true;
+ try{
+  const {data,error}=await sb.rpc('start_assessment',{p_class_id:classId,p_topic_id:topicId});if(error)return toast(error.message);
+  const rows=data||[];if(!rows.length)return toast('Atsiskaitymo klausimų bankas tuščias.');
+  const {data:sessionData}=await sb.auth.getSession();assessmentAccessToken=sessionData?.session?.access_token||null;
+  const answers=rows.map(r=>r.student_answer===null||r.student_answer===undefined?null:r.student_answer);
+  const firstUnanswered=answers.findIndex(a=>a===null);
+  quiz={topicId,classId,mode:'assessment-secure',items:rows.map(r=>prepareClientQuestion({id:r.attempt_question_id,question:r.question_text,options:r.options,correct:null,explanation:'',category:r.category||'',difficulty:r.difficulty||'',type:r.question_type||'single'})),index:firstUnanswered>=0?firstUnanswered:Math.max(0,rows.length-1),answers,attemptId:rows[0].attempt_id,startMs:Date.now(),last:null,completed:false};
+  $('quizMode').textContent='ATSISKAITYMAS';$('quizTitle').textContent=topicById(topicId).title;show('quiz');
+  if(firstUnanswered<0)return finishQuiz();
+  renderQ();
+ }finally{assessmentStartPending=false}
 }
 
 async function startQuiz(topicId,classId,mode,count){
+ setPresenceContext(`Žinių treniruotė: ${topicById(topicId)?.title||topicId}`,topicId);
  if(mode==='assessment')return toast('Šiam atsiskaitymui naudok saugų atsiskaitymo režimą.');
  const pool=PRACTICE.filter(q=>q.topic===topicId);if(!pool.length)return toast('Klausimų bankas tuščias.');
  const n=Math.min(Number(count)||10,pool.length);const selected=pickBalancedQuestions(pool,n);
@@ -1905,7 +2075,7 @@ async function submitQuestionAnswer(answer){
   document.querySelectorAll('#answers button,#answers input,#answers select').forEach(el=>el.disabled=true);
   const {error}=await sb.rpc('submit_assessment_answer',{p_attempt_id:quiz.attemptId,p_attempt_question_id:q.id,p_answer:normalizeAnswer(answer,type)});
   if(error){document.querySelectorAll('#answers button,#answers input,#answers select').forEach(el=>el.disabled=false);return toast(error.message)}
-  quiz.answers[quiz.index]=answer;$('feedback').className='feedback neutralFeedback';$('feedback').innerHTML='<b>✓ Atsakymas išsaugotas.</b><br>Teisingumas bus parodytas tik pasibaigus atsiskaitymui.';$('nextQuestion').textContent=quiz.index===quiz.items.length-1?'Baigti atsiskaitymą':'Kitas klausimas →';$('nextQuestion').classList.remove('hidden');return;
+  quiz.answers[quiz.index]=answer;$('feedback').className='feedback neutralFeedback';$('feedback').innerHTML='<b>✓ Atsakymas išsaugotas.</b><br>Teisingumas bus parodytas tik tada, kai visi klasės mokiniai baigs atsiskaitymą.';$('nextQuestion').textContent=quiz.index===quiz.items.length-1?'Baigti atsiskaitymą':'Kitas klausimas →';$('nextQuestion').classList.remove('hidden');return;
  }
  if(quiz.mode==='practice-g10'){
   document.querySelectorAll('#answers button,#answers input,#answers select').forEach(el=>el.disabled=true);
@@ -1918,17 +2088,51 @@ async function submitQuestionAnswer(answer){
 $('nextQuestion').onclick=()=>{if(quiz.index===quiz.items.length-1)finishQuiz();else{quiz.index++;renderQ()}};
 $('quitQuiz').onclick=async()=>{if(!confirm(quiz.mode==='assessment-secure'?'Baigti atsiskaitymą neatsakius į visus klausimus? Neatsakyti klausimai bus laikomi klaidingais.':'Baigti bandymą nebaigus?'))return;if(quiz.mode==='assessment-secure'){await logAssessmentExit('quit');await sb.rpc('finish_assessment',{p_attempt_id:quiz.attemptId});quiz.completed=true;}renderStudent()};
 async function finishQuiz(){
- let total=quiz.items.length,correct=quiz.items.reduce((n,q,i)=>n+(q.correct!=null&&answerEquals(quiz.answers[i],q.correct,qType(q))?1:0),0),pct=total?Math.round(correct/total*100):0,seconds=Math.max(1,Math.round((Date.now()-quiz.startMs)/1000)),pass=quiz.mode==='assessment-secure'?CFG.assessmentPassPercent:CFG.practicePassPercent,focusEvents=0;
+ let total=quiz.items.length,correct=quiz.items.reduce((n,q,i)=>n+(q.correct!=null&&answerEquals(quiz.answers[i],q.correct,qType(q))?1:0),0),pct=total?Math.round(correct/total*100):0,seconds=Math.max(1,Math.round((Date.now()-quiz.startMs)/1000)),pass=quiz.mode==='assessment-secure'?CFG.assessmentPassPercent:CFG.practicePassPercent,focusEvents=0,resultsReleased=true,completedStudents=0,totalStudents=0;
  if(quiz.mode==='assessment-secure'){
-  const {data,error}=await sb.rpc('finish_assessment',{p_attempt_id:quiz.attemptId});if(error)return toast(error.message);const r=Array.isArray(data)?data[0]:data;if(r){total=Number(r.total_questions)||total;correct=Number(r.correct_answers)||0;pct=Number(r.score_percent)||0;seconds=Number(r.duration_seconds)||seconds;focusEvents=Number(r.focus_events)||0}quiz.completed=true;
+  const {data,error}=await sb.rpc('finish_assessment',{p_attempt_id:quiz.attemptId});if(error)return toast(error.message);
+  const r=Array.isArray(data)?data[0]:data;
+  if(r){
+   total=Number(r.total_questions)||total;
+   seconds=Number(r.duration_seconds)||seconds;
+   focusEvents=Number(r.focus_events)||0;
+   resultsReleased=r.results_released===true;
+   completedStudents=Number(r.completed_students)||0;
+   totalStudents=Number(r.total_students)||0;
+   if(resultsReleased){correct=Number(r.correct_answers)||0;pct=Number(r.score_percent)||0}
+  }
+  quiz.completed=true;
  }else if(quiz.mode==='practice-g10'){
   const {data,error}=await sb.rpc('finish_grade10_practice',{p_attempt_id:quiz.attemptId});if(error)return toast(error.message);const r=Array.isArray(data)?data[0]:data;if(r){total=Number(r.total_questions)||total;correct=Number(r.correct_answers)||0;pct=Number(r.score_percent)||0;seconds=Number(r.duration_seconds)||seconds}
  }else await sb.from('practice_attempts').update({completed_at:new Date().toISOString(),duration_seconds:seconds,correct_answers:correct,score_percent:pct}).eq('id',quiz.attemptId);
- quiz.last={...quiz,correct,total,pct,seconds,pass,focusEvents};$('resultPercent').textContent=pct+'%';$('scoreCircle').style.setProperty('--score',pct+'%');$('correctCount').textContent=correct;$('wrongCount').textContent=total-correct;$('resultGoal').textContent=pass+'%';$('resultTitle').textContent=pct>=pass?(pct===100?'Puiku – 100%!':'Tikslas pasiektas!'):'Dar pasipraktikuok';$('resultSubtitle').textContent=quiz.mode==='assessment-secure'?`Atsiskaitymo trukmė: ${fmtDurationDetailed(seconds)}. Užfiksuoti išėjimo / fokuso įvykiai: ${focusEvents}.`:`Bandymo trukmė: ${fmtDurationDetailed(seconds)}.`;
- $('errorsReview').classList.add('hidden');$('retryQuiz').classList.toggle('hidden',quiz.mode==='assessment-secure');$('reviewErrors').classList.toggle('hidden',quiz.mode==='assessment-secure');show('results');
+
+ setPresenceContext(`Rezultatų peržiūra: ${topicById(quiz.topicId)?.title||quiz.topicId}`,quiz.topicId);
+ quiz.last={...quiz,correct,total,pct,seconds,pass,focusEvents,resultsReleased,completedStudents,totalStudents};
+ $('errorsReview').classList.add('hidden');
+ $('retryQuiz').classList.toggle('hidden',quiz.mode==='assessment-secure');
+
+ if(quiz.mode==='assessment-secure'&&!resultsReleased){
+  $('resultPercent').textContent='—';$('scoreCircle').style.setProperty('--score','0%');
+  $('correctCount').textContent='—';$('wrongCount').textContent='—';$('resultGoal').textContent='—';
+  $('resultTitle').textContent='Atsiskaitymas pateiktas';
+  $('resultSubtitle').textContent=`Tavo rezultatas ir teisingi atsakymai bus parodyti, kai visi klasės mokiniai baigs atsiskaitymą. Šiuo metu baigė ${completedStudents}/${totalStudents}. Tavo trukmė: ${fmtDurationDetailed(seconds)}. Užfiksuoti išėjimo / fokuso įvykiai: ${focusEvents}.`;
+  $('reviewErrors').classList.add('hidden');
+  show('results');return;
+ }
+
+ $('resultPercent').textContent=pct+'%';$('scoreCircle').style.setProperty('--score',pct+'%');$('correctCount').textContent=correct;$('wrongCount').textContent=total-correct;$('resultGoal').textContent=pass+'%';$('resultTitle').textContent=pct>=pass?(pct===100?'Puiku – 100%!':'Tikslas pasiektas!'):'Dar pasipraktikuok';
+ $('resultSubtitle').textContent=quiz.mode==='assessment-secure'?`Atsiskaitymo trukmė: ${fmtDurationDetailed(seconds)}. Užfiksuoti išėjimo / fokuso įvykiai: ${focusEvents}.`:`Bandymo trukmė: ${fmtDurationDetailed(seconds)}.`;
+ if(quiz.mode==='assessment-secure'){
+  $('reviewErrors').textContent='Peržiūrėti savo atsakymus';
+  $('reviewErrors').classList.remove('hidden');
+ }else{
+  $('reviewErrors').textContent='Peržiūrėti klaidas';
+  $('reviewErrors').classList.remove('hidden');
+ }
+ show('results');
 }
 $('retryQuiz').onclick=()=>{const r=quiz.last;if(!r||r.mode==='assessment-secure')return;if(r.mode==='practice-g10')return startGrade10BlockQuiz(r.topicId,r.classId,r.blockIds||[],r.items.length);startQuiz(r.topicId,r.classId,'practice',r.items.length)};
-$('reviewErrors').onclick=()=>{const r=quiz.last;if(!r||r.mode==='assessment-secure')return;const bad=r.items.map((q,i)=>({q,a:r.answers[i]})).filter(x=>!answerEquals(x.a,x.q.correct,qType(x.q)));$('errorsReview').classList.remove('hidden');$('errorsReview').innerHTML=bad.length?`<span class="kicker">PERŽIŪRA</span><h2>Klaidos ir paaiškinimai</h2>`+bad.map((x,i)=>`<div class="errorItem"><b>${i+1}. ${esc(x.q.question)}</b><p>Tavo atsakymas: <b>${esc(formatClientAnswer(x.q,x.a))}</b><br>Teisingas: <b>${esc(formatClientAnswer(x.q,x.q.correct))}</b><br>${esc(x.q.explanation)}</p></div>`).join(''):`<h2>Be klaidų 🎉</h2>`};
+$('reviewErrors').onclick=()=>{const r=quiz.last;if(!r)return;if(r.mode==='assessment-secure'){if(r.resultsReleased)return showMyAssessmentReview(r.attemptId);return}const bad=r.items.map((q,i)=>({q,a:r.answers[i]})).filter(x=>!answerEquals(x.a,x.q.correct,qType(x.q)));$('errorsReview').classList.remove('hidden');$('errorsReview').innerHTML=bad.length?`<span class="kicker">PERŽIŪRA</span><h2>Klaidos ir paaiškinimai</h2>`+bad.map((x,i)=>`<div class="errorItem"><b>${i+1}. ${esc(x.q.question)}</b><p>Tavo atsakymas: <b>${esc(formatClientAnswer(x.q,x.a))}</b><br>Teisingas: <b>${esc(formatClientAnswer(x.q,x.q.correct))}</b><br>${esc(x.q.explanation)}</p></div>`).join(''):`<h2>Be klaidų 🎉</h2>`};
 
 async function logAssessmentExit(type){
  if(quiz.mode!=='assessment-secure'||!quiz.attemptId||quiz.completed)return;try{await sb.rpc('log_assessment_focus_event',{p_attempt_id:quiz.attemptId,p_event_type:type})}catch(_e){}
@@ -1944,6 +2148,8 @@ window.addEventListener('pagehide',()=>logAssessmentExitKeepalive('pagehide'));
 
 /* ================= PROFILE ================= */
 function renderProfile(){
+ stopTeacherPresenceRefresh();
+ if(profile?.role==='student')setPresenceContext('Paskyra',null);
  setCurrentRestore(()=>renderProfile());
  const isStudent=profile.role==='student';
  const nameLocked=isStudent&&profile.name_change_used===true;
@@ -2006,6 +2212,7 @@ async function boot(){
    route('dashboard');
   }
   if(!session){
+   stopTeacherPresenceRefresh();
    stopIdleLogout();
    me=null;profile=null;
    setHeader();

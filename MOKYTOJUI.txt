@@ -1,13 +1,16 @@
-INFORMATIKA 11 v3
+INFORMATIKA 10–12 v5.5
 
-Pirmiausia atidarykite SETUP.md.
+Diegimo tvarka:
+1. Supabase SQL Editor paleiskite:
+   PATCH_v5_5_FAIR_ASSESSMENT_DELAYED_RESULTS_ONLINE.sql
+2. Tik gavus Success, pakeiskite GitHub failus šio paketo failais.
+3. Svetainėje atlikite Ctrl + F5.
 
-v3 funkcijos:
-- keli mokytojai ir atskiros jų klasės;
-- mokinių paskyros;
-- rezultatų, bandymų ir laiko kaupimas;
-- failų įkėlimas mokiniams;
-- mokinių darbų pateikimas;
-- temų/testų atrakinimas klasei.
+v5.5:
+- lygiaverčiai 11 klasės atsiskaitymai pagal fiksuotą balanso karkasą;
+- mokinio rezultatas ir teisingi atsakymai rodomi tik kai visi klasės mokiniai baigia;
+- mokytojas rezultatus ir atsakymus mato iš karto;
+- mokytojas mato, kas šiuo metu prisijungęs ir ką veikia;
+- vienas mokinys atsiskaitymą gali atlikti tik vieną kartą.
 
-Mokytojų duomenys atskiriami Supabase RLS taisyklėmis.
+Esami mokinių, klasių, failų ir rezultatų duomenys netrinami.

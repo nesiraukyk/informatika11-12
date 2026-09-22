@@ -241,3 +241,20 @@ Tai pašalina `new row violates row-level security policy for table "classes"` k
 - Mokytojo mokinio detalėse atsiskaitymo eilutė turi mygtuką „Peržiūrėti“ su trukme, rezultatu, išėjimų laiku ir visais atsakymais.
 - Atsiskaitymo teisingi atsakymai pradžioje į naršyklę nesiunčiami; vertinimas vyksta serverio RPC.
 - REIKIA paleisti `PATCH_v5_3_BALANCED_PRACTICE_SECURE_ASSESSMENT.sql` ir tada įkelti v5.3 GitHub failus.
+
+
+## v5.4 – vienas atsiskaitymo bandymas ir aiškus rezultatų langas
+- 11 klasės temos atsiskaitymą kiekvienas mokinys gali atlikti tik vieną kartą.
+- Jei pradėtas bandymas nutrūksta ar puslapis perkraunamas, naujas bandymas nekuriamas – tęsiamas tas pats.
+- Jau išsaugotų atsakymų nebegalima perrašyti.
+- Mokytojo klasės lange pridėta aiški skiltis „Atsiskaitymų rezultatai“.
+- Joje rodoma būsena, rezultatas, trukmė, išėjimų iš testo lango / fokuso praradimų skaičius ir mygtukas „Peržiūrėti atsakymus“.
+- SQL: paleisti tik PATCH_v5_4_SINGLE_ATTEMPT_ASSESSMENT_RESULTS.sql, jei v5.3 SQL jau buvo paleistas.
+
+## v5.5 – lygiaverčiai atsiskaitymai, uždelsti mokinio rezultatai, prisijungę dabar
+- 11 klasės vektorinės grafikos atsiskaitymas naudoja 20 balanso slotų. Standartiniame 20 klausimų teste kiekvienam mokiniui tenka tiksliai 8 vieno atsakymo, 5 kelių atsakymų, 4 „kuris netinka“ ir 3 sujungimo klausimai; 6 lengvi, 10 vidutinių ir 4 sunkesni.
+- Kiekvienas balanso slotas turi 8 lygiaverčius klausimo variantus. Todėl mokiniai gauna tą patį turinio ir sunkumo karkasą, bet ne būtinai tuos pačius klausimus.
+- Mokinys atsiskaitymo balą, teisingus atsakymus ir savo atsakymų peržiūrą pamato tik tada, kai visi dabartiniai klasės mokiniai yra užbaigę tą atsiskaitymą.
+- Mokytojas atsiskaitymo rezultatus, laiką, fokuso / išėjimo įvykius ir atsakymus mato iš karto.
+- Mokytojo pradžios lange rodoma „Prisijungę dabar“, o klasės mokinių lentelėje – dabartinė būsena ir veikla. Online laikomas aktyvumas per paskutines 90 s.; būsena atnaujinama kas 15 s.
+- Reikalingas `PATCH_v5_5_FAIR_ASSESSMENT_DELAYED_RESULTS_ONLINE.sql`.
