@@ -1,4 +1,3 @@
-/* Praktikos klausimų bankas. */
 window.PRACTICE_QUESTIONS = [
   {
     "id": "vg-001",
@@ -974,5 +973,380 @@ window.PRACTICE_QUESTIONS = [
     "explanation": "Galutinė techninė patikra sumažina suderinamumo ir neteisingo eksporto klaidų riziką.",
     "difficulty": "Sunkesnis",
     "category": "Darbo eiga"
+  },
+  {
+    "id": "vg-066",
+    "topic": "vektorine-grafika",
+    "question": "Kas yra PS (PostScript) formatas?",
+    "options": [
+      "Puslapio ir grafikos aprašymo formatas / kalba, naudojama leidyboje ir failų mainams",
+      "Tik garso formatas",
+      "Tik skaičiuoklės formatas",
+      "Tik nuotraukų glaudinimo algoritmas"
+    ],
+    "correct": 0,
+    "explanation": "PostScript naudojamas puslapio bei grafikos aprašymui ir sutinkamas leidybos procesuose bei failų mainuose.",
+    "difficulty": "Vidutinis",
+    "category": "Failų formatai"
+  },
+  {
+    "id": "vg-067",
+    "topic": "vektorine-grafika",
+    "question": "Kas yra WMF (Windows Metafile)?",
+    "options": [
+      "Microsoft Windows aplinkoje naudojamas vektorinės grafikos metafailo formatas",
+      "Tik vaizdo įrašo formatas",
+      "Tik interneto puslapio programavimo kalba",
+      "Tik garso formatas"
+    ],
+    "correct": 0,
+    "explanation": "WMF yra Windows Metafile – Microsoft Windows aplinkoje naudojamas grafikos metafailo formatas.",
+    "difficulty": "Vidutinis",
+    "category": "Failų formatai"
+  },
+  {
+    "id": "vg-068",
+    "topic": "vektorine-grafika",
+    "question": "Kuris teiginys apie EPS yra teisingas?",
+    "options": [
+      "EPS gali būti naudojamas grafinių duomenų mainams ir gali turėti tiek vektorinės, tiek taškinės grafikos turinio",
+      "EPS skirtas tik garsui",
+      "EPS visada yra tik JPEG nuotrauka",
+      "EPS yra skaičiuoklės formatas"
+    ],
+    "correct": 0,
+    "explanation": "EPS yra PostScript pagrindu sukurtas formatas, naudojamas grafinių duomenų mainams; jame gali būti vektorinės ir taškinės grafikos.",
+    "difficulty": "Sunkesnis",
+    "category": "Failų formatai"
+  },
+  {
+    "id": "vg-069",
+    "topic": "vektorine-grafika",
+    "question": "Kodėl taškinės grafikos failo fono permatomumas gali būti naudingas leidinyje?",
+    "options": [
+      "Objektą galima uždėti ant skirtingų fonų be nereikalingo stačiakampio fono",
+      "Vaizdas automatiškai tampa vektorinis",
+      "Failas visada tampa mažesnis",
+      "Spalvos automatiškai pakeičiamos į CMYK"
+    ],
+    "correct": 0,
+    "explanation": "Permatomas fonas leidžia grafikos objektą lanksčiau komponuoti ant kitų elementų ar spalvų.",
+    "difficulty": "Lengvas",
+    "category": "Raiška ir eksportas"
+  },
+  {
+    "id": "vg-070",
+    "topic": "vektorine-grafika",
+    "question": "Kuris formatas tinkamas, kai reikia taškinio vaizdo su pilnu alfa kanalo permatomumu?",
+    "options": [
+      "PNG",
+      "JPEG",
+      "TXT",
+      "MP3"
+    ],
+    "correct": 0,
+    "explanation": "PNG gali saugoti alfa kanalo permatomumą, todėl dažnai tinka logotipų ar kitų objektų taškinėms kopijoms.",
+    "difficulty": "Lengvas",
+    "category": "Raiška ir eksportas"
+  },
+  {
+    "id": "vg-071",
+    "topic": "vektorine-grafika",
+    "question": "Kada ypač prasminga išsaugoti logotipo taškinę kopiją su permatomu fonu?",
+    "options": [
+      "Kai logotipą reikės dėti ant skirtingų spalvų ar vaizdų fonų",
+      "Kai logotipas visada bus viename baltame fone",
+      "Kai failas bus naudojamas tik kaip garsas",
+      "Kai norima panaikinti visas spalvas"
+    ],
+    "correct": 0,
+    "explanation": "Permatomumas leidžia tą patį logotipą naudoti skirtinguose maketuose nepaliekant fono stačiakampio.",
+    "difficulty": "Vidutinis",
+    "category": "Situacijos"
+  },
+  {
+    "id": "vg-072",
+    "topic": "vektorine-grafika",
+    "question": "Kuo uždaras vektorinis kelias praktiškai skiriasi nuo atviro kelio?",
+    "options": [
+      "Uždaras kelias apibrėžia uždarą sritį, kurią patogu užpildyti spalva ar gradientu",
+      "Atviras kelias visada yra nuotrauka",
+      "Uždaras kelias negali turėti kontūro",
+      "Atviras kelias negali būti redaguojamas"
+    ],
+    "correct": 0,
+    "explanation": "Uždaras kelias apibrėžia sritį, todėl jo vidui galima taikyti užpildą; abu keliai gali turėti kontūrą.",
+    "difficulty": "Vidutinis",
+    "category": "Objektai ir įrankiai"
+  },
+  {
+    "id": "vg-073",
+    "topic": "vektorine-grafika",
+    "question": "Kuo skiriasi grynos spalvos užpildas nuo gradientinio užpildo?",
+    "options": [
+      "Grynos spalvos užpildas yra vienodas, o gradientas palaipsniui pereina tarp spalvų ar atspalvių",
+      "Gradientas visada yra nespalvotas",
+      "Gryna spalva naudojama tik taškinei grafikai",
+      "Jie niekuo nesiskiria"
+    ],
+    "correct": 0,
+    "explanation": "Gradientas sudaro tolygų spalvų ar atspalvių perėjimą, o grynos spalvos užpildas yra vientisas.",
+    "difficulty": "Lengvas",
+    "category": "Objektai ir įrankiai"
+  },
+  {
+    "id": "vg-074",
+    "topic": "vektorine-grafika",
+    "question": "Kam kuriant maketą naudinga lygiuoti objektus?",
+    "options": [
+      "Kad elementai būtų išdėstyti nuosekliai ir kompozicija atrodytų tvarkingai",
+      "Kad visi objektai taptų taškiniai",
+      "Kad automatiškai pasikeistų failo formatas",
+      "Kad būtų panaikintos spalvos"
+    ],
+    "correct": 0,
+    "explanation": "Objektų lygiavimas padeda išlaikyti vizualinę tvarką ir tarpusavio dermę.",
+    "difficulty": "Lengvas",
+    "category": "Dizaino principai"
+  },
+  {
+    "id": "vg-075",
+    "topic": "vektorine-grafika",
+    "question": "Kuris teiginys apie simetriją ir asimetriją dizaine teisingas?",
+    "options": [
+      "Abi gali būti tikslingos – pasirinkimas priklauso nuo norimos kompozicijos ir vizualinio įspūdžio",
+      "Asimetrija visada yra klaida",
+      "Simetrija visada privaloma",
+      "Jos svarbios tik taškinei grafikai"
+    ],
+    "correct": 0,
+    "explanation": "Rekomendacijose siūloma atkreipti dėmesį į simetriją ir asimetriją kaip kompozicijos elementus.",
+    "difficulty": "Vidutinis",
+    "category": "Dizaino principai"
+  },
+  {
+    "id": "vg-076",
+    "topic": "vektorine-grafika",
+    "question": "Ką kuriant vektorinį maketą reiškia tinkamai panaudoti formą ir erdvę?",
+    "options": [
+      "Parinkti elementų formas, dydžius ir tarpus taip, kad kompozicija būtų aiški ir subalansuota",
+      "Visus objektus sudėti vienoje vietoje",
+      "Naudoti tik vieną geometrinę figūrą",
+      "Visada panaikinti tuščią erdvę"
+    ],
+    "correct": 0,
+    "explanation": "Formos ir erdvės santykis yra vienas pagrindinių grafinio dizaino kompozicijos aspektų.",
+    "difficulty": "Vidutinis",
+    "category": "Dizaino principai"
+  },
+  {
+    "id": "vg-077",
+    "topic": "vektorine-grafika",
+    "question": "Kas gali nutikti, jei maketas yra per tankus ir tarp elementų beveik nėra erdvės?",
+    "options": [
+      "Informacija gali tapti sunkiau suvokiama ir kompozicija – perkrauta",
+      "Visi elementai automatiškai taps SVG",
+      "Spalvos automatiškai susiderins",
+      "Failas automatiškai taps mažesnis"
+    ],
+    "correct": 0,
+    "explanation": "Maketo tankis ir erdvė daro įtaką turinio aiškumui bei kompozicijos suvokimui.",
+    "difficulty": "Vidutinis",
+    "category": "Dizaino principai"
+  },
+  {
+    "id": "vg-078",
+    "topic": "vektorine-grafika",
+    "question": "Ką reiškia derinti objektus tarpusavyje?",
+    "options": [
+      "Parinkti jų dydžius, padėtį, spalvas ir stilių taip, kad jie veiktų kaip vientisa kompozicija",
+      "Visus objektus padaryti identiškus",
+      "Visus objektus rasterizuoti",
+      "Naudoti tik vieną spalvą"
+    ],
+    "correct": 0,
+    "explanation": "Objektų tarpusavio derinimas padeda sukurti nuoseklų ir aiškų grafinį darbą.",
+    "difficulty": "Vidutinis",
+    "category": "Dizaino principai"
+  },
+  {
+    "id": "vg-079",
+    "topic": "vektorine-grafika",
+    "question": "Kodėl kontrastas svarbus plakate ar logotipe?",
+    "options": [
+      "Jis padeda atskirti elementus ir išryškinti svarbią informaciją",
+      "Jis visada sumažina failo dydį",
+      "Jis panaikina teksto poreikį",
+      "Jis paverčia rastrą vektoriumi"
+    ],
+    "correct": 0,
+    "explanation": "Kontrastas padeda kurti aiškumą, išskirti svarbiausius elementus ir gerinti įskaitomumą.",
+    "difficulty": "Lengvas",
+    "category": "Dizaino principai"
+  },
+  {
+    "id": "vg-080",
+    "topic": "vektorine-grafika",
+    "question": "Koks teksto vaidmuo vektoriniame grafikos objekte?",
+    "options": [
+      "Tekstas gali būti integruotas kaip kompozicijos dalis ir perduoti informaciją",
+      "Tekstas vektorinėje grafikoje negalimas",
+      "Tekstas automatiškai panaikina vektorius",
+      "Tekstas naudojamas tik failo pavadinimui"
+    ],
+    "correct": 0,
+    "explanation": "Vektorinės grafikos projektuose tekstas gali būti vienas iš kuriamo objekto elementų.",
+    "difficulty": "Lengvas",
+    "category": "Tekstas ir tipografija"
+  },
+  {
+    "id": "vg-081",
+    "topic": "vektorine-grafika",
+    "question": "Kodėl į vektorinės grafikos dokumentą gali būti importuojamas papildomas objektas ar elementas?",
+    "options": [
+      "Kad jį būtų galima panaudoti ir suderinti su kuriamu projektu",
+      "Kad dokumentas automatiškai taptų nuotrauka",
+      "Kad būtų ištrinti esami objektai",
+      "Kad failas taptų garso formatu"
+    ],
+    "correct": 0,
+    "explanation": "Importavimas leidžia įtraukti iš kitų šaltinių gautus elementus į kuriamą kompoziciją.",
+    "difficulty": "Lengvas",
+    "category": "Darbo eiga"
+  },
+  {
+    "id": "vg-082",
+    "topic": "vektorine-grafika",
+    "question": "Kada logiška vektorinį objektą eksportuoti į taškinės grafikos formatą?",
+    "options": [
+      "Kai galutinė sistema ar paskirtis reikalauja taškinio failo, pavyzdžiui, PNG ar JPEG",
+      "Visada iškart pradėjus projektą",
+      "Tik tada, kai norime redaguoti mazgus",
+      "Niekada"
+    ],
+    "correct": 0,
+    "explanation": "Vektorinį originalą galima eksportuoti į taškinį formatą, jei to reikia galutinei naudojimo paskirčiai.",
+    "difficulty": "Vidutinis",
+    "category": "Raiška ir eksportas"
+  },
+  {
+    "id": "vg-083",
+    "topic": "vektorine-grafika",
+    "question": "Kodėl eksportavus logotipą į PNG verta pasilikti vektorinį originalą?",
+    "options": [
+      "Kad vėliau būtų galima kokybiškai keisti dydį ir redaguoti objektus",
+      "Kad PNG automatiškai taptų garsesnis",
+      "Kad nereikėtų išsaugoti failo",
+      "Kad būtų panaikintas skaidrumas"
+    ],
+    "correct": 0,
+    "explanation": "Vektorinis originalas išlaiko redaguojamus objektus ir nėra apribotas konkrečiu pikselių dydžiu.",
+    "difficulty": "Vidutinis",
+    "category": "Darbo eiga"
+  },
+  {
+    "id": "vg-084",
+    "topic": "vektorine-grafika",
+    "question": "Kuris formatas oficialiose rekomendacijose minimas kaip atvirasis vektorinės grafikos formatas dvimatei grafikai?",
+    "options": [
+      "SVG",
+      "MP3",
+      "XLSX",
+      "WAV"
+    ],
+    "correct": 0,
+    "explanation": "SVG – Scalable Vector Graphics – yra atvirasis vektorinės grafikos formatas.",
+    "difficulty": "Lengvas",
+    "category": "Failų formatai"
+  },
+  {
+    "id": "vg-085",
+    "topic": "vektorine-grafika",
+    "question": "Kam vektorinės grafikos failų formatuose naudojami mainų formatai, tokie kaip EPS?",
+    "options": [
+      "Grafiniams duomenims perduoti tarp skirtingų programų ir leidybos darbo eigoje",
+      "Tik garso įrašams saugoti",
+      "Tik programavimo kodui vykdyti",
+      "Tik slaptažodžiams saugoti"
+    ],
+    "correct": 0,
+    "explanation": "EPS yra skirtas grafinių duomenų mainams ir naudojamas profesionalios leidybos darbo eigoje.",
+    "difficulty": "Vidutinis",
+    "category": "Failų formatai"
+  },
+  {
+    "id": "vg-086",
+    "topic": "vektorine-grafika",
+    "question": "Ką reiškia pasirinkti tinkamą grafikos formatą pagal paskirtį?",
+    "options": [
+      "Įvertinti, kur failas bus naudojamas, ar reikės redaguoti, keisti mastelį, skaidrumą ar spausdinti",
+      "Visada rinktis tą patį formatą",
+      "Rinktis tik pagal failo pavadinimo ilgį",
+      "Visada rinktis JPEG"
+    ],
+    "correct": 0,
+    "explanation": "Formato pasirinkimas turi priklausyti nuo galutinės naudojimo paskirties ir techninių reikalavimų.",
+    "difficulty": "Sunkesnis",
+    "category": "Failų formatai"
+  },
+  {
+    "id": "vg-087",
+    "topic": "vektorine-grafika",
+    "question": "Mokinys kuria plakatą. Kuris sprendimas geriausiai atitinka grafinio dizaino rekomendacijas?",
+    "options": [
+      "Derinti kompoziciją, kontrastą, formas, erdvę ir objektų tarpusavio santykį",
+      "Visus objektus sudėti atsitiktinai",
+      "Naudoti kuo daugiau nesuderintų šriftų ir spalvų",
+      "Ignoruoti elementų dydį ir vietą"
+    ],
+    "correct": 0,
+    "explanation": "Praktiniuose darbuose rekomenduojama atkreipti dėmesį į kompoziciją, formą, erdvę, kontrastą ir elementų derinimą.",
+    "difficulty": "Vidutinis",
+    "category": "Praktinis taikymas"
+  },
+  {
+    "id": "vg-088",
+    "topic": "vektorine-grafika",
+    "question": "Kuris veiksmas geriausiai parodo, kad mokinys supranta vektorinės grafikos darbo eigą?",
+    "options": [
+      "Sukuria objektą, pritaiko spalvas ir tekstą, importuoja reikiamus elementus ir eksportuoja tinkamu formatu",
+      "Tik pakeičia failo pavadinimą",
+      "Tik įkelia nuotrauką nieko nekeisdamas",
+      "Tik pervadina JPEG į SVG"
+    ],
+    "correct": 0,
+    "explanation": "Temoje svarbus ne vien sąvokų žinojimas, bet ir objekto kūrimas, redagavimas, importas bei eksportas.",
+    "difficulty": "Sunkesnis",
+    "category": "Praktinis taikymas"
+  },
+  {
+    "id": "vg-089",
+    "topic": "vektorine-grafika",
+    "question": "Jei vektorinį logotipą reikia naudoti ir svetainėje, ir spausdintame plakate, koks sprendimas racionaliausias?",
+    "options": [
+      "Išlaikyti vektorinį originalą ir parengti paskirčiai tinkamas eksportuotas versijas",
+      "Palikti tik mažos raiškos JPEG",
+      "Ištrinti originalą po pirmo eksporto",
+      "Visur naudoti vieną atsitiktinį failą"
+    ],
+    "correct": 0,
+    "explanation": "Vektorinis originalas leidžia lanksčiai parengti skirtingoms terpėms tinkamas versijas.",
+    "difficulty": "Sunkesnis",
+    "category": "Situacijos"
+  },
+  {
+    "id": "vg-090",
+    "topic": "vektorine-grafika",
+    "question": "Kuris gebėjimas geriausiai parodo temos „Vektorinės grafikos ypatumai, vektorinės grafikos failų formatai“ supratimą?",
+    "options": [
+      "Gebėti pagrįstai pasirinkti grafikos rūšį, redaguoti vektorinius objektus ir eksportuoti juos tinkamu formatu",
+      "Tik mintinai išvardyti programų pavadinimus",
+      "Tik žinoti vieną failo plėtinį",
+      "Tik pakeisti dokumento pavadinimą"
+    ],
+    "correct": 0,
+    "explanation": "Tema apima sąvokų supratimą, praktinį vektorinių objektų kūrimą bei tinkamą formatų ir eksporto pasirinkimą.",
+    "difficulty": "Sunkesnis",
+    "category": "Praktinis taikymas"
   }
 ];

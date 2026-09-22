@@ -225,3 +225,8 @@ Tai pašalina `new row violates row-level security policy for table "classes"` k
 - Mokytojas savo klasėje atskirai įjungia / išjungia blokus bei gali pridėti, redaguoti ir trinti klausimus.
 - Mokinys mato tik mokytojo įjungtus blokus. Jei įjungtas vienas – gauna vieną treniruotės pasirinkimą; jei keli – gali pasirinkti vieną, kelis arba „Visas skyrius“.
 - 11 klasės dabartinis klausimų bankas neliečiamas.
+
+## v5.2 – 11 klasės vektorinės grafikos klausimų banko papildymas
+- 11 klasės „Vektorinės grafikos ypatumai, vektorinės grafikos failų formatai“ praktikos bankas padidintas nuo 65 iki 90 klausimų.
+- Papildyta BP rekomendacijose aiškiai minimais aspektais: PS, WMF, EPS, fono permatomumas, grynos spalvos ir gradientai, teksto panaudojimas, importas / eksportas, kompozicija, forma ir erdvė, simetrija / asimetrija, maketo tankis, kontrastas ir objektų tarpusavio derinimas.
+- Supabase SQL pakeitimų nereikia.
