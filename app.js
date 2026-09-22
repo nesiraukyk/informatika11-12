@@ -697,7 +697,7 @@ function renderTeacherClassPanel(panel,c,students,members,attempts,sessions,acce
       <label class="toggle"><input type="checkbox" data-access="${t.id}" data-field="is_open" ${a.is_open?'checked':''}> Tema</label>
       <label class="toggle"><input type="checkbox" data-access="${t.id}" data-field="practice_open" ${a.practice_open?'checked':''}> Praktika</label>
       <label class="toggle"><input type="checkbox" data-access="${t.id}" data-field="assessment_open" ${a.assessment_open?'checked':''}> Atsiskaitymas</label>
-      ${c.grade_level==='11'?`<button class="smallBtn" data-assessment-settings="${t.id}">⚙ ${(assessmentSettings.find(s=>s.topic_id===t.id)?.question_count)||20} kl.</button>`:''}
+      ${c.grade_level==='11'?`<button class="smallBtn" data-assessment-settings="${t.id}">⚙ ${(assessmentSettings.find(s=>s.topic_id===t.id)?.question_count)||30} kl.</button>`:''}
      </div>
     </div>
    </div>`}).join(''):'<div class="emptyState"><b>Ši klasė dar neturi temų.</b>Paspausk „+ Nauja tema“ ir sukurk pirmąją 10 klasės mokymosi temą.</div>'}</div>`;
@@ -1335,12 +1335,12 @@ async function updateTopicAccess(classId,topicId,field,value){
  toast(error?error.message:'Atnaujinta.');
 }
 async function openAssessmentSettingsModal(c,topicId,checkbox,access,settings,openAfterSave=false){
- const current=settings.find(s=>s.topic_id===topicId)?.question_count||20;
+ const current=settings.find(s=>s.topic_id===topicId)?.question_count||30;
  const t=topicById(topicId);
- modal(`<span class="kicker">ATSISKAITYMO NUSTATYMAI</span><h2>${esc(t?.title||topicId)}</h2><p class="muted">Pasirink, kiek klausimų gaus kiekvienas mokinys. Sistema naudoja vienodą balanso karkasą: kiekvienam mokiniui tenka tokios pačios temos, tie patys sunkumo lygiai ir tie patys klausimų tipai, bet parenkami skirtingi lygiaverčiai klausimų variantai.</p><form id="assessmentSettingsForm" class="formGroup"><label>Klausimų skaičius<input id="assessmentQuestionCountInput" type="number" min="5" max="40" step="1" value="${current}" required></label><p class="formHint">Rekomenduojama: 20 klausimų. Galima rinktis nuo 5 iki 40.</p><button class="primary" type="submit">${openAfterSave?'Išsaugoti ir atidaryti atsiskaitymą':'Išsaugoti'}</button></form>`);
+ modal(`<span class="kicker">ATSISKAITYMO NUSTATYMAI</span><h2>${esc(t?.title||topicId)}</h2><p class="muted">Pasirink, kiek klausimų gaus kiekvienas mokinys. Sistema naudoja vienodą balanso karkasą: kiekvienam mokiniui tenka tokios pačios temos, tie patys sunkumo lygiai ir tie patys klausimų tipai, bet parenkami skirtingi lygiaverčiai klausimų variantai.</p><form id="assessmentSettingsForm" class="formGroup"><label>Klausimų skaičius<input id="assessmentQuestionCountInput" type="number" min="5" max="30" step="1" value="${current}" required></label><p class="formHint">Rekomenduojama: 30 klausimų. Galima rinktis nuo 5 iki 30.</p><button class="primary" type="submit">${openAfterSave?'Išsaugoti ir atidaryti atsiskaitymą':'Išsaugoti'}</button></form>`);
  $('assessmentSettingsForm').onsubmit=async e=>{
   e.preventDefault();
-  const count=Math.max(5,Math.min(40,Number($('assessmentQuestionCountInput').value)||20));
+  const count=Math.max(5,Math.min(30,Number($('assessmentQuestionCountInput').value)||30));
   const {data,error}=await sb.from('assessment_settings').upsert({class_id:c.id,topic_id:topicId,question_count:count,updated_by:me.id,updated_at:new Date().toISOString()},{onConflict:'class_id,topic_id'}).select().single();
   if(error)return toast(error.message);
   const ix=settings.findIndex(s=>s.topic_id===topicId);if(ix>=0)settings[ix]=data;else settings.push(data);
@@ -1837,7 +1837,7 @@ function renderStudentAssessmentCard(c,a,assessmentSetting,status){
   <div class="detailMetrics"><div class="metric"><strong>${status.completed_students||0}/${status.total_students||0}</strong><span>jau baigė</span></div><div class="metric"><strong>${fmtDurationDetailed(status.duration_seconds)}</strong><span>tavo trukmė</span></div><div class="metric"><strong>${status.focus_events||0}</strong><span>išėjimų / fokuso įvykių</span></div></div>`;
  }
  if(a.assessment_open){
-  return `<span class="badge ok">Atidaryta</span><p class="muted">${status?.attempt_id?`Atsiskaitymas jau pradėtas. <b>Naujas bandymas nebus kuriamas</b> – tęsi tą patį bandymą.`:`Atsiskaitymas šiuo metu atidarytas.`} Klausimų skaičius: <b>${assessmentSetting?.question_count||20}</b>. Atsiskaitymą galima atlikti tik vieną kartą. Visi mokiniai gauna lygiavertį sunkumo ir turinio karkasą. Fiksuojamas atlikimo laikas ir išėjimai iš lango / fokuso praradimai.</p><button class="primary" id="startAssessmentTopic">${status?.attempt_id?'Tęsti atsiskaitymą':'Pradėti atsiskaitymą'}</button>`;
+  return `<span class="badge ok">Atidaryta</span><p class="muted">${status?.attempt_id?`Atsiskaitymas jau pradėtas. <b>Naujas bandymas nebus kuriamas</b> – tęsi tą patį bandymą.`:`Atsiskaitymas šiuo metu atidarytas.`} Klausimų skaičius: <b>${assessmentSetting?.question_count||30}</b>. Atsiskaitymą galima atlikti tik vieną kartą. Visi mokiniai gauna lygiavertį sunkumo ir turinio karkasą. Fiksuojamas atlikimo laikas ir išėjimai iš lango / fokuso praradimai.</p><button class="primary" id="startAssessmentTopic">${status?.attempt_id?'Tęsti atsiskaitymą':'Pradėti atsiskaitymą'}</button>`;
  }
  return '<div class="lockedBox">🔒 Mokytojas atsiskaitymo dar neatidarė.</div>';
 }

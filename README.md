@@ -236,7 +236,7 @@ Tai pašalina `new row violates row-level security policy for table "classes"` k
 - 11 klasės vektorinės grafikos praktikos bankas: 120 klausimų (90 vieno pasirinkimo + 30 kelių tipų).
 - 10 klausimų praktika parenkama subalansuotai pagal kategorijas, sunkumą ir klausimo tipą.
 - Saugus 11 klasės atsiskaitymo bankas laikomas Supabase: 100 klausimų, 4 tipai (vienas atsakymas, keli atsakymai, „kuris netinka“, sujungimas).
-- Mokytojas prieš atidarydamas atsiskaitymą pasirenka 5–40 klausimų (numatyta 20).
+- Mokytojas prieš atidarydamas atsiskaitymą pasirenka 5–30 klausimų (numatyta 30).
 - Atsiskaitymo trukmę skaičiuoja serveris; fiksuojami skirtuko/langų paslėpimo, fokuso praradimo, puslapio išėjimo ir nebaigto uždarymo įvykiai.
 - Mokytojo mokinio detalėse atsiskaitymo eilutė turi mygtuką „Peržiūrėti“ su trukme, rezultatu, išėjimų laiku ir visais atsakymais.
 - Atsiskaitymo teisingi atsakymai pradžioje į naršyklę nesiunčiami; vertinimas vyksta serverio RPC.
@@ -252,9 +252,18 @@ Tai pašalina `new row violates row-level security policy for table "classes"` k
 - SQL: paleisti tik PATCH_v5_4_SINGLE_ATTEMPT_ASSESSMENT_RESULTS.sql, jei v5.3 SQL jau buvo paleistas.
 
 ## v5.5 – lygiaverčiai atsiskaitymai, uždelsti mokinio rezultatai, prisijungę dabar
-- 11 klasės vektorinės grafikos atsiskaitymas naudoja 20 balanso slotų. Standartiniame 20 klausimų teste kiekvienam mokiniui tenka tiksliai 8 vieno atsakymo, 5 kelių atsakymų, 4 „kuris netinka“ ir 3 sujungimo klausimai; 6 lengvi, 10 vidutinių ir 4 sunkesni.
+- 11 klasės vektorinės grafikos atsiskaitymas naudoja 30 balanso pozicijų. Standartiniame 30 klausimų teste kiekvienam mokiniui tenka tiksliai 12 vieno atsakymo, 8 kelių atsakymų, 6 „kuris netinka“ ir 4 sujungimo klausimai; 9 lengvi, 15 vidutinių ir 6 sunkesni.
 - Kiekvienas balanso slotas turi 8 lygiaverčius klausimo variantus. Todėl mokiniai gauna tą patį turinio ir sunkumo karkasą, bet ne būtinai tuos pačius klausimus.
 - Mokinys atsiskaitymo balą, teisingus atsakymus ir savo atsakymų peržiūrą pamato tik tada, kai visi dabartiniai klasės mokiniai yra užbaigę tą atsiskaitymą.
 - Mokytojas atsiskaitymo rezultatus, laiką, fokuso / išėjimo įvykius ir atsakymus mato iš karto.
 - Mokytojo pradžios lange rodoma „Prisijungę dabar“, o klasės mokinių lentelėje – dabartinė būsena ir veikla. Online laikomas aktyvumas per paskutines 90 s.; būsena atnaujinama kas 15 s.
 - Reikalingas `PATCH_v5_5_FAIR_ASSESSMENT_DELAYED_RESULTS_ONLINE.sql`.
+
+
+## v5.6 – 30 klausimų subalansuotas atsiskaitymas
+- 11 klasės vektorinės grafikos standartinis atsiskaitymas pakeistas į 30 klausimų.
+- Mokytojo nustatymuose numatyta 30; galima rinktis 5–30.
+- 30 klausimų forma turi 30 atskirų balanso pozicijų; nė viena pozicija tame pačiame teste nesikartoja.
+- Kiekvienai pozicijai yra 8 lygiaverčiai variantai: 30 × 8 = 240 saugių atsiskaitymo klausimų.
+- 30 klausimų struktūra: 12 vieno atsakymo, 8 kelių atsakymų, 6 „kuris netinka“, 4 sujungimo; 9 lengvi, 15 vidutinių ir 6 sunkesni.
+- Ankstesnė vieno bandymo taisyklė, uždelstas rezultatų rodymas, laiko / išėjimų fiksavimas ir prisijungusių mokinių stebėjimas išlieka.

@@ -14,3 +14,5 @@ v5.5:
 - vienas mokinys atsiskaitymą gali atlikti tik vieną kartą.
 
 Esami mokinių, klasių, failų ir rezultatų duomenys netrinami.
+
+V5.6: standartinis 11 klasės vektorinės grafikos atsiskaitymas – 30 klausimų; 30 atskirų balanso pozicijų, 8 variantai kiekvienai.
