@@ -2118,7 +2118,7 @@ function prepareClientQuestion(q){
 function renderQuestionInput(q){
  const type=qType(q),isAssessment=quiz.mode==='assessment-secure',saved=quiz.answers[quiz.index];
  if(type==='single'||type==='odd'){
-  $('answers').innerHTML=(q.shown||[]).map((o,i)=>`<button class="answer ${isAssessment&&Number(saved)===Number(o.original)?'selected':''}" data-v="${o.original}"><b>${String.fromCharCode(65+i)}.</b> ${esc(o.text)}</button>`).join('');
+  $('answers').innerHTML=(q.shown||[]).map((o,i)=>`<button class="answer ${isAssessment&&assessmentAnswerHasValue(q,saved)&&Number(saved)===Number(o.original)?'selected':''}" data-v="${o.original}"><b>${String.fromCharCode(65+i)}.</b> ${esc(o.text)}</button>`).join('');
   document.querySelectorAll('.answer').forEach(b=>b.onclick=()=>{const value=Number(b.dataset.v);if(isAssessment){quiz.answers[quiz.index]=value;document.querySelectorAll('.answer').forEach(x=>x.classList.toggle('selected',Number(x.dataset.v)===value));renderAssessmentQuestionNav();queueAssessmentAnswerSave(q,value);return}submitQuestionAnswer(value)});return;
  }
  if(type==='multi'){

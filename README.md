@@ -289,3 +289,10 @@ Tai pašalina `new row violates row-level security policy for table "classes"` k
 - Atsiskaityme pridėti „Ankstesnis“, „Kitas“ ir 1–30 klausimų navigatorius; atsakyti klausimai pažymimi.
 - Mygtukas „Išeiti“ nebaigia atsiskaitymo: išėjimas užfiksuojamas, o mokinys gali tęsti tą patį bandymą vėliau.
 - Galutinis pateikimas lieka atskiras veiksmas ir po jo atsakymų keisti nebegalima.
+
+## v5.9 – atsakymo pažymėjimo ir SVG klausimų pataisymai
+- Neatsakytame vieno pasirinkimo klausime nebepažymimas pirmasis / teisingas variantas.
+- Grįžus į jau atsakytą klausimą, mokinio pasirinkimas ir toliau rodomas pažymėtas.
+- Pataisyti 8 SVG balanso pozicijos variantai, kad klausimas ir atsakymų tipas sutaptų (pvz. plėtinys -> .svg).
+- Oficialūs formatų pavadinimai gali likti anglų kalba tik ten, kur tikrinama santrumpos reikšmė.
+- Jau užbaigti arba atsakyti istoriniai klausimai neperrašomi; pataisomi tik dar neatsakyti aktyvių bandymų klausimai.
