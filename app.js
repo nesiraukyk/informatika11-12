@@ -52,9 +52,24 @@ const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.r
 const fmtSec=s=>{s=Number(s||0);const h=Math.floor(s/3600),m=Math.floor((s%3600)/60);return h?`${h} val. ${m} min.`:`${m} min.`};
 const fmtDurationDetailed=s=>{s=Math.max(0,Number(s||0));const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=Math.floor(s%60);return h?`${h} val. ${m} min. ${sec} s`:(m?`${m} min. ${sec} s`:`${sec} s`)};
 const qType=q=>q?.type||q?.question_type||'single';
-const normalizeAnswer=(v,type)=>{if(type==='multi')return [...(Array.isArray(v)?v:[])].map(Number).sort((x,y)=>x-y);if(type==='matching'&&v&&typeof v==='object'){const o={};Object.keys(v).sort().forEach(k=>o[k]=Number(v[k]));return o}return v===null||v===undefined?null:Number(v)};
+const questionChoices=q=>Array.isArray(q?.options)?q.options:(Array.isArray(q?.options?.choices)?q.options.choices:[]);
+const normalizeAnswer=(v,type)=>{
+ if(type==='multi')return [...(Array.isArray(v)?v:[])].map(Number).sort((x,y)=>x-y);
+ if((type==='matching'||type==='sequence')&&v&&typeof v==='object'&&!Array.isArray(v)){const o={};Object.keys(v).sort((a,b)=>Number(a)-Number(b)).forEach(k=>o[k]=Number(v[k]));return o}
+ if(type==='short')return v===null||v===undefined?null:String(v).trim();
+ return v===null||v===undefined?null:Number(v)
+};
 const answerEquals=(a,b,type)=>JSON.stringify(normalizeAnswer(a,type))===JSON.stringify(normalizeAnswer(b,type));
-const qTypeLabel=t=>({single:'Vienas atsakymas',multi:'Keli atsakymai',odd:'Kuris netinka',matching:'Sujungimas'})[t]||'Klausimas';
+const qTypeLabel=t=>({single:'Vienas atsakymas',multi:'Keli atsakymai',odd:'Kuris netinka',matching:'Sujungimas',sequence:'Eiliškumas',short:'Trumpas atsakymas'})[t]||'Klausimas';
+function renderQuestionVisual(q){
+ const v=q?.options?.visual;if(!v||!v.kind)return '';
+ const caption=v.caption?`<div class="questionVisualCaption">${esc(v.caption)}</div>`:'';
+ if(v.kind==='bezier-labelled')return `<div class="questionVisual">${caption}<svg viewBox="0 0 620 210" role="img" aria-label="Bezjė kreivės schema"><path d="M115 150 C215 25 390 25 500 150" fill="none" stroke="currentColor" stroke-width="7"/><line x1="115" y1="150" x2="205" y2="55" stroke="currentColor" stroke-width="2" stroke-dasharray="7 7" opacity=".5"/><circle cx="115" cy="150" r="12" class="visualAccent"/><circle cx="205" cy="55" r="10" class="visualHandle"/><text x="88" y="188">A</text><text x="194" y="38">B</text><text x="315" y="64">C</text><text x="153" y="104">D</text></svg></div>`;
+ if(v.kind==='vector-raster-zoom')return `<div class="questionVisual">${caption}<div class="visualCompare"><div><b>A</b><svg viewBox="0 0 180 130"><circle cx="90" cy="65" r="44" class="visualSmooth"/></svg><span>Padidinta</span></div><div><b>B</b><div class="pixelCircle" aria-label="pikseliuotas apskritimas"></div><span>Padidinta</span></div></div></div>`;
+ if(v.kind==='composition-space')return `<div class="questionVisual">${caption}<div class="compositionCompare"><div><b>A</b><div class="crowdedMock"><span></span><span></span><span></span><span></span><span></span><span></span></div></div><div><b>B</b><div class="balancedMock"><span class="heroBox"></span><span></span><span></span></div></div></div></div>`;
+ if(v.kind==='gradient-samples')return `<div class="questionVisual">${caption}<div class="gradientSamples"><div><b>A</b><span class="solidSample"></span></div><div><b>B</b><span class="gradientSample"></span></div><div><b>C</b><span class="outlineSample"></span></div><div><b>D</b><span class="transparentSample"></span></div></div></div>`;
+ return '';
+}
 const fmtDate=d=>d?new Date(d).toLocaleString('lt-LT'):'–';
 
 function renderStudentTeacherUpdates(posts=[]){
@@ -1475,12 +1490,16 @@ async function removeStudentFromClass(studentId,classId,studentName){
 
 function formatStoredAnswer(q,answer){
  if(answer===null||answer===undefined)return 'neatsakyta';
- const type=q.question_type||'single',opts=q.options;
- if(type==='single'||type==='odd'){const i=Number(answer);return Array.isArray(opts)&&opts[i]!=null?opts[i]:String(answer)}
- if(type==='multi'){return (Array.isArray(answer)?answer:[]).map(i=>Array.isArray(opts)&&opts[Number(i)]!=null?opts[Number(i)]:String(i)).join('; ')||'neatsakyta'}
+ const type=q.question_type||'single',opts=q.options,choices=questionChoices(q);
+ if(type==='single'||type==='odd'){const i=Number(answer);return choices[i]!=null?choices[i]:String(answer)}
+ if(type==='multi'){return (Array.isArray(answer)?answer:[]).map(i=>choices[Number(i)]!=null?choices[Number(i)]:String(i)).join('; ')||'neatsakyta'}
  if(type==='matching'){
   const left=opts?.left||[],right=opts?.right||[];return left.map((l,i)=>`${l} → ${right[Number(answer?.[String(i)])]??'—'}`).join(' | ')
  }
+ if(type==='sequence'){
+  const items=opts?.items||[];return Object.entries(answer||{}).sort((a,b)=>Number(a[1])-Number(b[1])).map(([idx,pos])=>`${Number(pos)+1}. ${items[Number(idx)]??'—'}`).join(' → ')||'neatsakyta'
+ }
+ if(type==='short')return String(answer||'').trim()||'neatsakyta';
  return String(answer);
 }
 function focusEventLabel(t){return ({hidden:'Perėjo į kitą skirtuką / puslapis paslėptas',blur:'Naršyklės langas prarado fokusą',pagehide:'Išėjo arba perkrovė puslapį',quit:'Paspaudė „Baigti“ nebaigęs'})[t]||t}
@@ -2109,7 +2128,8 @@ function assessmentAnswerHasValue(q,answer){
  const type=qType(q);
  if(answer===null||answer===undefined)return false;
  if(type==='multi')return Array.isArray(answer)&&answer.length>0;
- if(type==='matching')return answer&&typeof answer==='object'&&Object.keys(answer).length>0;
+ if(type==='matching'||type==='sequence')return answer&&typeof answer==='object'&&!Array.isArray(answer)&&Object.keys(answer).length>0;
+ if(type==='short')return String(answer).trim().length>0;
  return Number.isFinite(Number(answer));
 }
 function assessmentAnswerComplete(q,answer){
@@ -2119,6 +2139,11 @@ function assessmentAnswerComplete(q,answer){
   const left=q.options?.left||[];
   return left.every((_x,i)=>answer?.[String(i)]!==undefined&&answer?.[String(i)]!==null&&answer?.[String(i)]!=='');
  }
+ if(type==='sequence'){
+  const items=q.options?.items||[],vals=items.map((_x,i)=>answer?.[String(i)]).filter(v=>v!==undefined&&v!==null&&v!=='').map(Number);
+  return vals.length===items.length&&new Set(vals).size===items.length&&vals.every(v=>v>=0&&v<items.length);
+ }
+ if(type==='short')return String(answer).trim().length>=2;
  return true;
 }
 function saveAssessmentDraftLocal(){
@@ -2167,27 +2192,49 @@ function renderAssessmentQuestionNav(){
 
 function prepareClientQuestion(q){
  const type=qType(q),out={...q,type};
- if(type==='single'||type==='odd'||type==='multi')out.shown=shuffle((q.options||[]).map((text,original)=>({text,original})));
+ if(type==='single'||type==='odd'||type==='multi'){
+  const choices=questionChoices(q).map((text,original)=>({text,original}));
+  out.shown=q?.options?.shuffle===false?choices:shuffle(choices);
+ }
+ if(type==='sequence')out.sequenceShown=shuffle((q.options?.items||[]).map((text,original)=>({text,original})));
  return out;
 }
 function renderQuestionInput(q){
- const type=qType(q),isAssessment=quiz.mode==='assessment-secure',saved=quiz.answers[quiz.index];
+ const type=qType(q),isAssessment=quiz.mode==='assessment-secure',saved=quiz.answers[quiz.index],visual=renderQuestionVisual(q);
  if(type==='single'||type==='odd'){
-  $('answers').innerHTML=(q.shown||[]).map((o,i)=>`<button class="answer ${isAssessment&&assessmentAnswerHasValue(q,saved)&&Number(saved)===Number(o.original)?'selected':''}" data-v="${o.original}"><b>${String.fromCharCode(65+i)}.</b> ${esc(o.text)}</button>`).join('');
+  $('answers').innerHTML=visual+(q.shown||[]).map((o,i)=>`<button class="answer ${isAssessment&&assessmentAnswerHasValue(q,saved)&&Number(saved)===Number(o.original)?'selected':''}" data-v="${o.original}"><b>${String.fromCharCode(65+i)}.</b> ${esc(o.text)}</button>`).join('');
   document.querySelectorAll('.answer').forEach(b=>b.onclick=()=>{const value=Number(b.dataset.v);if(isAssessment){quiz.answers[quiz.index]=value;document.querySelectorAll('.answer').forEach(x=>x.classList.toggle('selected',Number(x.dataset.v)===value));renderAssessmentQuestionNav();queueAssessmentAnswerSave(q,value);return}submitQuestionAnswer(value)});return;
  }
  if(type==='multi'){
   const selected=new Set(Array.isArray(saved)?saved.map(Number):[]);
-  $('answers').innerHTML=`<div class="multiHint">Pažymėk visus teisingus atsakymus.</div>${(q.shown||[]).map((o,i)=>`<label class="multiAnswer ${isAssessment&&selected.has(Number(o.original))?'selected':''}"><input type="checkbox" data-multi-v="${o.original}" ${isAssessment&&selected.has(Number(o.original))?'checked':''}><span><b>${String.fromCharCode(65+i)}.</b> ${esc(o.text)}</span></label>`).join('')}${isAssessment?'':'<button class="primary confirmAnswerBtn" id="confirmMultiAnswer">Patvirtinti atsakymą</button>'}`;
+  $('answers').innerHTML=visual+`<div class="multiHint">Pažymėk visus teisingus atsakymus.</div>${(q.shown||[]).map((o,i)=>`<label class="multiAnswer ${isAssessment&&selected.has(Number(o.original))?'selected':''}"><input type="checkbox" data-multi-v="${o.original}" ${isAssessment&&selected.has(Number(o.original))?'checked':''}><span><b>${String.fromCharCode(65+i)}.</b> ${esc(o.text)}</span></label>`).join('')}${isAssessment?'':'<button class="primary confirmAnswerBtn" id="confirmMultiAnswer">Patvirtinti atsakymą</button>'}`;
   if(isAssessment){document.querySelectorAll('[data-multi-v]').forEach(ch=>ch.onchange=()=>{const vals=[...document.querySelectorAll('[data-multi-v]:checked')].map(x=>Number(x.dataset.multiV)).sort((a,b)=>a-b);quiz.answers[quiz.index]=vals;document.querySelectorAll('.multiAnswer').forEach(l=>l.classList.toggle('selected',l.querySelector('input')?.checked===true));renderAssessmentQuestionNav();queueAssessmentAnswerSave(q,vals)})}
   else $('confirmMultiAnswer').onclick=()=>{const vals=[...document.querySelectorAll('[data-multi-v]:checked')].map(x=>Number(x.dataset.multiV)).sort((a,b)=>a-b);if(!vals.length)return toast('Pasirink bent vieną atsakymą.');submitQuestionAnswer(vals)};return;
  }
  if(type==='matching'){
   const left=q.options?.left||[],right=q.options?.right||[],existing=saved&&typeof saved==='object'?saved:{};
-  $('answers').innerHTML=`<div class="multiHint">Kiekvienai sąvokai parink tinkamą porą.</div><div class="matchingGrid">${left.map((l,i)=>`<label class="matchingRow ${isAssessment&&existing[String(i)]!==undefined?'selected':''}"><span>${esc(l)}</span><select data-match="${i}"><option value="">— pasirink —</option>${right.map((r,j)=>`<option value="${j}" ${isAssessment&&Number(existing[String(i)])===j?'selected':''}>${esc(r)}</option>`).join('')}</select></label>`).join('')}</div>${isAssessment?'':'<button class="primary confirmAnswerBtn" id="confirmMatchingAnswer">Patvirtinti atsakymą</button>'}`;
+  $('answers').innerHTML=visual+`<div class="multiHint">Kiekvienai sąvokai parink tinkamą porą.</div><div class="matchingGrid">${left.map((l,i)=>`<label class="matchingRow ${isAssessment&&existing[String(i)]!==undefined?'selected':''}"><span>${esc(l)}</span><select data-match="${i}"><option value="">— pasirink —</option>${right.map((r,j)=>`<option value="${j}" ${isAssessment&&Number(existing[String(i)])===j?'selected':''}>${esc(r)}</option>`).join('')}</select></label>`).join('')}</div>${isAssessment?'':'<button class="primary confirmAnswerBtn" id="confirmMatchingAnswer">Patvirtinti atsakymą</button>'}`;
   if(isAssessment){document.querySelectorAll('[data-match]').forEach(sel=>sel.onchange=()=>{const ans={};document.querySelectorAll('[data-match]').forEach(x=>{if(x.value!=='')ans[x.dataset.match]=Number(x.value)});quiz.answers[quiz.index]=ans;document.querySelectorAll('.matchingRow').forEach(l=>l.classList.toggle('selected',l.querySelector('select')?.value!==''));renderAssessmentQuestionNav();queueAssessmentAnswerSave(q,ans)})}
   else $('confirmMatchingAnswer').onclick=()=>{const ans={};let ok=true;document.querySelectorAll('[data-match]').forEach(s=>{if(s.value==='')ok=false;else ans[s.dataset.match]=Number(s.value)});if(!ok)return toast('Sujunk visas poras.');submitQuestionAnswer(ans)};
+  return;
  }
+ if(type==='sequence'){
+  const items=q.sequenceShown||[],existing=saved&&typeof saved==='object'&&!Array.isArray(saved)?saved:{},n=q.options?.items?.length||items.length;
+  $('answers').innerHTML=visual+`<div class="multiHint">Kiekvienam žingsniui parink jo vietą sekoje: 1 – pirmas žingsnis.</div><div class="sequenceGrid">${items.map(item=>`<label class="sequenceRow ${existing[String(item.original)]!==undefined?'selected':''}"><span>${esc(item.text)}</span><select data-sequence="${item.original}"><option value="">— vieta —</option>${Array.from({length:n},(_x,j)=>`<option value="${j}" ${Number(existing[String(item.original)])===j?'selected':''}>${j+1}</option>`).join('')}</select></label>`).join('')}</div><div class="sequenceHint" id="sequenceHint"></div>`;
+  const updateSequence=()=>{const ans={};document.querySelectorAll('[data-sequence]').forEach(x=>{if(x.value!=='')ans[x.dataset.sequence]=Number(x.value)});quiz.answers[quiz.index]=ans;document.querySelectorAll('.sequenceRow').forEach(l=>l.classList.toggle('selected',l.querySelector('select')?.value!==''));const vals=Object.values(ans).map(Number),duplicate=vals.length!==new Set(vals).size;$('sequenceHint').textContent=duplicate?'Kiekviena vieta sekoje gali būti panaudota tik vieną kartą.':'';renderAssessmentQuestionNav();queueAssessmentAnswerSave(q,ans)};
+  document.querySelectorAll('[data-sequence]').forEach(sel=>sel.onchange=updateSequence);
+  return;
+ }
+ if(type==='short'){
+  const val=saved===null||saved===undefined?'':String(saved);
+  $('answers').innerHTML=visual+`<div class="multiHint">Atsakyk trumpai, 1–2 sakiniais. Atsakymą gali keisti iki teorinės dalies pateikimo.</div><textarea id="shortAssessmentAnswer" class="shortAnswerInput" rows="4" maxlength="500" placeholder="Įrašyk atsakymą...">${esc(val)}</textarea><div class="shortAnswerMeta"><span>Iki 500 simbolių</span><span id="shortAnswerCount">${val.length}/500</span></div>`;
+  const ta=$('shortAssessmentAnswer');
+  let timer=null;
+  ta.oninput=()=>{const value=ta.value;quiz.answers[quiz.index]=value;assessmentDirtyQuestionIds.add(q.id);saveAssessmentDraftLocal();renderAssessmentQuestionNav();$('shortAnswerCount').textContent=`${value.length}/500`;setAssessmentSaveStatus('Išsaugoma…','saving');clearTimeout(timer);timer=setTimeout(()=>queueAssessmentAnswerSave(q,value),650)};
+  ta.onblur=()=>{clearTimeout(timer);queueAssessmentAnswerSave(q,ta.value)};
+  return;
+ }
+ $('answers').innerHTML=visual+'<div class="emptyState">Šio klausimo tipas nepalaikomas.</div>';
 }
 function markPracticeAnswer(q,answer,ok){
  const type=qType(q);
@@ -2195,10 +2242,12 @@ function markPracticeAnswer(q,answer,ok){
  else document.querySelectorAll('#answers input,#answers select,#answers button').forEach(el=>el.disabled=true);
 }
 function formatClientAnswer(q,answer){
- if(answer===null||answer===undefined)return 'neatsakyta';const type=qType(q),opts=q.options;
- if(type==='single'||type==='odd')return opts?.[Number(answer)]??String(answer);
- if(type==='multi')return (Array.isArray(answer)?answer:[]).map(i=>opts?.[Number(i)]??String(i)).join('; ');
+ if(answer===null||answer===undefined)return 'neatsakyta';const type=qType(q),opts=q.options,choices=questionChoices(q);
+ if(type==='single'||type==='odd')return choices?.[Number(answer)]??String(answer);
+ if(type==='multi')return (Array.isArray(answer)?answer:[]).map(i=>choices?.[Number(i)]??String(i)).join('; ');
  if(type==='matching'){const left=opts?.left||[],right=opts?.right||[];return left.map((l,i)=>`${l} → ${right[Number(answer?.[String(i)])]??'—'}`).join(' | ')}
+ if(type==='sequence'){const items=opts?.items||[];return Object.entries(answer||{}).sort((a,b)=>Number(a[1])-Number(b[1])).map(([idx,pos])=>`${Number(pos)+1}. ${items[Number(idx)]??'—'}`).join(' → ')}
+ if(type==='short')return String(answer||'').trim()||'neatsakyta';
  return String(answer);
 }
 

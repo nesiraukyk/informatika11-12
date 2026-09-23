@@ -322,3 +322,13 @@ Tai pašalina `new row violates row-level security policy for table "classes"` k
 - Jei trūksta SVG ir/ar PNG, mokinys gauna aiškų perspėjimą ir gali pasirinkti „Atšaukti“ arba vis tiek pateikti.
 - Po pateikimo failų keisti ar papildomai įkelti nebegalima.
 - Mokytojas mato, kokie failai buvo pateikti, ir rubrikos kriterijų „Tinkamai pateikti SVG + PNG“ gali vertinti atitinkamai.
+
+## v5.13 – sunkesnis ir įvairesnis 11 klasės atsiskaitymas
+- 30 teorijos klausimų balansas: 6 lengvi, 16 vidutinių, 8 sunkesni.
+- Daugiau realių situacijų ir kelių žingsnių sprendimų.
+- 4 vaizdų analizės klausimų pozicijos (Bezjė schema, vektorius / rastras, kompozicija, gradientas).
+- 3 eiliškumo klausimų pozicijos.
+- 2 trumpų 1–2 sakinių atsakymų pozicijos su automatiniu esminių sąvokų patikrinimu.
+- Išlieka vieno atsakymo, kelių atsakymų, „kuris netinka“ ir sujungimo klausimai.
+- Atsakymai kaip ir anksčiau automatiškai saugomi, iki I dalies pateikimo juos galima keisti.
+- II dalies logotipo praktinė užduotis lieka atskira ir nekeičiama.

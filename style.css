@@ -557,3 +557,47 @@ textarea{
  .practicalFileCard{align-items:flex-start;flex-wrap:wrap}
  .assessmentLogoPreview{max-width:100%}
 }
+
+
+/* ===== v5.13 · sunkesni atsiskaitymo klausimai ===== */
+.questionVisual{
+  margin:0 0 14px;
+  padding:16px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:color-mix(in srgb,var(--p) 3%,var(--surface));
+  color:var(--ink);
+}
+.questionVisualCaption{font-size:12px;color:var(--muted);font-weight:750;margin-bottom:10px}
+.questionVisual svg{display:block;width:100%;max-height:210px}
+.questionVisual svg text{fill:currentColor;font:800 18px system-ui,sans-serif}
+.questionVisual .visualAccent{fill:var(--p)}
+.questionVisual .visualHandle{fill:var(--surface);stroke:var(--p);stroke-width:5}
+.visualCompare,.compositionCompare,.gradientSamples{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.visualCompare>div,.compositionCompare>div,.gradientSamples>div{display:grid;gap:8px;place-items:center;padding:12px;border:1px solid var(--line);border-radius:13px;background:var(--surface)}
+.visualCompare span{font-size:11px;color:var(--muted)}
+.visualSmooth{fill:color-mix(in srgb,var(--p) 18%,var(--surface));stroke:var(--p);stroke-width:6}
+.pixelCircle{width:112px;height:112px;border-radius:50%;background:var(--p);image-rendering:pixelated;clip-path:polygon(28% 0,72% 0,72% 7%,86% 7%,86% 14%,93% 14%,93% 28%,100% 28%,100% 72%,93% 72%,93% 86%,86% 86%,86% 93%,72% 93%,72% 100%,28% 100%,28% 93%,14% 93%,14% 86%,7% 86%,7% 72%,0 72%,0 28%,7% 28%,7% 14%,14% 14%,14% 7%,28% 7%)}
+.crowdedMock,.balancedMock{width:100%;height:135px;border-radius:10px;background:var(--surface2);position:relative;overflow:hidden}
+.crowdedMock span{position:absolute;background:color-mix(in srgb,var(--p) 35%,var(--surface));border:1px solid var(--p);border-radius:7px}
+.crowdedMock span:nth-child(1){inset:8px 48% 78px 8px}.crowdedMock span:nth-child(2){inset:8px 8px 76px 54%}.crowdedMock span:nth-child(3){inset:52px 42% 42px 6px}.crowdedMock span:nth-child(4){inset:55px 6px 40px 60%}.crowdedMock span:nth-child(5){inset:96px 49% 8px 5px}.crowdedMock span:nth-child(6){inset:94px 5px 6px 53%}
+.balancedMock .heroBox,.balancedMock span{position:absolute;display:block;background:color-mix(in srgb,var(--p) 30%,var(--surface));border-radius:8px}
+.balancedMock .heroBox{left:18px;top:18px;width:45%;height:56px}.balancedMock span:nth-child(2){left:18px;bottom:22px;width:64%;height:12px}.balancedMock span:nth-child(3){right:18px;bottom:20px;width:22%;height:34px}
+.gradientSamples{grid-template-columns:repeat(4,minmax(0,1fr))}
+.gradientSamples span{display:block;width:100%;height:72px;border-radius:10px}
+.solidSample{background:var(--p)}
+.gradientSample{background:linear-gradient(90deg,var(--p),#34d8e8)}
+.outlineSample{border:7px solid var(--p);background:transparent}
+.transparentSample{background:repeating-conic-gradient(#d8deea 0 25%,#fff 0 50%) 50%/20px 20px}
+.sequenceGrid{display:grid;gap:10px}
+.sequenceRow{display:grid;grid-template-columns:1fr 115px;gap:12px;align-items:center;border:1px solid var(--line);background:var(--surface2);border-radius:13px;padding:12px 13px}
+.sequenceRow.selected{border-color:var(--p);background:color-mix(in srgb,var(--p) 8%,var(--surface))}
+.sequenceRow select,.matchingRow select{min-width:0}
+.sequenceHint{min-height:18px;color:var(--bad);font-size:12px;font-weight:750}
+.shortAnswerInput{width:100%;resize:vertical;min-height:110px;border:1px solid var(--line);border-radius:14px;background:var(--surface2);color:var(--ink);padding:14px;font:inherit;line-height:1.5}
+.shortAnswerInput:focus{outline:2px solid color-mix(in srgb,var(--p) 35%,transparent);border-color:var(--p)}
+.shortAnswerMeta{display:flex;justify-content:space-between;color:var(--muted);font-size:11px;margin-top:6px}
+@media(max-width:620px){
+ .gradientSamples{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .sequenceRow{grid-template-columns:1fr}
+}
