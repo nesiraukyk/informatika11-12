@@ -629,3 +629,14 @@ textarea{
 .rewardFacts{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.rewardFacts span{font-size:11px;padding:7px 9px;border:1px solid var(--line);border-radius:999px;background:var(--surface)}
 .newBadge{display:flex;align-items:center;gap:11px;margin-top:13px;padding:11px;border-radius:14px;background:var(--surface);border:1px solid color-mix(in srgb,var(--p) 25%,var(--line))}.newBadge>span{font-size:28px}.newBadge div{display:flex;flex-direction:column}.newBadge small{color:var(--p);font-weight:900;letter-spacing:.06em}.newBadge b{font-size:15px}
 @media(max-width:760px){.motivationMiniGrid{grid-template-columns:repeat(2,1fr)}.classChallengeMini{align-items:flex-start;flex-direction:column}.classChallengeMini .miniProgress{width:100%;flex:auto}.badgeGrid{grid-template-columns:1fr}.motivationActions{align-items:flex-start;flex-direction:column}.rewardLevel{align-items:flex-start;flex-direction:column}.rewardLevel .miniProgress{width:100%;flex:auto}}
+
+
+/* ===== v5.15 · mokytojo motyvacijos valdymas ===== */
+.motivationAdminPanel{max-width:100%}
+.motivationMasterSwitch{display:flex;align-items:center;gap:18px;padding:16px;margin:8px 0 14px;border:1px solid color-mix(in srgb,var(--p) 24%,var(--line));border-radius:16px;background:color-mix(in srgb,var(--p) 5%,var(--surface))}
+.motivationMasterSwitch .grow{display:flex;flex-direction:column;gap:4px}
+.motivationMasterSwitch .grow span{font-size:12px;color:var(--muted)}
+.motivationBigToggle{white-space:nowrap;font-weight:850}
+.motivationStudentSelect{min-width:230px;max-width:100%;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);padding:8px 10px;font:inherit}
+.motivationAdminTable td{vertical-align:middle}
+@media(max-width:700px){.motivationMasterSwitch{align-items:flex-start;flex-direction:column}.motivationStudentSelect{min-width:180px}}

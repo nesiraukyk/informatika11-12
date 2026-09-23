@@ -343,3 +343,13 @@ Tai pašalina `new row violates row-level security policy for table "classes"` k
 - Apsauga nuo XP „farminimo“: kartojant tą pačią temą tą pačią dieną vėlesni bandymai duoda mažiau XP.
 - Sistema progresą paskaičiuoja ir iš anksčiau užbaigtų praktikų; duomenys nedubliuojami atskiroje XP lentelėje.
 - Į ZIP įtraukti `CNAME` (`ngg-informatika.lt`) ir `.nojekyll`, kad GitHub Pages domeno nustatymai nedingtų keičiant versiją.
+
+## v5.15 – motyvacinės sistemos valdymas mokytojui
+- Klasės puslapyje atsirado skiltis `🎯 Motyvacija`.
+- Mokytojas gali įjungti / išjungti sistemą visai klasei.
+- Kiekvienam mokiniui galima pasirinkti: `Pagal klasės nustatymą`, `Įjungti šiam mokiniui`, `Išjungti šiam mokiniui`.
+- Individualus nustatymas turi pirmenybę prieš klasės nustatymą.
+- Po v5.15 motyvacija klasėms pagal nutylėjimą išjungta, todėl galima testuoti tik su pasirinktu demo mokiniu.
+- Kai sistema mokiniui išjungta, jis nemato XP kortelės, `Pasiekimų`, temos įvaldymo ir XP atlygio po treniruotės. Pačios žinių treniruotės nesikeičia.
+- Vėliau įjungus sistemą progresas perskaičiuojamas iš jau atliktų treniruočių.
+- `CNAME` (`ngg-informatika.lt`) ir `.nojekyll` išlieka ZIP.

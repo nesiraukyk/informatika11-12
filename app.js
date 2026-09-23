@@ -271,7 +271,7 @@ function setHeader(){
  // Mokinys turi vieną aiškią pradžios nuorodą, kuri visada atidaro jo klasę.
  $('homeNav').classList.toggle('hidden',isTeacher);
  $('homeNav').dataset.route='student';
- if($('achievementsNav'))$('achievementsNav').classList.toggle('hidden',isTeacher);
+ if($('achievementsNav'))$('achievementsNav').classList.add('hidden');
  $('teacherNav').classList.toggle('hidden',!isTeacher);
  $('teacherNav').textContent=profile.role==='admin'?'Administratoriaus skydelis':'Mokytojo aplinka';
  $('studentNav').classList.add('hidden');
@@ -695,6 +695,7 @@ async function openTeacherClass(classId,initialPanel='students'){
  <div class="pageHero"><button class="back" id="backTeacher">← ${profile.role==='admin'?'Visos klasės':'Mano klasės'}</button><div class="classHeader"><div class="grow"><span class="kicker">KLASĖ${c.grade_level?` · ${esc(gradeLabel(c.grade_level)||c.grade_level)}`:''}</span><h1>${esc(c.name)}</h1></div><div class="classHeaderActions"><div>Prisijungimo kodas <span class="joinCode">${esc(c.join_code)}</span></div><button class="ghost" id="studentPreviewBtn">👁 Mokinio vaizdas</button></div></div></div>
  <div class="tabsRow actions" style="margin-bottom:14px">
   <button class="smallBtn primaryLike" data-tpanel="students">Mokiniai</button>
+  <button class="smallBtn" data-tpanel="motivation">🎯 Motyvacija</button>
   <button class="smallBtn" data-tpanel="assessments">Atsiskaitymų rezultatai${(attempts||[]).filter(x=>x.mode==='assessment').length?` <span class="inlineCount">${(attempts||[]).filter(x=>x.mode==='assessment').length}</span>`:''}</button>
   <button class="smallBtn" data-tpanel="topics">Temos</button>
   <button class="smallBtn" data-tpanel="resources">Mokymosi failai</button>
@@ -719,6 +720,52 @@ async function openTeacherClass(classId,initialPanel='students'){
  showClassPanel(activePanel);
  startClassPresenceRefresh(c.id);
 }
+
+async function loadTeacherMotivationSettings(classId){
+ const {data,error}=await sb.rpc('get_motivation_teacher_settings',{p_class_id:classId});
+ if(error)throw error;
+ return data||{class_enabled:false,students:[]};
+}
+async function renderTeacherMotivation(c,students){
+ const host=$('teacherClassPanel');if(!host)return;
+ host.innerHTML=`<div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">MOTYVACINĖ SISTEMA</span><h2>Kraunama...</h2></div></div></div>`;
+ let settings;
+ try{settings=await loadTeacherMotivationSettings(c.id)}catch(e){host.innerHTML=`<div class="panel"><div class="notice">${esc(e.message||String(e))}</div></div>`;return}
+ const byId=Object.fromEntries((settings.students||[]).map(x=>[x.student_id,x]));
+ const classOn=!!settings.class_enabled;
+ const rows=students.map(s=>{
+  const st=byId[s.id]||{has_override:false,override_enabled:null,effective_enabled:classOn};
+  const mode=st.has_override?(st.override_enabled?'on':'off'):'inherit';
+  return `<tr><td><b>${esc(s.full_name||'Mokinys')}</b></td><td><span class="badge ${st.effective_enabled?'ok':''}">${st.effective_enabled?'Įjungta':'Išjungta'}</span></td><td><select class="motivationStudentSelect" data-motivation-student="${s.id}"><option value="inherit" ${mode==='inherit'?'selected':''}>Pagal klasės nustatymą</option><option value="on" ${mode==='on'?'selected':''}>Įjungti šiam mokiniui</option><option value="off" ${mode==='off'?'selected':''}>Išjungti šiam mokiniui</option></select></td></tr>`;
+ }).join('');
+ host.innerHTML=`<div class="panel motivationAdminPanel">
+  <div class="sectionTitle"><div class="grow"><span class="kicker">MOTYVACINĖ SISTEMA</span><h2>XP, lygiai ir pasiekimai</h2><p class="muted">Gali įjungti visai klasei arba padaryti išimtį konkrečiam mokiniui. Testavimui patogu klasę palikti išjungtą ir įjungti tik savo demo mokiniui.</p></div></div>
+  <div class="motivationMasterSwitch"><div class="grow"><b>Visai klasei</b><span>${classOn?'Mokiniai pagal nutylėjimą mato motyvacinę sistemą.':'Mokiniai pagal nutylėjimą motyvacinės sistemos nemato.'}</span></div><label class="toggle motivationBigToggle"><input type="checkbox" id="classMotivationEnabled" ${classOn?'checked':''}> ${classOn?'Įjungta':'Išjungta'}</label></div>
+  <div class="notice"><b>Individuali išimtis turi pirmenybę.</b> Jei klasei sistema išjungta, gali ją įjungti tik vienam demo mokiniui.</div>
+  ${students.length?`<div class="tableWrap"><table class="dataTable motivationAdminTable"><thead><tr><th>Mokinys</th><th>Dabar mato</th><th>Nustatymas</th></tr></thead><tbody>${rows}</tbody></table></div>`:'<div class="emptyState">Klasėje dar nėra mokinių.</div>'}
+ </div>`;
+ const master=$('classMotivationEnabled');
+ if(master)master.onchange=async()=>{
+  master.disabled=true;
+  const {error}=await sb.rpc('set_class_motivation_enabled',{p_class_id:c.id,p_enabled:master.checked});
+  if(error){master.checked=!master.checked;master.disabled=false;return toast(error.message)}
+  toast(master.checked?'Motyvacinė sistema įjungta klasei.':'Motyvacinė sistema išjungta klasei.');
+  renderTeacherMotivation(c,students);
+ };
+ document.querySelectorAll('[data-motivation-student]').forEach(sel=>sel.onchange=async()=>{
+  sel.disabled=true;
+  let error=null;
+  if(sel.value==='inherit'){
+   ({error}=await sb.rpc('clear_student_motivation_override',{p_class_id:c.id,p_student_id:sel.dataset.motivationStudent}));
+  }else{
+   ({error}=await sb.rpc('set_student_motivation_override',{p_class_id:c.id,p_student_id:sel.dataset.motivationStudent,p_enabled:sel.value==='on'}));
+  }
+  if(error){sel.disabled=false;toast(error.message);return}
+  toast('Mokinio motyvacinės sistemos nustatymas išsaugotas.');
+  renderTeacherMotivation(c,students);
+ });
+}
+
 function renderTeacherClassPanel(panel,c,students,members,attempts,sessions,access,assessmentSettings=[]){
  const host=$('teacherClassPanel');
  if(panel==='students'){
@@ -732,6 +779,9 @@ function renderTeacherClassPanel(panel,c,students,members,attempts,sessions,acce
   host.innerHTML=`<div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">MOKINIAI</span><h2>${students.length} mok.</h2></div></div>
    ${students.length?`<div class="tableWrap"><table class="dataTable"><thead><tr><th>Mokinys</th><th>Būsena dabar</th><th>Paskutinis aktyvumas</th><th>Žinių treniruotės / atsiskaitymai</th><th>Aktyvus laikas</th><th>Pažymių vidurkis</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`:'<div class="emptyState"><b>Mokinių dar nėra.</b>Duokite mokiniams klasės kodą '+esc(c.join_code)+'.</div>'}</div>`;
   document.querySelectorAll('[data-student]').forEach(b=>b.onclick=()=>showStudentDetail(b.dataset.student,c.id));
+ }
+ if(panel==='motivation'){
+  renderTeacherMotivation(c,students);
  }
  if(panel==='assessments'){
   renderTeacherAssessments(c,students,attempts);
@@ -1852,14 +1902,14 @@ async function deleteAssignmentSubmission(id,c,assignmentId,who='student',topicI
 
 
 /* ================= MOTYVACIJA ================= */
-function motivationDefault(){
- return {total_xp:0,level_no:1,level_name:'Pradedantysis',level_min_xp:0,next_level_xp:250,level_progress_percent:0,completed_practices:0,perfect_count:0,best_score:0,today_practices:0,streak_days:0,weekly_practices:0,weekly_goal:3,badges:[],badges_unlocked:0,topic_mastery:[],class_weekly_practices:0,class_challenge_goal:3,class_challenge_percent:0};
+function motivationDefault(enabled=false){
+ return {enabled,total_xp:0,level_no:1,level_name:'Pradedantysis',level_min_xp:0,next_level_xp:250,level_progress_percent:0,completed_practices:0,perfect_count:0,best_score:0,today_practices:0,streak_days:0,weekly_practices:0,weekly_goal:3,badges:[],badges_unlocked:0,topic_mastery:[],class_weekly_practices:0,class_challenge_goal:3,class_challenge_percent:0};
 }
 async function getMotivationSummary(classId){
- if(!classId)return motivationDefault();
+ if(!classId)return motivationDefault(false);
  const {data,error}=await sb.rpc('get_my_motivation_summary',{p_class_id:classId});
- if(error){console.warn('Motyvacija:',error.message);return motivationDefault()}
- return data||motivationDefault();
+ if(error){console.warn('Motyvacija:',error.message);return motivationDefault(false)}
+ return data||motivationDefault(false);
 }
 async function getPracticeReward(attemptId){
  if(!attemptId)return null;
@@ -1874,7 +1924,7 @@ function motivationProgressText(s){
  return s?.next_level_xp==null?`${Number(s.total_xp)||0} XP · aukščiausias lygis`:`${Number(s.total_xp)||0} / ${Number(s.next_level_xp)||0} XP`;
 }
 function renderMotivationCard(s){
- s=s||motivationDefault();
+ s=s||motivationDefault(false);if(!s.enabled)return '';
  const weekly=Math.min(Number(s.weekly_practices)||0,Number(s.weekly_goal)||3),weeklyGoal=Number(s.weekly_goal)||3;
  const classNow=Number(s.class_weekly_practices)||0,classGoal=Number(s.class_challenge_goal)||3;
  return `<section class="motivationCard">
@@ -1908,7 +1958,7 @@ function detectNewBadge(summary,pct){
 }
 function renderPracticeMotivationReward(reward,topicId,pct){
  const box=$('motivationResult');if(!box)return;
- if(!reward?.summary){box.classList.add('hidden');box.innerHTML='';return}
+ if(!reward?.enabled||!reward?.summary?.enabled){box.classList.add('hidden');box.innerHTML='';return}
  const s=reward.summary,m=masteryFor(s,topicId),badge=detectNewBadge(s,pct);
  box.classList.remove('hidden');
  box.innerHTML=`<div class="rewardXp"><span>Už treniruotę</span><strong>+${Number(reward.xp_gained)||0} XP</strong></div>
@@ -1925,6 +1975,11 @@ async function renderAchievements(){
  $('achievementsContent').innerHTML='<div class="pageHero"><span class="kicker">PASIEKIMAI</span><h1>Kraunama...</h1></div>';
  await loadClassTopics(c.id);
  const s=await getMotivationSummary(c.id);
+ if(!s.enabled){
+  if($('achievementsNav'))$('achievementsNav').classList.add('hidden');
+  $('achievementsContent').innerHTML=`<div class="pageHero"><button class="back" id="backAchievements">← Mano klasė</button><span class="kicker">🏆 PASIEKIMAI</span><h1>Motyvacinė sistema neįjungta</h1><p>Šiai paskyrai mokytojas motyvacinės sistemos dar neįjungė.</p></div><div class="panel"><div class="emptyState">Žinių treniruotes gali atlikti kaip įprastai. XP, lygiai ir ženkliukai bus rodomi tik tada, kai mokytojas įjungs sistemą.</div></div>`;
+  show('achievements');$('backAchievements').onclick=()=>appBack(()=>renderStudent());return;
+ }
  const badges=s.badges||[],mastery=s.topic_mastery||[];
  $('achievementsContent').innerHTML=`<div class="pageHero"><button class="back" id="backAchievements">← Mano klasė</button><span class="kicker">🏆 PASIEKIMAI</span><h1>Tavo mokymosi progresas</h1><p>XP gauni už žinių treniruotes. Atsiskaitymų pažymiai XP nekeičia.</p></div>
  ${renderMotivationCard(s)}
@@ -1968,6 +2023,7 @@ async function renderStudent(){
   sb.from('direct_submissions').select('*').eq('student_id',me.id).eq('class_id',c.id).order('submitted_at',{ascending:false}),
   getMotivationSummary(c.id)
  ]);
+ if($('achievementsNav'))$('achievementsNav').classList.toggle('hidden',!motivation?.enabled);
  if(directErr)return toast(directErr.message);
 
  const secs=(sessions||[]).reduce((n,x)=>n+(x.duration_seconds||0),0),best=(attempts||[]).length?Math.max(...attempts.map(x=>x.score_percent||0)):0;
@@ -2101,7 +2157,7 @@ async function openStudentTopic(topicId,c,access){
  <div class="contentGrid"><div class="stack">
   ${renderStudentTeacherUpdates(topicPosts||[])}
   <div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">PRAKTIKA</span><h2>Žinių treniruotė</h2></div><span class="badge ${a.practice_open?'ok':''}">${a.practice_open?'Atidaryta':'Užrakinta'}</span></div>
-   ${topicMastery?`<div class="topicMasteryBox"><div class="masteryHead"><span>Temos įvaldymas</span><strong>${Number(topicMastery.mastery_percent)||0}%</strong></div><div class="masteryTrack"><span style="width:${Math.max(0,Math.min(100,Number(topicMastery.mastery_percent)||0))}%"></span></div><div class="subtle">Skaičiuojama pagal paskutines iki 5 treniruočių · geriausias rezultatas ${Number(topicMastery.best_score)||0}%</div></div>`:'<div class="topicMasteryBox empty"><b>Temos įvaldymas</b><span>Atlik pirmą treniruotę – čia atsiras tavo progresas.</span></div>'}
+   ${motivation?.enabled?(topicMastery?`<div class="topicMasteryBox"><div class="masteryHead"><span>Temos įvaldymas</span><strong>${Number(topicMastery.mastery_percent)||0}%</strong></div><div class="masteryTrack"><span style="width:${Math.max(0,Math.min(100,Number(topicMastery.mastery_percent)||0))}%"></span></div><div class="subtle">Skaičiuojama pagal paskutines iki 5 treniruočių · geriausias rezultatas ${Number(topicMastery.best_score)||0}%</div></div>`:'<div class="topicMasteryBox empty"><b>Temos įvaldymas</b><span>Atlik pirmą treniruotę – čia atsiras tavo progresas.</span></div>'):''}
    ${c.grade_level==='10'?renderGrade10StudentPracticePicker(practiceBlocks||[],a.practice_open):`<p class="muted"><b>Praktikuotis gali tiek kartų, kiek nori.</b> Kiekvieną kartą sistema iš didesnio klausimų banko atsitiktinai parenka 10 klausimų ir sumaišo atsakymų variantus, todėl bandymai nėra vienodi. Po kiekvieno atsakymo gausi paaiškinimą, o rezultatas ir atlikimo laikas bus išsaugoti tavo paskyroje.</p><button class="primary" id="startPracticeTopic" ${a.practice_open?'':'disabled'}>Pradėti 10 klausimų praktiką</button>`}
   </div>
   <div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">MOKYMOSI FAILAI</span><h2>Failai atsisiuntimui</h2></div></div>
