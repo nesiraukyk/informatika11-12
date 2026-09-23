@@ -373,3 +373,12 @@ Tai pašalina `new row violates row-level security policy for table "classes"` k
 - Mokytojo `🎯 Motyvacija` skiltyje pridėti jungikliai: rodyti klasės draugus, rodyti statuso ženkliukus, leisti kosmetines temas.
 - Visi nauji elementai mokiniui rodomi tik tada, kai jam įjungta motyvacinė sistema.
 - `CNAME` (`ngg-informatika.lt`) ir `.nojekyll` išlieka ZIP.
+
+## v5.18 – aiškesnės eiliškumo situacijos
+- Pakeistos tik 11 klasės vektorinės grafikos eiliškumo užduotys (pozicijos 11, 17 ir 28).
+- Ilgi ir dviprasmiški sakiniai pakeisti trumpais, konkrečiais veiksmais.
+- Naujo logotipo seka: sukurti → sutvarkyti → išsaugoti SVG → eksportuoti PNG.
+- Esamo logotipo atnaujinimas: atidaryti SVG → pakeisti → išsaugoti SVG → eksportuoti PNG.
+- Galutinio failo parengimas internetui: baigti redaguoti → išsaugoti SVG → eksportuoti PNG → patikrinti PNG.
+- Kiti v5.17 klausimai, motyvacinė sistema ir sąsaja nekeisti.
+- Jau pradėti atsiskaitymai lieka su savo ankstesniais klausimų snapshot'ais; nauji bandymai naudos v5.18 formuluotes.
