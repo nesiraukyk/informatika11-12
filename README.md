@@ -315,3 +315,10 @@ Tai pašalina `new row violates row-level security policy for table "classes"` k
 - Bendras procentas skaičiuojamas iš teorijos taškų + praktinės dalies taškų (pvz. 30+10=40 t.).
 - Mokinys rezultatą ir teisingus teorijos atsakymus mato tik kai klasė baigė atsiskaitymą ir mokytojas įvertino jo praktinę dalį.
 - Pašalinant mokinį iš klasės, jo atsiskaitymo SVG/PNG failai taip pat išvalomi; įprastų užduočių failai neliečiami.
+
+## v5.12 – praktinę dalį galima pateikti ir be failų
+- SVG ir PNG išlieka rekomenduojami praktinės užduoties failai, bet nebėra techninė pateikimo sąlyga.
+- „Pateikti visą atsiskaitymą“ visada aktyvus.
+- Jei trūksta SVG ir/ar PNG, mokinys gauna aiškų perspėjimą ir gali pasirinkti „Atšaukti“ arba vis tiek pateikti.
+- Po pateikimo failų keisti ar papildomai įkelti nebegalima.
+- Mokytojas mato, kokie failai buvo pateikti, ir rubrikos kriterijų „Tinkamai pateikti SVG + PNG“ gali vertinti atitinkamai.
