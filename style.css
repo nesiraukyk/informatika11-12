@@ -516,3 +516,44 @@ textarea{
   .assessmentTopicCell{width:180px;max-width:180px}
   .teacherUpdatesSection{padding:15px}
 }
+
+/* ===== v5.11 · dviejų dalių atsiskaitymas ===== */
+.assessmentPracticalSetting{
+  display:flex;align-items:flex-start;gap:10px;padding:13px 14px;border:1px solid var(--line);
+  border-radius:14px;background:color-mix(in srgb,var(--p) 4%,var(--surface));
+}
+.assessmentPracticalSetting input{margin-top:3px;flex:0 0 auto}
+.assessmentPracticalSetting span{display:grid;gap:3px}
+.assessmentPracticalSetting small{color:var(--muted);line-height:1.4}
+.assessmentStepsMini,.assessmentStepBar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.assessmentStepsMini{margin:10px 0}
+.assessmentStepsMini span,.assessmentStepBar span{
+  padding:7px 10px;border:1px solid var(--line);border-radius:999px;background:var(--surface);
+  color:var(--muted);font-size:12px;font-weight:850
+}
+.assessmentStepsMini span.active,.assessmentStepBar span.active{border-color:color-mix(in srgb,var(--p) 40%,var(--line));background:color-mix(in srgb,var(--p) 8%,var(--surface));color:var(--p)}
+.assessmentStepsMini span.done,.assessmentStepBar span.done{border-color:color-mix(in srgb,#1f9d55 35%,var(--line));color:#178447;background:color-mix(in srgb,#1f9d55 7%,var(--surface))}
+.assessmentStepBar{max-width:1180px;margin:0 auto 18px;padding:0 4px}
+.practicalAssessmentGrid{align-items:start}
+.rubricPreview{display:grid;gap:7px;margin:16px 0}
+.rubricPreview>div{display:flex;justify-content:space-between;gap:12px;padding:9px 11px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.rubricPreview b{white-space:nowrap;color:var(--p)}
+.practicalFileCard{display:flex;align-items:center;gap:10px;padding:12px;margin:10px 0;border:1px dashed var(--line);border-radius:14px;background:color-mix(in srgb,var(--surface) 92%,transparent)}
+.practicalFileCard.ready{border-style:solid;border-color:color-mix(in srgb,#1f9d55 35%,var(--line));background:color-mix(in srgb,#1f9d55 5%,var(--surface))}
+.practicalFileIcon{width:36px;height:36px;display:grid;place-items:center;border-radius:10px;background:var(--surface);border:1px solid var(--line);font-weight:900;color:var(--p)}
+.practicalUploadButton{cursor:pointer}
+.practicalSubmitStatus{margin:14px 0}
+.fullWidth{width:100%;justify-content:center;margin-top:8px}
+.practicalTeacherPanel{margin-top:14px}
+.assessmentLogoPreview{display:block;max-width:420px;max-height:280px;width:auto;height:auto;object-fit:contain;margin:12px auto 16px;padding:10px;border:1px solid var(--line);border-radius:14px;background:#fff}
+.practicalTeacherFiles{display:grid;gap:6px}
+.practicalGradeForm{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.rubricInputs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.rubricInputs label{display:grid;grid-template-columns:1fr auto;align-items:center;gap:6px}
+.rubricInputs label span{font-size:11px;color:var(--muted)}
+.rubricInputs input{grid-column:1/-1}
+@media(max-width:760px){
+ .rubricInputs{grid-template-columns:1fr}
+ .practicalFileCard{align-items:flex-start;flex-wrap:wrap}
+ .assessmentLogoPreview{max-width:100%}
+}

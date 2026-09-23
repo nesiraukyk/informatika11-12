@@ -304,3 +304,14 @@ Tai pašalina `new row violates row-level security policy for table "classes"` k
 - Pastabos ir nuorodos aiškiai atskiriamos pagal tipą, pateikiamos kompaktiškiau ir nebeatrodo kaip pagrindinės mokymosi kortelės.
 - Tas pats vaizdas rodomas ir mokytojo „Mokinio vaizdas“ peržiūroje.
 - Supabase SQL pakeitimų nereikia.
+
+## v5.11 – dviejų dalių 11 klasės atsiskaitymas
+- Vektorinės grafikos atsiskaitymas gali būti padalintas į I dalį (teorijos testas) ir II dalį (logotipo kūrimas).
+- Po teorijos pateikimo teorijos atsakymai užrakinami, o mokinys pereina į praktinę dalį.
+- Praktinėje dalyje išėjimai iš naršyklės nefiksuojami, nes mokinys turi dirbti „Inkscape“ ar kita grafikos programa.
+- Privalomi du failai: SVG originalas ir PNG peržiūra. Abu išsaugomi privačiame `student-submissions` bucket'e.
+- Galutinis atsiskaitymo pateikimas galimas tik įkėlus SVG ir PNG.
+- Mokytojas rezultatų lange mato PNG peržiūrą, gali atsisiųsti abu failus ir vertina logotipą pagal 10 taškų rubriką: objektai/formos 2, Bezjė 2, užpildas/kontūras/gradientas 2, tekstas 1, kompozicija 2, SVG+PNG 1.
+- Bendras procentas skaičiuojamas iš teorijos taškų + praktinės dalies taškų (pvz. 30+10=40 t.).
+- Mokinys rezultatą ir teisingus teorijos atsakymus mato tik kai klasė baigė atsiskaitymą ir mokytojas įvertino jo praktinę dalį.
+- Pašalinant mokinį iš klasės, jo atsiskaitymo SVG/PNG failai taip pat išvalomi; įprastų užduočių failai neliečiami.

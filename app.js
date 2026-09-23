@@ -88,6 +88,7 @@ let presenceActivity='Platforma',presenceTopicId=null,presenceClassId=null,teach
 let quiz={topicId:null,classId:null,mode:null,items:[],index:0,answers:[],attemptId:null,startMs:0,last:null,completed:false};
 let assessmentAccessToken=null,assessmentBlurTimer=null;
 let assessmentSaveQueue=Promise.resolve(),assessmentDirtyQuestionIds=new Set();
+let assessmentPracticalView={attemptId:null,topicId:null,classId:null};
 
 let uiBackStack=[],restoringBack=false,historyGuardReady=false,currentRestore=null;
 
@@ -572,6 +573,12 @@ function storageFileName(originalName){
  let ext=dot>0?name.slice(dot+1).toLowerCase().replace(/[^a-z0-9]/g,''):'';
  if(ext.length>12)ext='';
  return `${crypto.randomUUID()}${ext?'.'+ext:''}`;
+}
+
+function fmtFileSize(bytes){
+ const n=Number(bytes||0);if(!n)return '0 B';
+ if(n<1024)return `${n} B`;if(n<1024*1024)return `${(n/1024).toFixed(1)} KB`;
+ return `${(n/1024/1024).toFixed(1)} MB`;
 }
 
 function randomCode(){return Math.random().toString(36).slice(2,8).toUpperCase()}
@@ -1330,57 +1337,43 @@ async function deleteTopicPost(id,c,topicId){
 async function renderTeacherAssessments(c,students,attempts){
  const host=$('teacherClassPanel');
  const rows=(attempts||[]).filter(x=>x.mode==='assessment').sort((a,b)=>new Date(b.started_at)-new Date(a.started_at));
- host.innerHTML=`<div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">ATSISKAITYMŲ REZULTATAI</span><h2>Mokinių atsiskaitymai</h2><p class="muted">Mokytojas rezultatą ir visus atsakymus mato iš karto. Papildomą bandymą konkrečiam mokiniui galima suteikti tik iš čia.</p></div></div><div class="emptyState">Kraunama...</div></div>`;
+ host.innerHTML=`<div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">ATSISKAITYMŲ REZULTATAI</span><h2>Mokinių atsiskaitymai</h2><p class="muted">Mokytojas teorijos rezultatą ir mokinio atsakymus mato iš karto. Logotipo praktinė dalis vertinama atskirai pagal 10 taškų rubriką.</p></div></div><div class="emptyState">Kraunama...</div></div>`;
  if(!rows.length){host.innerHTML=`<div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">ATSISKAITYMŲ REZULTATAI</span><h2>Mokinių atsiskaitymai</h2><p class="muted">Kai mokiniai pradės atsiskaitymą, rezultatai atsiras čia.</p></div></div><div class="emptyState">Atsiskaitymų dar nėra.</div></div>`;return}
  const ids=rows.map(x=>x.id);
- const [{data:events,error},{data:retryRows}]=await Promise.all([
+ const [{data:events,error},{data:retryRows},{data:practicalRows}]=await Promise.all([
   sb.from('assessment_focus_events').select('attempt_id,event_type,occurred_at').in('attempt_id',ids),
-  sb.from('assessment_retry_permissions').select('class_id,student_id,topic_id,extra_attempts').eq('class_id',c.id)
+  sb.from('assessment_retry_permissions').select('class_id,student_id,topic_id,extra_attempts').eq('class_id',c.id),
+  sb.from('assessment_attempt_practical').select('*').in('attempt_id',ids)
  ]);
- const eventRows=error?[]:(events||[]);
- const countBy={};eventRows.forEach(e=>countBy[e.attempt_id]=(countBy[e.attempt_id]||0)+1);
+ const practicalBy=Object.fromEntries((practicalRows||[]).map(x=>[x.attempt_id,x]));
+ const eventRows=error?[]:(events||[]),countBy={};eventRows.forEach(e=>countBy[e.attempt_id]=(countBy[e.attempt_id]||0)+1);
  const studentBy=Object.fromEntries((students||[]).map(x=>[x.id,x]));
- const totalStudents=(students||[]).length;
- const completedByTopic={};
- rows.filter(x=>x.completed_at).forEach(x=>{
-  if(!completedByTopic[x.topic_id])completedByTopic[x.topic_id]=new Set();
-  completedByTopic[x.topic_id].add(x.student_id);
- });
- const keyOf=x=>`${x.student_id}::${x.topic_id}`;
- const groups={};
- [...rows].sort((a,b)=>new Date(a.started_at)-new Date(b.started_at)).forEach(x=>{
-  const k=keyOf(x);(groups[k]||(groups[k]=[])).push(x);
- });
- const attemptNoById={};
- const latestByKey={};
- Object.entries(groups).forEach(([k,list])=>{
-  list.forEach((x,i)=>attemptNoById[x.id]=i+1);
-  latestByKey[k]=list[list.length-1];
- });
+ const totalStudents=(students||[]).length,completedByTopic={};
+ rows.filter(x=>x.completed_at).forEach(x=>{if(!completedByTopic[x.topic_id])completedByTopic[x.topic_id]=new Set();completedByTopic[x.topic_id].add(x.student_id)});
+ const keyOf=x=>`${x.student_id}::${x.topic_id}`,groups={};
+ [...rows].sort((a,b)=>new Date(a.started_at)-new Date(b.started_at)).forEach(x=>{const k=keyOf(x);(groups[k]||(groups[k]=[])).push(x)});
+ const attemptNoById={},latestByKey={};Object.entries(groups).forEach(([k,list])=>{list.forEach((x,i)=>attemptNoById[x.id]=i+1);latestByKey[k]=list[list.length-1]});
  const retryByKey={};(retryRows||[]).forEach(r=>retryByKey[`${r.student_id}::${r.topic_id}`]=r);
  const body=rows.map(x=>{
-  const st=studentBy[x.student_id],done=!!x.completed_at,k=keyOf(x),group=groups[k]||[];
+  const st=studentBy[x.student_id],done=!!x.completed_at,k=keyOf(x),group=groups[k]||[],pr=practicalBy[x.id];
   const duration=done?fmtDurationDetailed(x.duration_seconds):fmtDurationDetailed(Math.max(1,Math.floor((Date.now()-new Date(x.started_at).getTime())/1000)));
-  const result=done?`${x.correct_answers||0}/${x.total_questions||0} · ${x.score_percent||0}%`:'—';
-  const completed=completedByTopic[x.topic_id]?.size||0;
-  const released=totalStudents>0&&completed>=totalStudents;
-  const studentVisibility=released?'<span class="badge ok">Rodoma</span>':`<span class="badge">Laukiama ${completed}/${totalStudents}</span>`;
-  const completedAttempts=group.filter(a=>a.completed_at).length;
-  const hasUnfinished=group.some(a=>!a.completed_at);
-  const allowedAttempts=1+Number(retryByKey[k]?.extra_attempts||0);
-  const retryAlreadyAvailable=!hasUnfinished&&completedAttempts<allowedAttempts;
-  const isLatest=latestByKey[k]?.id===x.id;
-  let retryAction='';
-  if(done&&isLatest){
-   retryAction=retryAlreadyAvailable
-    ? '<span class="badge ok">Pakartojimas leistas</span>'
-    : `<button class="smallBtn" data-grant-assessment-retry="${x.student_id}" data-retry-topic="${esc(x.topic_id)}" data-retry-name="${esc(st?.full_name||'Mokinys')}">Leisti pakartoti</button>`;
-  }
+  let result='—',logo='—',stateLabel=done?'Baigtas':'Vyksta / nebaigtas';
+  if(pr){
+   if(pr.theory_submitted_at&&!done)stateLabel='II dalis · logotipas';
+   if(pr.practical_submitted_at&&pr.practical_score==null)logo='<span class="badge ok">Pateiktas · vertinti</span>';
+   else if(pr.practical_score!=null){const ps=Number(pr.practical_score),overall=Math.round(((Number(x.correct_answers)||0)+ps)*100/Math.max(1,(Number(x.total_questions)||0)+Number(pr.practical_max_points||10)));logo=`<span class="badge ok">${ps%1?ps.toFixed(1):ps}/${Number(pr.practical_max_points||10)}</span>`;result=`Teorija ${x.correct_answers||0}/${x.total_questions||0} · <b>${overall}%</b>`}
+   else if(pr.theory_submitted_at)logo='<span class="badge">Rengia</span>';
+   else logo='<span class="badge">Nepradėtas</span>';
+   if(result==='—'&&pr.theory_submitted_at)result=`Teorija ${x.correct_answers||0}/${x.total_questions||0} · ${x.score_percent||0}%`;
+  }else if(done)result=`${x.correct_answers||0}/${x.total_questions||0} · ${x.score_percent||0}%`;
+  const completed=completedByTopic[x.topic_id]?.size||0,released=totalStudents>0&&completed>=totalStudents&&(!pr||pr.practical_score!=null);
+  const studentVisibility=released?'<span class="badge ok">Rodoma</span>':(totalStudents>0&&completed>=totalStudents&&pr&&pr.practical_score==null?'<span class="badge">Laukia įvertinimo</span>':`<span class="badge">Laukiama ${completed}/${totalStudents}</span>`);
+  const completedAttempts=group.filter(a=>a.completed_at).length,hasUnfinished=group.some(a=>!a.completed_at),allowedAttempts=1+Number(retryByKey[k]?.extra_attempts||0),retryAlreadyAvailable=!hasUnfinished&&completedAttempts<allowedAttempts,isLatest=latestByKey[k]?.id===x.id;
+  let retryAction='';if(done&&isLatest)retryAction=retryAlreadyAvailable?'<span class="badge ok">Pakartojimas leistas</span>':`<button class="smallBtn" data-grant-assessment-retry="${x.student_id}" data-retry-topic="${esc(x.topic_id)}" data-retry-name="${esc(st?.full_name||'Mokinys')}">Leisti pakartoti</button>`;
   const fullTopicTitle=topicById(x.topic_id)?.title||x.topic_id;
-  return `<tr><td><b>${esc(st?.full_name||'Mokinys')}</b></td><td class="assessmentTopicCell"><button type="button" class="assessmentTopicToggle" data-toggle-assessment-topic title="${esc(fullTopicTitle)}"><span class="assessmentTopicText">${esc(fullTopicTitle)}</span><span class="assessmentTopicChevron" aria-hidden="true">⌄</span></button></td><td><b>${attemptNoById[x.id]||1}</b></td><td><span class="badge ${done?'ok':''}">${done?'Baigtas':'Vyksta / nebaigtas'}</span></td><td><b>${result}</b></td><td>${duration}${done?'':' (iki dabar)'}</td><td><b>${countBy[x.id]||0}</b></td><td>${studentVisibility}</td><td>${fmtDate(x.started_at)}</td><td><div class="actions"><button class="smallBtn" data-assessment-result="${x.id}" data-assessment-student="${x.student_id}">Peržiūrėti atsakymus</button>${retryAction}</div></td></tr>`;
+  return `<tr><td><b>${esc(st?.full_name||'Mokinys')}</b></td><td class="assessmentTopicCell"><button type="button" class="assessmentTopicToggle" data-toggle-assessment-topic title="${esc(fullTopicTitle)}"><span class="assessmentTopicText">${esc(fullTopicTitle)}</span><span class="assessmentTopicChevron" aria-hidden="true">⌄</span></button></td><td><b>${attemptNoById[x.id]||1}</b></td><td><span class="badge ${done?'ok':''}">${stateLabel}</span></td><td><b>${result}</b></td><td>${logo}</td><td>${duration}${done?'':' (iki dabar)'}</td><td><b>${countBy[x.id]||0}</b></td><td>${studentVisibility}</td><td><div class="actions"><button class="smallBtn" data-assessment-result="${x.id}" data-assessment-student="${x.student_id}">Peržiūrėti</button>${retryAction}</div></td></tr>`;
  }).join('');
- host.innerHTML=`<div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">ATSISKAITYMŲ REZULTATAI</span><h2>Mokinių atsiskaitymai</h2><p class="muted">Pagal nutylėjimą mokinys turi vieną bandymą. Paspaudus „Leisti pakartoti“ jam atrakinamas tik vienas kitas bandymas. Ankstesni rezultatai lieka istorijoje, o naujam bandymui sistema pirmiausia parenka anksčiau nematytus lygiaverčius klausimų variantus.</p></div><span class="badge">${rows.length} band.</span></div>
- <div class="tableWrap"><table class="dataTable"><thead><tr><th>Mokinys</th><th>Tema</th><th>Bandymas</th><th>Būsena</th><th>Rezultatas</th><th>Laikas</th><th>Išėjo iš lango</th><th>Mokiniams</th><th>Pradėta</th><th></th></tr></thead><tbody>${body}</tbody></table></div></div>`;
+ host.innerHTML=`<div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">ATSISKAITYMŲ REZULTATAI</span><h2>Mokinių atsiskaitymai</h2><p class="muted">Atsiskaitymas gali turėti dvi dalis: teorijos testą ir logotipo kūrimą. Logotipą atidaryk per „Peržiūrėti“, ten pat įvesi rubrikos taškus ir komentarą.</p></div><span class="badge">${rows.length} band.</span></div><div class="tableWrap"><table class="dataTable"><thead><tr><th>Mokinys</th><th>Tema</th><th>Bandymas</th><th>Būsena</th><th>Rezultatas</th><th>Logotipas</th><th>Laikas</th><th>Išėjo</th><th>Mokiniams</th><th></th></tr></thead><tbody>${body}</tbody></table></div></div>`;
  document.querySelectorAll('[data-assessment-result]').forEach(b=>b.onclick=()=>showAssessmentAttemptDetail(b.dataset.assessmentResult,b.dataset.assessmentStudent,c.id));
  document.querySelectorAll('[data-toggle-assessment-topic]').forEach(b=>b.onclick=()=>{b.classList.toggle('expanded');b.setAttribute('aria-expanded',b.classList.contains('expanded')?'true':'false')});
  document.querySelectorAll('[data-grant-assessment-retry]').forEach(b=>b.onclick=()=>grantAssessmentRetry(c,b.dataset.grantAssessmentRetry,b.dataset.retryTopic,b.dataset.retryName,b));
@@ -1402,21 +1395,29 @@ async function updateTopicAccess(classId,topicId,field,value){
  toast(error?error.message:'Atnaujinta.');
 }
 async function openAssessmentSettingsModal(c,topicId,checkbox,access,settings,openAfterSave=false){
- const current=settings.find(s=>s.topic_id===topicId)?.question_count||30;
+ const row=settings.find(s=>s.topic_id===topicId)||{};
+ const current=row.question_count||30;
  const t=topicById(topicId);
- modal(`<span class="kicker">ATSISKAITYMO NUSTATYMAI</span><h2>${esc(t?.title||topicId)}</h2><p class="muted">Pasirink, kiek klausimų gaus kiekvienas mokinys. Sistema naudoja vienodą balanso karkasą: kiekvienam mokiniui tenka tokios pačios temos, tie patys sunkumo lygiai ir tie patys klausimų tipai, bet parenkami skirtingi lygiaverčiai klausimų variantai.</p><form id="assessmentSettingsForm" class="formGroup"><label>Klausimų skaičius<input id="assessmentQuestionCountInput" type="number" min="5" max="30" step="1" value="${current}" required></label><p class="formHint">Rekomenduojama: 30 klausimų. Galima rinktis nuo 5 iki 30.</p><button class="primary" type="submit">${openAfterSave?'Išsaugoti ir atidaryti atsiskaitymą':'Išsaugoti'}</button></form>`);
+ const supportsLogo=c.grade_level==='11'&&topicId==='vektorine-grafika';
+ const logoEnabled=supportsLogo?(row.practical_enabled!==false):false;
+ modal(`<span class="kicker">ATSISKAITYMO NUSTATYMAI</span><h2>${esc(t?.title||topicId)}</h2><p class="muted">Pasirink, kiek klausimų gaus kiekvienas mokinys. Sistema naudoja vienodą balanso karkasą: kiekvienam mokiniui tenka tokios pačios temos, tie patys sunkumo lygiai ir tie patys klausimų tipai, bet parenkami skirtingi lygiaverčiai klausimų variantai.</p><form id="assessmentSettingsForm" class="formGroup"><label>Klausimų skaičius<input id="assessmentQuestionCountInput" type="number" min="5" max="30" step="1" value="${current}" required></label><p class="formHint">Rekomenduojama: 30 klausimų. Galima rinktis nuo 5 iki 30.</p>
+ ${supportsLogo?`<label class="assessmentPracticalSetting"><input id="assessmentPracticalEnabled" type="checkbox" ${logoEnabled?'checked':''}><span><b>II dalis – logotipo kūrimas</b><small>Mokinys po teorijos pateiks SVG originalą ir PNG peržiūrą. Praktinę dalį mokytojas vertina iki 10 taškų.</small></span></label>`:''}
+ <button class="primary" type="submit">${openAfterSave?'Išsaugoti ir atidaryti atsiskaitymą':'Išsaugoti'}</button></form>`);
  $('assessmentSettingsForm').onsubmit=async e=>{
   e.preventDefault();
   const count=Math.max(5,Math.min(30,Number($('assessmentQuestionCountInput').value)||30));
-  const {data,error}=await sb.from('assessment_settings').upsert({class_id:c.id,topic_id:topicId,question_count:count,updated_by:me.id,updated_at:new Date().toISOString()},{onConflict:'class_id,topic_id'}).select().single();
+  const practicalEnabled=supportsLogo?$('assessmentPracticalEnabled').checked:false;
+  const payload={class_id:c.id,topic_id:topicId,question_count:count,updated_by:me.id,updated_at:new Date().toISOString()};
+  if(supportsLogo){Object.assign(payload,{practical_enabled:practicalEnabled,practical_title:'Logotipo kūrimas',practical_max_points:10,practical_instructions:'Sukurkite originalų vektorinį logotipą pasirinkta tema. Naudokite bent 3 vektorinius objektus, geometrines formas, bent vieną Bezjė kreivę, užpildą ir kontūrą, gradientą bei tekstą. Išlaikykite aiškią ir tvarkingą kompoziciją. Pateikite SVG originalą ir PNG peržiūrą.'})}
+  const {data,error}=await sb.from('assessment_settings').upsert(payload,{onConflict:'class_id,topic_id'}).select().single();
   if(error)return toast(error.message);
   const ix=settings.findIndex(s=>s.topic_id===topicId);if(ix>=0)settings[ix]=data;else settings.push(data);
   if(openAfterSave){
    await updateTopicAccess(c.id,topicId,'assessment_open',true);
-   const row=access.find(x=>x.topic_id===topicId);if(row)row.assessment_open=true;
+   const ar=access.find(x=>x.topic_id===topicId);if(ar)ar.assessment_open=true;
    if(checkbox)checkbox.checked=true;
   }
-  closeModal();toast(openAfterSave?`Atsiskaitymas atidarytas: ${count} klausimų.`:`Atsiskaitymo klausimų skaičius: ${count}.`);
+  closeModal();toast(openAfterSave?`Atsiskaitymas atidarytas: ${count} teorijos klausimų${practicalEnabled?' + logotipo užduotis':''}.`:'Atsiskaitymo nustatymai išsaugoti.');
   openTeacherClass(c.id,'topics');
  };
 }
@@ -1463,12 +1464,13 @@ async function showStudentDetail(studentId,classId){
 }
 
 async function removeStudentFromClass(studentId,classId,studentName){
- if(!confirm(`Pašalinti mokinį „${studentName}“ iš šios klasės?\n\nBus ištrinti VISI jo žinių treniruočių ir atsiskaitymų bandymai šioje klasėje, įskaitant testo atsakymus, laiką ir išėjimų iš lango istoriją. Pateikti failai ir pati prisijungimo paskyra nebus trinami.`))return;
+ if(!confirm(`Pašalinti mokinį „${studentName}“ iš šios klasės?\n\nBus ištrinti VISI jo žinių treniruočių ir atsiskaitymų bandymai šioje klasėje, įskaitant testo atsakymus, laiką, išėjimų istoriją ir atsiskaitymo praktinės dalies SVG/PNG failus. Įprastų užduočių failai ir pati prisijungimo paskyra nebus trinami.`))return;
+ const {data:practicalFiles}=await sb.from('assessment_practical_files').select('storage_path').eq('student_id',studentId).eq('class_id',classId);
+ const paths=(practicalFiles||[]).map(x=>x.storage_path).filter(Boolean);
+ if(paths.length){const {error:storageErr}=await sb.storage.from('student-submissions').remove(paths);if(storageErr)return toast(`Nepavyko ištrinti praktinės dalies failų: ${storageErr.message}`)}
  const {error}=await sb.rpc('teacher_remove_student_from_class',{p_class_id:classId,p_student_id:studentId});
  if(error)return toast(error.message);
- closeModal();
- toast('Mokinys pašalintas iš klasės, o jo testų ir treniruočių rezultatai ištrinti.');
- openTeacherClass(classId,'students');
+ closeModal();toast('Mokinys pašalintas, o jo testų ir praktinės dalies rezultatai ištrinti.');openTeacherClass(classId,'students');
 }
 
 function formatStoredAnswer(q,answer){
@@ -1484,22 +1486,44 @@ function formatStoredAnswer(q,answer){
 function focusEventLabel(t){return ({hidden:'Perėjo į kitą skirtuką / puslapis paslėptas',blur:'Naršyklės langas prarado fokusą',pagehide:'Išėjo arba perkrovė puslapį',quit:'Paspaudė „Baigti“ nebaigęs'})[t]||t}
 async function showAssessmentAttemptDetail(attemptId,studentId,classId){
  modal(`<span class="kicker">ATSISKAITYMO DETALĖS</span><h2>Kraunama...</h2>`);
- const [{data:attempt,error:aErr},{data:questions,error:qErr},{data:events,error:eErr}]=await Promise.all([
+ const [{data:attempt,error:aErr},{data:questions,error:qErr},{data:events,error:eErr},{data:practical},{data:files}]=await Promise.all([
   sb.from('practice_attempts').select('*').eq('id',attemptId).single(),
   sb.from('assessment_attempt_questions').select('*').eq('attempt_id',attemptId).order('question_order',{ascending:true}),
-  sb.from('assessment_focus_events').select('*').eq('attempt_id',attemptId).order('occurred_at',{ascending:true})
+  sb.from('assessment_focus_events').select('*').eq('attempt_id',attemptId).order('occurred_at',{ascending:true}),
+  sb.from('assessment_attempt_practical').select('*').eq('attempt_id',attemptId).maybeSingle(),
+  sb.from('assessment_practical_files').select('*').eq('attempt_id',attemptId).order('uploaded_at',{ascending:true})
  ]);
  if(aErr)return modal(`<div class="notice">${esc(aErr.message)}</div>`);
- const hasDetails=!qErr&&(questions||[]).length>0;
+ const hasDetails=!qErr&&(questions||[]).length>0,fileBy=Object.fromEntries((files||[]).map(f=>[f.file_kind,f]));
+ let pngUrl='';if(fileBy.png){const {data:signed}=await sb.storage.from('student-submissions').createSignedUrl(fileBy.png.storage_path,120);pngUrl=signed?.signedUrl||''}
+ const practicalScore=practical?.practical_score==null?null:Number(practical.practical_score),practicalMax=Number(practical?.practical_max_points||10),overall=practicalScore==null?null:Math.round(((Number(attempt.correct_answers)||0)+practicalScore)*100/Math.max(1,(Number(attempt.total_questions)||0)+practicalMax));
+ const theorySeconds=Number(practical?.theory_duration_seconds||0),practicalSeconds=practical?.practical_started_at&&practical?.practical_submitted_at?Math.max(0,Math.round((new Date(practical.practical_submitted_at)-new Date(practical.practical_started_at))/1000)):0;
+ const rb=practical?.rubric_scores||{};
+ const practicalPanel=practical?`<div class="panel practicalTeacherPanel"><div class="sectionTitle"><div class="grow"><span class="kicker">II DALIS</span><h3>Logotipo kūrimas</h3><p class="muted">${practical.practical_submitted_at?`Pateikta ${fmtDate(practical.practical_submitted_at)}`:(practical.theory_submitted_at?'Teorija baigta, praktinė dalis dar nepateikta.':'Praktinė dalis dar nepradėta.')}</p></div>${practicalScore!=null?`<span class="badge ok">${practicalScore%1?practicalScore.toFixed(1):practicalScore}/${practicalMax}</span>`:''}</div>
+ ${pngUrl?`<a href="${pngUrl}" target="_blank" rel="noopener"><img class="assessmentLogoPreview" src="${pngUrl}" alt="Mokinio logotipo PNG peržiūra"></a>`:''}
+ <div class="practicalTeacherFiles">${(files||[]).length?(files||[]).map(f=>`<div class="resourceRow"><div class="grow"><b>${f.file_kind.toUpperCase()} · ${esc(f.original_name)}</b><div class="subtle">${fmtFileSize(f.size_bytes)}</div></div><button class="smallBtn" data-assessment-practical-file="${f.id}">Atsisiųsti</button></div>`).join(''):'<div class="emptyState">Failų dar nėra.</div>'}</div>
+ ${practical.practical_submitted_at?`<form id="practicalGradeForm" class="formGroup practicalGradeForm"><h3>Vertinimo rubrika · 10 t.</h3><div class="rubricInputs">
+  <label>Objektai ir formos <span>0–2</span><input id="rubricObjects" type="number" min="0" max="2" step="0.5" value="${rb.objects??''}" required></label>
+  <label>Bezjė kreivė <span>0–2</span><input id="rubricBezier" type="number" min="0" max="2" step="0.5" value="${rb.bezier??''}" required></label>
+  <label>Užpildas, kontūras, gradientas <span>0–2</span><input id="rubricStyle" type="number" min="0" max="2" step="0.5" value="${rb.style??''}" required></label>
+  <label>Tekstas <span>0–1</span><input id="rubricText" type="number" min="0" max="1" step="0.5" value="${rb.text??''}" required></label>
+  <label>Kompozicija <span>0–2</span><input id="rubricComposition" type="number" min="0" max="2" step="0.5" value="${rb.composition??''}" required></label>
+  <label>SVG + PNG pateikimas <span>0–1</span><input id="rubricFiles" type="number" min="0" max="1" step="0.5" value="${rb.files??''}" required></label>
+ </div><label>Komentaras mokiniui<textarea id="practicalTeacherComment" rows="3" placeholder="Nebūtina">${esc(practical.teacher_comment||'')}</textarea></label><button class="primary" type="submit">Išsaugoti praktinės dalies vertinimą</button></form>`:''}</div>`:'';
  modal(`<button class="back" id="backToStudentDetail">← Atgal į mokinį</button><span class="kicker">ATSISKAITYMO DETALĖS</span><h2>${esc(topicById(attempt.topic_id)?.title||attempt.topic_id)}</h2>
- <div class="detailMetrics assessmentMetrics"><div class="metric"><strong>${attempt.score_percent}%</strong><span>rezultatas</span></div><div class="metric"><strong>${attempt.correct_answers}/${attempt.total_questions}</strong><span>teisingai</span></div><div class="metric"><strong>${fmtDurationDetailed(attempt.duration_seconds)}</strong><span>trukmė</span></div><div class="metric"><strong>${(events||[]).length}</strong><span>išėjimų / fokuso įvykių</span></div></div>
- <p class="muted">Pradėta: <b>${fmtDate(attempt.started_at)}</b> · baigta: <b>${fmtDate(attempt.completed_at)}</b></p>
- <div class="panel assessmentFocusPanel"><h3>Išėjimai ir fokuso praradimai</h3>${eErr?`<div class="notice">${esc(eErr.message)}</div>`:(events||[]).length?(events||[]).map((e,i)=>`<div class="historyRow"><span>${i+1}. ${esc(focusEventLabel(e.event_type))}</span><b>${fmtDate(e.occurred_at)}</b></div>`).join(''):'<div class="emptyState">Neužfiksuota nė vieno išėjimo ar fokuso praradimo.</div>'}</div>
- <div class="panel"><h3>Klausimai ir atsakymai</h3>${hasDetails?(questions||[]).map(q=>`<div class="assessmentQuestionDetail ${q.is_correct?'isCorrect':'isWrong'}"><div class="bankQuestionMeta"><span class="badge">${q.question_order}</span><span class="badge">${esc(qTypeLabel(q.question_type))}</span><span class="badge">${esc(q.category)}</span></div><b>${esc(q.question_text)}</b><p>Mokinio atsakymas: <strong>${esc(formatStoredAnswer(q,q.student_answer))}</strong><br>Teisingas atsakymas: <strong>${esc(formatStoredAnswer(q,q.correct_answer))}</strong></p><div class="subtle">${q.is_correct?'✓ Teisingai':'✕ Neteisingai / neatsakyta'}${q.answered_at?' · atsakyta '+fmtDate(q.answered_at):''}</div>${q.explanation?`<div class="subtle">${esc(q.explanation)}</div>`:''}</div>`).join(''):'<div class="emptyState">Šis bandymas atliktas iki v5.3, todėl klausimų ir fokuso įvykių detalizacija jam nebuvo kaupiama.</div>'}</div>`);
+ <div class="detailMetrics assessmentMetrics"><div class="metric"><strong>${attempt.correct_answers||0}/${attempt.total_questions||0}</strong><span>teorija</span></div><div class="metric"><strong>${attempt.score_percent??0}%</strong><span>teorijos %</span></div>${practical?`<div class="metric"><strong>${practicalScore==null?'—':`${practicalScore%1?practicalScore.toFixed(1):practicalScore}/${practicalMax}`}</strong><span>logotipas</span></div><div class="metric"><strong>${overall==null?'—':overall+'%'}</strong><span>bendras</span></div><div class="metric"><strong>${fmtDurationDetailed(theorySeconds)}</strong><span>teorijos laikas</span></div><div class="metric"><strong>${practicalSeconds?fmtDurationDetailed(practicalSeconds):'—'}</strong><span>praktikos laikas</span></div>`:`<div class="metric"><strong>${fmtDurationDetailed(attempt.duration_seconds)}</strong><span>trukmė</span></div>`}<div class="metric"><strong>${(events||[]).length}</strong><span>išėjimų teorijoje</span></div></div>
+ <p class="muted">Pradėta: <b>${fmtDate(attempt.started_at)}</b> · baigta: <b>${fmtDate(attempt.completed_at)}</b></p>${practicalPanel}
+ <div class="panel assessmentFocusPanel"><h3>Išėjimai teorinės dalies metu</h3>${eErr?`<div class="notice">${esc(eErr.message)}</div>`:(events||[]).length?(events||[]).map((e,i)=>`<div class="historyRow"><span>${i+1}. ${esc(focusEventLabel(e.event_type))}</span><b>${fmtDate(e.occurred_at)}</b></div>`).join(''):'<div class="emptyState">Neužfiksuota nė vieno išėjimo ar fokuso praradimo.</div>'}</div>
+ <div class="panel"><h3>I dalis · teorijos klausimai ir atsakymai</h3>${hasDetails?(questions||[]).map(q=>`<div class="assessmentQuestionDetail ${q.is_correct?'isCorrect':'isWrong'}"><div class="bankQuestionMeta"><span class="badge">${q.question_order}</span><span class="badge">${esc(qTypeLabel(q.question_type))}</span><span class="badge">${esc(q.category)}</span></div><b>${esc(q.question_text)}</b><p>Mokinio atsakymas: <strong>${esc(formatStoredAnswer(q,q.student_answer))}</strong><br>Teisingas atsakymas: <strong>${esc(formatStoredAnswer(q,q.correct_answer))}</strong></p><div class="subtle">${q.is_correct?'✓ Teisingai':'✕ Neteisingai / neatsakyta'}${q.answered_at?' · atsakyta '+fmtDate(q.answered_at):''}</div>${q.explanation?`<div class="subtle">${esc(q.explanation)}</div>`:''}</div>`).join(''):'<div class="emptyState">Šiam bandymui teorijos detalizacijos nėra.</div>'}</div>`);
  $('backToStudentDetail').onclick=()=>showStudentDetail(studentId,classId);
+ document.querySelectorAll('[data-assessment-practical-file]').forEach(b=>b.onclick=()=>downloadAssessmentPracticalFile(b.dataset.assessmentPracticalFile));
+ if($('practicalGradeForm'))$('practicalGradeForm').onsubmit=async e=>{
+  e.preventDefault();
+  const rubric={objects:Number($('rubricObjects').value),bezier:Number($('rubricBezier').value),style:Number($('rubricStyle').value),text:Number($('rubricText').value),composition:Number($('rubricComposition').value),files:Number($('rubricFiles').value)};
+  const {error}=await sb.rpc('grade_assessment_practical',{p_attempt_id:attemptId,p_rubric:rubric,p_comment:$('practicalTeacherComment').value.trim()||null});
+  if(error)return toast(error.message);toast('Logotipo vertinimas išsaugotas.');showAssessmentAttemptDetail(attemptId,studentId,classId);
+ };
 }
-
-
 
 async function renderTeacherResources(c){
  const {data:rows,error}=await sb.from('learning_resources').select('*').eq('class_id',c.id).order('created_at',{ascending:false});
@@ -1908,18 +1932,25 @@ function renderStudentAssessmentCard(c,a,assessmentSetting,status){
   const attemptNo=status.attempt_number||status.completed_attempts||1;
   const retryAllowed=!!status.can_start_new;
   const retryButton=(a.assessment_open&&retryAllowed)?`<button class="primary" id="startAssessmentTopic">Pradėti ${attemptNo+1} bandymą</button>`:'';
-  const retryNotice=retryAllowed?'<div class="notice"><b>Mokytojas leido dar vieną bandymą.</b> Ankstesnis rezultatas išliks istorijoje, o naujas variantas bus sugeneruotas iš lygiaverčių klausimų.</div>':'<p class="subtle">Papildomą bandymą gali atrakinti mokytojas.</p>';
+  const retryNotice=retryAllowed?'<div class="notice"><b>Mokytojas leido dar vieną bandymą.</b> Ankstesnis rezultatas išliks istorijoje, o naujam bandymui bus sugeneruotas kitas lygiavertis variantas.</div>':'<p class="subtle">Papildomą bandymą gali atrakinti mokytojas.</p>';
   if(status.results_released){
+   const practical=status.practical_required?`<div class="metric"><strong>${Number(status.practical_score||0).toFixed(Number(status.practical_score)%1?1:0)}/${Number(status.practical_max_points||10).toFixed(0)}</strong><span>logotipas</span></div>`:'';
+   const overall=status.practical_required?`<div class="metric"><strong>${status.overall_percent??0}%</strong><span>bendras rezultatas</span></div>`:`<div class="metric"><strong>${status.score_percent??0}%</strong><span>rezultatas</span></div>`;
    return `<span class="badge ok">${attemptNo} bandymas atliktas · rezultatai paskelbti</span>
-   <div class="detailMetrics"><div class="metric"><strong>${status.score_percent??0}%</strong><span>rezultatas</span></div><div class="metric"><strong>${status.correct_answers??0}/${status.total_questions||0}</strong><span>teisingai</span></div><div class="metric"><strong>${fmtDurationDetailed(status.duration_seconds)}</strong><span>trukmė</span></div></div>
-   <div class="actions"><button class="ghost" id="studentAssessmentReview">Peržiūrėti savo atsakymus</button>${retryButton}</div>${retryNotice}`;
+   <div class="detailMetrics">${overall}<div class="metric"><strong>${status.correct_answers??0}/${status.total_questions||0}</strong><span>teorija</span></div>${practical}<div class="metric"><strong>${fmtDurationDetailed(status.duration_seconds)}</strong><span>bendra trukmė</span></div></div>
+   ${status.practical_comment?`<div class="notice"><b>Mokytojo komentaras apie logotipą:</b><br>${esc(status.practical_comment)}</div>`:''}
+   <div class="actions"><button class="ghost" id="studentAssessmentReview">Peržiūrėti teorijos atsakymus</button>${retryButton}</div>${retryNotice}`;
   }
-  return `<span class="badge ok">${attemptNo} bandymas atliktas</span><p class="muted"><b>Atsiskaitymas pateiktas.</b> Rezultatas ir teisingi atsakymai bus parodyti, kai visi klasės mokiniai baigs šios temos atsiskaitymą.</p>
-  <div class="detailMetrics"><div class="metric"><strong>${status.completed_students||0}/${status.total_students||0}</strong><span>jau baigė</span></div><div class="metric"><strong>${fmtDurationDetailed(status.duration_seconds)}</strong><span>tavo trukmė</span></div><div class="metric"><strong>${status.focus_events||0}</strong><span>išėjimų / fokuso įvykių</span></div></div>${retryNotice}${retryButton}`;
+  return `<span class="badge ok">${attemptNo} bandymas pateiktas</span><p class="muted"><b>Atsiskaitymas pateiktas.</b> Rezultatas bus paskelbtas vėliau.</p>
+  <div class="detailMetrics"><div class="metric"><strong>${fmtDurationDetailed(status.duration_seconds)}</strong><span>bendra trukmė</span></div><div class="metric"><strong>${status.focus_events||0}</strong><span>išėjimų teorijos metu</span></div></div>${retryNotice}${retryButton}`;
+ }
+ if(status?.practical_required&&status?.theory_submitted_at&&!status?.practical_submitted_at){
+  return `<span class="badge ok">I dalis baigta</span><div class="assessmentStepsMini"><span class="done">1 · Teorija ✓</span><span class="active">2 · Logotipas</span></div><p class="muted">Teorinė dalis pateikta ir jos atsakymų keisti nebegalima. Dabar atlik II dalį: sukurk logotipą ir įkelk SVG bei PNG failus.</p><button class="primary" id="continueAssessmentPractical">Tęsti II dalį – logotipas →</button>`;
  }
  if(a.assessment_open){
   const attemptNo=status?.attempt_number||1;
-  return `<span class="badge ok">Atidaryta</span><p class="muted">${status?.attempt_id?`Tęsiamas <b>${attemptNo} bandymas</b>. Naujas bandymas nebus kuriamas, kol šis nebaigtas.`:`Atsiskaitymas šiuo metu atidarytas.`} Klausimų skaičius: <b>${assessmentSetting?.question_count||30}</b>. Pagal nutylėjimą suteikiamas vienas bandymas, o papildomą gali atrakinti tik mokytojas. Fiksuojamas atlikimo laikas ir išėjimai iš lango / fokuso praradimai.</p><button class="primary" id="startAssessmentTopic">${status?.attempt_id?'Tęsti atsiskaitymą':'Pradėti atsiskaitymą'}</button>`;
+  const twoParts=assessmentSetting?.practical_enabled===true;
+  return `<span class="badge ok">Atidaryta</span><div class="assessmentStepsMini"><span class="active">1 · Teorija</span>${twoParts?'<span>2 · Logotipas</span>':''}</div><p class="muted">${status?.attempt_id?`Tęsiamas <b>${attemptNo} bandymas</b>. Naujas bandymas nebus kuriamas, kol šis nebaigtas.`:'Atsiskaitymas šiuo metu atidarytas.'} Teorijos klausimų: <b>${assessmentSetting?.question_count||30}</b>${twoParts?'. Po teorijos pereisi į praktinę logotipo kūrimo dalį.':'.'} Fokuso / išėjimų stebėjimas taikomas tik teorinei daliai.</p><button class="primary" id="startAssessmentTopic">${status?.attempt_id?'Tęsti I dalį – teoriją':'Pradėti I dalį – teoriją'}</button>`;
  }
  return '<div class="lockedBox">🔒 Mokytojas atsiskaitymo dar neatidarė.</div>';
 }
@@ -1942,7 +1973,7 @@ async function openStudentTopic(topicId,c,access){
   sb.from('assignments').select('*').eq('class_id',c.id).eq('topic_id',topicId).eq('is_open',true).order('created_at',{ascending:false}),
   sb.from('class_posts').select('*').eq('class_id',c.id).eq('topic_id',topicId).order('created_at',{ascending:false}),
   c.grade_level==='10'?sb.from('class_question_blocks').select('id,title,description').eq('class_id',c.id).eq('parent_topic_id',topicId).eq('is_enabled',true).order('sort_order',{ascending:true}):Promise.resolve({data:[]}),
-  c.grade_level==='11'?sb.from('assessment_settings').select('question_count').eq('class_id',c.id).eq('topic_id',topicId).maybeSingle():Promise.resolve({data:null}),
+  c.grade_level==='11'?sb.from('assessment_settings').select('*').eq('class_id',c.id).eq('topic_id',topicId).maybeSingle():Promise.resolve({data:null}),
   c.grade_level==='11'?sb.rpc('get_my_assessment_status',{p_class_id:c.id,p_topic_id:topicId}):Promise.resolve({data:[]})
  ]);
  const assessmentStatus=assessmentStatusRow(assessmentStatusData);
@@ -1975,7 +2006,8 @@ async function openStudentTopic(topicId,c,access){
   if(!blockIds.length)return toast('Pasirink bent vieną temą.');
   startGrade10BlockQuiz(topicId,c.id,blockIds,10);
  };
- if(a.assessment_open&&$('startAssessmentTopic'))$('startAssessmentTopic').onclick=()=>c.grade_level==='11'?startSecureAssessment(topicId,c.id):startQuiz(topicId,c.id,'assessment',CFG.assessmentQuestionCount);
+ if(a.assessment_open&&$('startAssessmentTopic'))$('startAssessmentTopic').onclick=()=>c.grade_level==='11'?startSecureAssessment(topicId,c.id,assessmentStatus):startQuiz(topicId,c.id,'assessment',CFG.assessmentQuestionCount);
+ if($('continueAssessmentPractical'))$('continueAssessmentPractical').onclick=()=>openAssessmentPractical(assessmentStatus.attempt_id,topicId,c.id);
  if($('studentAssessmentReview'))$('studentAssessmentReview').onclick=()=>showMyAssessmentReview(assessmentStatus.attempt_id);
  document.querySelectorAll('[data-sresource]').forEach(b=>b.onclick=()=>downloadResource(b.dataset.sresource));
  document.querySelectorAll('[data-submit]').forEach(b=>b.onclick=()=>submissionModal(b.dataset.submit,c,topicId,access));
@@ -2179,7 +2211,8 @@ async function startGrade10BlockQuiz(topicId,classId,blockIds,count){
 }
 
 let assessmentStartPending=false;
-async function startSecureAssessment(topicId,classId){
+async function startSecureAssessment(topicId,classId,status=null){
+ if(status?.practical_required&&status?.theory_submitted_at&&!status?.practical_submitted_at)return openAssessmentPractical(status.attempt_id,topicId,classId);
  setPresenceContext(`Atsiskaitymas: ${topicById(topicId)?.title||topicId}`,topicId);
  if(assessmentStartPending)return;assessmentStartPending=true;
  try{
@@ -2211,7 +2244,7 @@ function renderQ(){
  const live=quiz.items.slice(0,quiz.index).reduce((n,item,i)=>n+(item.correct!=null&&answerEquals(quiz.answers[i],item.correct,qType(item))?1:0),0);$('quizScoreLive').textContent=String(quiz.mode).startsWith('practice')?`Teisingai: ${live}`:'';
  $('questionCategory').textContent=[q.category,qTypeLabel(qType(q))].filter(Boolean).join(' · ');$('questionDifficulty').textContent=q.difficulty||'';$('questionText').textContent=q.question;$('feedback').classList.add('hidden');renderQuestionInput(q);
  const isAssessment=quiz.mode==='assessment-secure';$('quitQuiz').textContent=isAssessment?'Išeiti':'Baigti';$('prevQuestion').classList.toggle('hidden',!isAssessment||quiz.index===0);
- if(isAssessment){$('nextQuestion').textContent=quiz.index===quiz.items.length-1?'Pateikti atsiskaitymą':'Kitas klausimas →';$('nextQuestion').classList.remove('hidden');setAssessmentSaveStatus(assessmentAnswerHasValue(q,quiz.answers[quiz.index])?'Išsaugota':'Atsakymai išsaugomi automatiškai',assessmentAnswerHasValue(q,quiz.answers[quiz.index])?'saved':'')}
+ if(isAssessment){$('nextQuestion').textContent=quiz.index===quiz.items.length-1?'Baigti I dalį →':'Kitas klausimas →';$('nextQuestion').classList.remove('hidden');setAssessmentSaveStatus(assessmentAnswerHasValue(q,quiz.answers[quiz.index])?'Išsaugota':'Atsakymai išsaugomi automatiškai',assessmentAnswerHasValue(q,quiz.answers[quiz.index])?'saved':'')}
  else{$('nextQuestion').classList.add('hidden');setAssessmentSaveStatus('')}
  renderAssessmentQuestionNav();
 }
@@ -2233,10 +2266,10 @@ $('nextQuestion').onclick=async()=>{
  if(quiz.mode==='assessment-secure'){
   if(quiz.index<quiz.items.length-1){quiz.index++;renderQ();return}
   const unanswered=quiz.items.reduce((n,q,i)=>n+(assessmentAnswerComplete(q,quiz.answers[i])?0:1),0);
-  const msg=unanswered?`Liko neatsakytų arba nebaigtų klausimų: ${unanswered}. Ar tikrai pateikti atsiskaitymą? Po pateikimo atsakymų keisti nebegalėsi.`:'Ar tikrai pateikti atsiskaitymą? Po pateikimo atsakymų keisti nebegalėsi.';
+  const msg=unanswered?`Liko neatsakytų arba nebaigtų klausimų: ${unanswered}. Ar tikrai baigti I dalį? Pateikus teoriją jos atsakymų keisti nebegalėsi.`:'Ar tikrai baigti I dalį – teoriją? Pateikus jos atsakymų keisti nebegalėsi.';
   if(!confirm(msg))return;
   try{setAssessmentSaveStatus('Išsaugomi paskutiniai pakeitimai…','saving');await flushAssessmentSaves()}catch(e){toast('Nepavyko išsaugoti paskutinių atsakymų. Patikrink interneto ryšį ir bandyk dar kartą.');return}
-  return finishQuiz();
+  return finishAssessmentTheory();
  }
  if(quiz.index===quiz.items.length-1)finishQuiz();else{quiz.index++;renderQ()}
 };
@@ -2250,7 +2283,49 @@ $('quitQuiz').onclick=async()=>{
  }
  if(!confirm('Baigti bandymą nebaigus?'))return;renderStudent();
 };
+
+function resetAssessmentQuizState(){
+ quiz={topicId:null,classId:null,mode:null,items:[],index:0,answers:[],attemptId:null,startMs:0,last:null,completed:false};
+ assessmentAccessToken=null;assessmentDirtyQuestionIds=new Set();assessmentSaveQueue=Promise.resolve();
+}
+function showAssessmentSubmittedSummary(data={}){
+ const seconds=Number(data.duration_seconds||data.theory_duration_seconds||0),focusEvents=Number(data.focus_events||0);
+ $('resultPercent').textContent='—';$('scoreCircle').style.setProperty('--score','0%');$('correctCount').textContent='—';$('wrongCount').textContent='—';$('resultGoal').textContent='—';
+ $('resultTitle').textContent='Atsiskaitymas pateiktas';$('resultSubtitle').textContent=`Rezultatas bus paskelbtas vėliau.${seconds?` Bendra trukmė: ${fmtDurationDetailed(seconds)}.`:''}${focusEvents?` Teorijos metu užfiksuota išėjimų / fokuso įvykių: ${focusEvents}.`:''}`;
+ $('retryQuiz').classList.add('hidden');$('reviewErrors').classList.add('hidden');$('errorsReview').classList.add('hidden');show('results');
+}
+async function finishAssessmentTheory(){
+ if(quiz.mode!=='assessment-secure'||!quiz.attemptId)return;
+ try{await flushAssessmentSaves()}catch(e){return toast('Nepavyko išsaugoti paskutinių atsakymų. Teorinė dalis dar nepateikta.')}
+ const ctx={attemptId:quiz.attemptId,topicId:quiz.topicId,classId:quiz.classId};
+ const {data,error}=await sb.rpc('finish_assessment_theory',{p_attempt_id:ctx.attemptId});if(error)return toast(error.message);
+ const r=Array.isArray(data)?data[0]:data||{};quiz.completed=true;clearAssessmentDraftLocal(ctx.attemptId);assessmentAccessToken=null;
+ if(r.practical_required){resetAssessmentQuizState();return openAssessmentPractical(ctx.attemptId,ctx.topicId,ctx.classId)}
+ resetAssessmentQuizState();showAssessmentSubmittedSummary(r);
+}
+async function openAssessmentPractical(attemptId,topicId,classId){
+ assessmentPracticalView={attemptId,topicId,classId};setPresenceContext(`Atsiskaitymo praktinė dalis: ${topicById(topicId)?.title||topicId}`,topicId);
+ const {error:startErr}=await sb.rpc('start_assessment_practical',{p_attempt_id:attemptId});if(startErr)return toast(startErr.message);
+ const [{data:state,error:stateErr},{data:files,error:fileErr}]=await Promise.all([sb.from('assessment_attempt_practical').select('*').eq('attempt_id',attemptId).single(),sb.from('assessment_practical_files').select('*').eq('attempt_id',attemptId).order('uploaded_at',{ascending:true})]);
+ if(stateErr)return toast(stateErr.message);if(fileErr)return toast(fileErr.message);
+ const byKind=Object.fromEntries((files||[]).map(f=>[f.file_kind,f])),submitted=!!state.practical_submitted_at;
+ const requirementRows=[['Vektoriniai objektai ir geometrinės formos','2 t.'],['Bent viena Bezjė kreivė','2 t.'],['Užpildas, kontūras ir gradientas','2 t.'],['Tekstas','1 t.'],['Kompozicija ir tvarkingumas','2 t.'],['Tinkamai pateikti SVG + PNG','1 t.']];
+ const fileCard=(kind,label,accept)=>{const f=byKind[kind];return `<div class="practicalFileCard ${f?'ready':''}"><div class="practicalFileIcon">${kind==='svg'?'◇':'▧'}</div><div class="grow"><b>${label}</b><div class="subtle">${f?`${esc(f.original_name)} · ${fmtFileSize(f.size_bytes)}`:(kind==='svg'?'Vektorinis originalas (.svg)':'Galutinio vaizdo peržiūra (.png)')}</div></div>${f?`<button class="smallBtn" data-practical-download="${f.id}">Atsisiųsti</button>`:''}${submitted?'':`<label class="smallBtn practicalUploadButton">${f?'Pakeisti':'Įkelti'}<input type="file" data-practical-upload="${kind}" accept="${accept}" hidden></label>`}</div>`};
+ $('assessmentPracticalContent').innerHTML=`<div class="pageHero"><span class="kicker">ATSISKAITYMAS · II DALIS</span><h1>${esc(state.title||'Logotipo kūrimas')}</h1><p>Teorinė dalis jau pateikta. Praktinės dalies metu gali dirbti „Inkscape“ ar kita vektorinės grafikos programa – išėjimai iš naršyklės čia nefiksuojami.</p></div><div class="assessmentStepBar"><span class="done">1 · Teorija ✓</span><span class="active">2 · Logotipas</span><span>3 · Pateikimas</span></div><div class="contentGrid practicalAssessmentGrid"><div class="stack"><div class="panel"><span class="kicker">UŽDUOTIS</span><h2>Sukurk vektorinį logotipą</h2><p class="muted">${esc(state.instructions||'')}</p><div class="rubricPreview">${requirementRows.map(([n,p])=>`<div><span>${esc(n)}</span><b>${p}</b></div>`).join('')}</div><div class="notice"><b>Kas yra gradientas?</b> Tai tolygus vienos spalvos perėjimas į kitą spalvą ar jos atspalvį, pvz., nuo tamsiai mėlynos į šviesiai mėlyną.</div></div></div><div class="stack"><div class="panel"><span class="kicker">FAILŲ PATEIKIMAS</span><h2>SVG + PNG</h2><p class="muted">Prieš galutinį pateikimą turi būti įkelti abu failai.</p>${fileCard('svg','SVG originalas','.svg,image/svg+xml')}${fileCard('png','PNG peržiūra','.png,image/png')}<div class="practicalSubmitStatus">${submitted?'<span class="badge ok">Praktinė dalis pateikta</span>':`<span class="badge ${byKind.svg&&byKind.png?'ok':''}">${byKind.svg&&byKind.png?'Abu failai paruošti':'Trūksta failų'}</span>`}</div>${submitted?'<p class="muted">Atsiskaitymas jau pateiktas. Rezultatas bus paskelbtas vėliau.</p>':`<button class="primary fullWidth" id="submitAssessmentPractical" ${byKind.svg&&byKind.png?'':'disabled'}>Pateikti visą atsiskaitymą</button><button class="ghost fullWidth" id="leaveAssessmentPractical">Išeiti ir tęsti vėliau</button>`}</div></div></div>`;
+ document.querySelectorAll('[data-practical-download]').forEach(b=>b.onclick=()=>downloadAssessmentPracticalFile(b.dataset.practicalDownload));document.querySelectorAll('[data-practical-upload]').forEach(inp=>inp.onchange=()=>uploadAssessmentPracticalFile(inp.dataset.practicalUpload,inp.files?.[0],byKind[inp.dataset.practicalUpload]||null));
+ if($('leaveAssessmentPractical'))$('leaveAssessmentPractical').onclick=()=>renderStudent();if($('submitAssessmentPractical'))$('submitAssessmentPractical').onclick=()=>submitAssessmentPracticalFinal(state);show('assessment-practical');
+}
+async function uploadAssessmentPracticalFile(kind,file,oldFile){
+ if(!file)return;const ctx=assessmentPracticalView,ext=fileExtension(file.name);if(ext!==kind)return toast(kind==='svg'?'Pasirink .svg failą.':'Pasirink .png failą.');if(file.size>25*1024*1024)return toast('Vienas failas gali būti iki 25 MB.');
+ const path=`${ctx.classId}/assessment-${ctx.attemptId}/${me.id}/${storageFileName(file.name)}`;toast(`Įkeliamas ${kind.toUpperCase()} failas...`);const {error:upErr}=await sb.storage.from('student-submissions').upload(path,file,storageUploadOptions(file));if(upErr)return toast(upErr.message);
+ const payload={attempt_id:ctx.attemptId,class_id:ctx.classId,student_id:me.id,file_kind:kind,storage_path:path,original_name:file.name,mime_type:uploadContentType(file),size_bytes:file.size,uploaded_at:new Date().toISOString()};const {error}=await sb.from('assessment_practical_files').upsert(payload,{onConflict:'attempt_id,file_kind'});if(error){await sb.storage.from('student-submissions').remove([path]);return toast(error.message)}
+ if(oldFile?.storage_path&&oldFile.storage_path!==path)await sb.storage.from('student-submissions').remove([oldFile.storage_path]);toast(`${kind.toUpperCase()} failas išsaugotas.`);openAssessmentPractical(ctx.attemptId,ctx.topicId,ctx.classId);
+}
+async function downloadAssessmentPracticalFile(id){const {data:f,error}=await sb.from('assessment_practical_files').select('*').eq('id',id).single();if(error)return toast(error.message);const {data,error:e}=await sb.storage.from('student-submissions').createSignedUrl(f.storage_path,60);if(e)return toast(e.message);window.open(data.signedUrl,'_blank')}
+async function submitAssessmentPracticalFinal(state){if(!confirm('Pateikti II dalį ir užbaigti visą atsiskaitymą? Po pateikimo failų pakeisti nebegalėsi.'))return;const btn=$('submitAssessmentPractical');if(btn)btn.disabled=true;const {data,error}=await sb.rpc('finish_assessment_practical',{p_attempt_id:state.attempt_id});if(error){if(btn)btn.disabled=false;return toast(error.message)}const r=Array.isArray(data)?data[0]:data||{};assessmentPracticalView={attemptId:null,topicId:null,classId:null};showAssessmentSubmittedSummary(r)}
+
 async function finishQuiz(){
+ if(quiz.mode==='assessment-secure')return finishAssessmentTheory();
  let total=quiz.items.length,correct=quiz.items.reduce((n,q,i)=>n+(q.correct!=null&&answerEquals(quiz.answers[i],q.correct,qType(q))?1:0),0),pct=total?Math.round(correct/total*100):0,seconds=Math.max(1,Math.round((Date.now()-quiz.startMs)/1000)),pass=quiz.mode==='assessment-secure'?CFG.assessmentPassPercent:CFG.practicePassPercent,focusEvents=0,resultsReleased=true,completedStudents=0,totalStudents=0;
  if(quiz.mode==='assessment-secure'){
   try{await flushAssessmentSaves()}catch(e){return toast('Nepavyko išsaugoti paskutinių atsakymų. Atsiskaitymas dar nepateiktas.')}
