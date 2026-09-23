@@ -353,3 +353,23 @@ Tai pašalina `new row violates row-level security policy for table "classes"` k
 - Kai sistema mokiniui išjungta, jis nemato XP kortelės, `Pasiekimų`, temos įvaldymo ir XP atlygio po treniruotės. Pačios žinių treniruotės nesikeičia.
 - Vėliau įjungus sistemą progresas perskaičiuojamas iš jau atliktų treniruočių.
 - `CNAME` (`ngg-informatika.lt`) ir `.nojekyll` išlieka ZIP.
+
+## v5.16 – motyvacinės sistemos tekstų ir rodiklių aiškumas
+- Pašalintas tekstas „Čia nėra mokinių reitingo“.
+- Pašalinta „Geriausia treniruotė“ kortelė.
+- „Savaitės tikslas“ aiškiau rodomas kaip „treniruotės šią savaitę“.
+- Pasiekimų puslapyje paaiškinta, kad 0/3 reiškia 0 iš 3 savaitės treniruočių.
+- „XP farminti“ tekstas pakeistas neutraliu paaiškinimu apie mažėjantį XP už tos pačios temos kartojimą tą pačią dieną.
+- Užrakinti pasiekimai dabar rodo savo pavadinimą ir atrakinimo sąlygą, vietoje „???“.
+- Supabase SQL pakeitimų nereikia.
+
+## v5.17 – ilgalaikiai apdovanojimai, klasė ir privilegijos
+- Nauji ilgalaikiai pasiekimai už 10, 20, 30, 50, 100, 200, 300, 500 ir 1000 užbaigtų žinių treniruočių.
+- Šie skaičiai sumuojami per visas mokymosi temas; oficialūs atsiskaitymai neskaičiuojami.
+- Kai mokytojas leidžia, mokinys mato skiltį `👥 Klasė` su klasės draugų vardais ir jų ilgalaikio statuso ženkliukais.
+- Klasės draugams nerodomi XP, pažymiai ar atsiskaitymų rezultatai.
+- Mokinys gali pasirinkti vieną jau atrakintą ilgalaikį ženkliuką, rodomą prie jo vardo; nepasirinkus automatiškai naudojamas aukščiausias.
+- Įdiegta pirmoji privilegijų sistema: kosmetinės aplinkos temos, atrakinamos ties 10 / 20 / 30 / 50 / 100 / 200 / 300 / 500 / 1000 treniruočių ribomis.
+- Mokytojo `🎯 Motyvacija` skiltyje pridėti jungikliai: rodyti klasės draugus, rodyti statuso ženkliukus, leisti kosmetines temas.
+- Visi nauji elementai mokiniui rodomi tik tada, kai jam įjungta motyvacinė sistema.
+- `CNAME` (`ngg-informatika.lt`) ir `.nojekyll` išlieka ZIP.

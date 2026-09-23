@@ -616,7 +616,7 @@ textarea{
 .xpOrb{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;background:var(--p);color:white;line-height:1;text-align:center;box-shadow:0 10px 30px color-mix(in srgb,var(--p) 25%,transparent)}
 .xpOrb strong{font-size:22px}.xpOrb span{font-size:10px;font-weight:900;letter-spacing:.08em}
 .xpTrack,.masteryTrack,.miniProgress{height:9px;border-radius:999px;background:var(--line);overflow:hidden}.xpTrack{margin:15px 0}.xpTrack span,.masteryTrack span,.miniProgress span{display:block;height:100%;border-radius:inherit;background:var(--p)}
-.motivationMiniGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.motivationMiniGrid>div{padding:11px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}.motivationMiniGrid strong{display:block;font-size:15px}.motivationMiniGrid span{font-size:11px;color:var(--muted)}
+.motivationMiniGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.motivationMiniGrid>div{padding:11px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}.motivationMiniGrid strong{display:block;font-size:15px}.motivationMiniGrid span{font-size:11px;color:var(--muted)}
 .classChallengeMini{display:flex;align-items:center;gap:14px;margin-top:12px;padding:11px 12px;border:1px dashed color-mix(in srgb,var(--p) 32%,var(--line));border-radius:14px}.classChallengeMini .grow{display:flex;flex-direction:column}.classChallengeMini b{font-size:13px}.classChallengeMini span{font-size:11px;color:var(--muted)}.classChallengeMini .miniProgress{width:150px;flex:0 0 150px}
 .motivationActions{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:13px}
 .topicMasteryBox{margin:10px 0 14px;padding:13px;border:1px solid var(--line);border-radius:14px;background:var(--surface2)}.topicMasteryBox.empty{display:flex;flex-direction:column;gap:4px;color:var(--muted)}.topicMasteryBox.empty b{color:var(--ink)}
@@ -640,3 +640,47 @@ textarea{
 .motivationStudentSelect{min-width:230px;max-width:100%;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);padding:8px 10px;font:inherit}
 .motivationAdminTable td{vertical-align:middle}
 @media(max-width:700px){.motivationMasterSwitch{align-items:flex-start;flex-direction:column}.motivationStudentSelect{min-width:180px}}
+
+
+/* ===== v5.17 · ilgalaikiai pasiekimai, klasė ir privilegijos ===== */
+.motivationFeatureOptions{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+  margin:14px 0 18px;
+}
+.motivationFeatureOptions .toggle{
+  padding:12px;
+  border:1px solid var(--line);
+  border-radius:13px;
+  background:var(--surface2);
+  color:var(--ink);
+  font-weight:750;
+}
+.privilegePanel{display:grid;gap:12px}
+.motivationPrefLabel{display:grid;gap:4px;color:var(--muted);font-size:12px;font-weight:850}
+.motivationPrefLabel select{width:100%}
+.privilegeUnlock{border-style:dashed}
+.classmateGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.classmateCard{display:flex;align-items:center;gap:12px;padding:14px;border:1px solid var(--line);border-radius:16px;background:var(--surface2)}
+.classmateCard.me{border-color:color-mix(in srgb,var(--p) 35%,var(--line));background:color-mix(in srgb,var(--p) 6%,var(--surface))}
+.classmateAvatar{width:44px;height:44px;flex:0 0 44px;border-radius:14px;display:grid;place-items:center;background:color-mix(in srgb,var(--p) 12%,var(--surface));border:1px solid color-mix(in srgb,var(--p) 25%,var(--line));font-weight:950;color:var(--p)}
+.classmateInfo{flex:1;min-width:0}.classmateInfo>div{display:flex;align-items:center;gap:7px}.classmateInfo b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.classmateInfo>span{display:block;margin-top:4px;color:var(--muted);font-size:12px}
+.youPill{font-size:10px;font-weight:900;color:var(--p);border:1px solid color-mix(in srgb,var(--p) 30%,var(--line));border-radius:999px;padding:3px 6px}
+.classmateStatusIcon{font-size:26px;flex:0 0 auto}
+
+/* Atrakintos kosmetinės aplinkos temos keičia akcentą, bet ne mokymosi turinį. */
+html[data-student-skin="ocean"]{--p:#087aa3;--p2:#075d7b}
+html[data-student-skin="forest"]{--p:#2e7d4f;--p2:#215f3b}
+html[data-student-skin="violet"]{--p:#7550c8;--p2:#5837a3}
+html[data-student-skin="night"]{--p:#4f67b7;--p2:#394d92}
+html[data-student-skin="aurora"]{--p:#078c82;--p2:#5b4fba}
+html[data-student-skin="gold"]{--p:#a16b0c;--p2:#7b5007}
+html[data-student-skin="diamond"]{--p:#2587a9;--p2:#6f57b6}
+html[data-student-skin="master"]{--p:#8b4b9b;--p2:#5f3470}
+html[data-student-skin="legend"]{--p:#b56b00;--p2:#744b9e}
+
+@media(max-width:760px){
+ .motivationFeatureOptions{grid-template-columns:1fr}
+ .classmateGrid{grid-template-columns:1fr}
+}

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Informatika 10–12</title>
-<link rel="stylesheet" href="style.css?v=5.15">
+<link rel="stylesheet" href="style.css?v=5.17">
 </head>
 <body>
 <header class="topbar hidden" id="appHeader">
@@ -13,6 +13,7 @@
     <div class="navRight">
       <button class="navBtn" id="homeNav" data-route="student">Pradžia</button>
       <button class="navBtn" id="achievementsNav" data-route="achievements">🏆 Pasiekimai</button>
+      <button class="navBtn" id="classmatesNav" data-route="classmates">👥 Klasė</button>
       <button class="navBtn" id="teacherNav" data-route="teacher">Mokytojo aplinka</button>
       <button class="navBtn" id="studentNav" data-route="student">Mano klasė</button>
       <button class="navBtn" data-route="profile">Paskyra</button>
@@ -128,6 +129,10 @@
   <div id="achievementsContent"></div>
 </section>
 
+<section id="view-classmates" class="view hidden">
+  <div id="classmatesContent"></div>
+</section>
+
 <section id="view-profile" class="view hidden">
   <div id="profileContent"></div>
 </section>
@@ -137,10 +142,10 @@
 <div id="toast" class="toast hidden"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase-config.js?v=5.15"></script>
-<script src="config.js?v=5.15"></script>
-<script src="questions.js?v=5.15"></script>
-<script src="assessment.js?v=5.15"></script>
-<script src="app.js?v=5.15"></script>
+<script src="supabase-config.js?v=5.17"></script>
+<script src="config.js?v=5.17"></script>
+<script src="questions.js?v=5.17"></script>
+<script src="assessment.js?v=5.17"></script>
+<script src="app.js?v=5.17"></script>
 </body>
 </html>

@@ -257,6 +257,7 @@ function route(name){
  if(name==='teacher')return profile?.role==='teacher'||profile?.role==='admin'?renderTeacher():renderStudent();
  if(name==='student')return renderStudent();
  if(name==='achievements')return profile?.role==='student'?renderAchievements():renderTeacher();
+ if(name==='classmates')return profile?.role==='student'?renderClassmates():renderTeacher();
  if(name==='profile')return renderProfile();
  show(name);
 }
@@ -272,6 +273,8 @@ function setHeader(){
  $('homeNav').classList.toggle('hidden',isTeacher);
  $('homeNav').dataset.route='student';
  if($('achievementsNav'))$('achievementsNav').classList.add('hidden');
+ if($('classmatesNav'))$('classmatesNav').classList.add('hidden');
+ if(isTeacher)delete document.documentElement.dataset.studentSkin;
  $('teacherNav').classList.toggle('hidden',!isTeacher);
  $('teacherNav').textContent=profile.role==='admin'?'Administratoriaus skydelis':'Mokytojo aplinka';
  $('studentNav').classList.add('hidden');
@@ -281,7 +284,7 @@ function setHeader(){
 }
 
 $('themeToggle').onclick=()=>{const n=(document.documentElement.dataset.theme||'light')==='dark'?'light':'dark';document.documentElement.dataset.theme=n;localStorage.setItem('inf11v3_theme',n)};
-$('logoutBtn').onclick=async()=>{stopHeartbeat();stopTeacherPresenceRefresh();stopIdleLogout();clearIdleClock();await sb.auth.signOut();me=null;profile=null;currentClass=null;uiBackStack=[];currentRestore=null;historyGuardReady=false;if($('loginEmail'))$('loginEmail').value='';if($('loginPassword'))$('loginPassword').value='';setHeader();show('auth')};
+$('logoutBtn').onclick=async()=>{stopHeartbeat();stopTeacherPresenceRefresh();stopIdleLogout();clearIdleClock();await sb.auth.signOut();delete document.documentElement.dataset.studentSkin;me=null;profile=null;currentClass=null;uiBackStack=[];currentRestore=null;historyGuardReady=false;if($('loginEmail'))$('loginEmail').value='';if($('loginPassword'))$('loginPassword').value='';setHeader();show('auth')};
 
 $('tabLogin').onclick=()=>{$('tabLogin').classList.add('active');$('tabSignup').classList.remove('active');$('loginForm').classList.remove('hidden');$('signupForm').classList.add('hidden')};
 $('tabSignup').onclick=()=>{$('tabSignup').classList.add('active');$('tabLogin').classList.remove('active');$('signupForm').classList.remove('hidden');$('loginForm').classList.add('hidden')};
@@ -724,7 +727,7 @@ async function openTeacherClass(classId,initialPanel='students'){
 async function loadTeacherMotivationSettings(classId){
  const {data,error}=await sb.rpc('get_motivation_teacher_settings',{p_class_id:classId});
  if(error)throw error;
- return data||{class_enabled:false,students:[]};
+ return data||{class_enabled:false,show_classmates:false,show_badges:true,allow_cosmetics:false,students:[]};
 }
 async function renderTeacherMotivation(c,students){
  const host=$('teacherClassPanel');if(!host)return;
@@ -733,6 +736,7 @@ async function renderTeacherMotivation(c,students){
  try{settings=await loadTeacherMotivationSettings(c.id)}catch(e){host.innerHTML=`<div class="panel"><div class="notice">${esc(e.message||String(e))}</div></div>`;return}
  const byId=Object.fromEntries((settings.students||[]).map(x=>[x.student_id,x]));
  const classOn=!!settings.class_enabled;
+ const showClassmates=!!settings.show_classmates,showBadges=settings.show_badges!==false,allowCosmetics=!!settings.allow_cosmetics;
  const rows=students.map(s=>{
   const st=byId[s.id]||{has_override:false,override_enabled:null,effective_enabled:classOn};
   const mode=st.has_override?(st.override_enabled?'on':'off'):'inherit';
@@ -742,6 +746,11 @@ async function renderTeacherMotivation(c,students){
   <div class="sectionTitle"><div class="grow"><span class="kicker">MOTYVACINĖ SISTEMA</span><h2>XP, lygiai ir pasiekimai</h2><p class="muted">Gali įjungti visai klasei arba padaryti išimtį konkrečiam mokiniui. Testavimui patogu klasę palikti išjungtą ir įjungti tik savo demo mokiniui.</p></div></div>
   <div class="motivationMasterSwitch"><div class="grow"><b>Visai klasei</b><span>${classOn?'Mokiniai pagal nutylėjimą mato motyvacinę sistemą.':'Mokiniai pagal nutylėjimą motyvacinės sistemos nemato.'}</span></div><label class="toggle motivationBigToggle"><input type="checkbox" id="classMotivationEnabled" ${classOn?'checked':''}> ${classOn?'Įjungta':'Išjungta'}</label></div>
   <div class="notice"><b>Individuali išimtis turi pirmenybę.</b> Jei klasei sistema išjungta, gali ją įjungti tik vienam demo mokiniui.</div>
+  <div class="motivationFeatureOptions">
+   <label class="toggle"><input type="checkbox" id="motivationShowClassmates" ${showClassmates?'checked':''}> Rodyti mokiniams klasės draugus</label>
+   <label class="toggle"><input type="checkbox" id="motivationShowBadges" ${showBadges?'checked':''}> Rodyti statuso ženkliukus prie vardų</label>
+   <label class="toggle"><input type="checkbox" id="motivationAllowCosmetics" ${allowCosmetics?'checked':''}> Leisti kosmetines aplinkos temas</label>
+  </div>
   ${students.length?`<div class="tableWrap"><table class="dataTable motivationAdminTable"><thead><tr><th>Mokinys</th><th>Dabar mato</th><th>Nustatymas</th></tr></thead><tbody>${rows}</tbody></table></div>`:'<div class="emptyState">Klasėje dar nėra mokinių.</div>'}
  </div>`;
  const master=$('classMotivationEnabled');
@@ -752,6 +761,20 @@ async function renderTeacherMotivation(c,students){
   toast(master.checked?'Motyvacinė sistema įjungta klasei.':'Motyvacinė sistema išjungta klasei.');
   renderTeacherMotivation(c,students);
  };
+ const saveMotivationOptions=async()=>{
+  const a=$('motivationShowClassmates'),b=$('motivationShowBadges'),d=$('motivationAllowCosmetics');
+  [a,b,d].filter(Boolean).forEach(x=>x.disabled=true);
+  const {error}=await sb.rpc('set_motivation_class_options',{
+   p_class_id:c.id,
+   p_show_classmates:!!a?.checked,
+   p_show_badges:!!b?.checked,
+   p_allow_cosmetics:!!d?.checked
+  });
+  if(error){toast(error.message);return renderTeacherMotivation(c,students)}
+  toast('Motyvacinės sistemos parinktys išsaugotos.');
+  renderTeacherMotivation(c,students);
+ };
+ ['motivationShowClassmates','motivationShowBadges','motivationAllowCosmetics'].forEach(id=>{if($(id))$(id).onchange=saveMotivationOptions});
  document.querySelectorAll('[data-motivation-student]').forEach(sel=>sel.onchange=async()=>{
   sel.disabled=true;
   let error=null;
@@ -1903,7 +1926,7 @@ async function deleteAssignmentSubmission(id,c,assignmentId,who='student',topicI
 
 /* ================= MOTYVACIJA ================= */
 function motivationDefault(enabled=false){
- return {enabled,total_xp:0,level_no:1,level_name:'Pradedantysis',level_min_xp:0,next_level_xp:250,level_progress_percent:0,completed_practices:0,perfect_count:0,best_score:0,today_practices:0,streak_days:0,weekly_practices:0,weekly_goal:3,badges:[],badges_unlocked:0,topic_mastery:[],class_weekly_practices:0,class_challenge_goal:3,class_challenge_percent:0};
+ return {enabled,total_xp:0,level_no:1,level_name:'Pradedantysis',level_min_xp:0,next_level_xp:250,level_progress_percent:0,completed_practices:0,perfect_count:0,best_score:0,today_practices:0,streak_days:0,weekly_practices:0,weekly_goal:3,badges:[],badges_unlocked:0,topic_mastery:[],class_weekly_practices:0,class_challenge_goal:3,class_challenge_percent:0,classmates_visible:false,badges_visible:false,cosmetics_enabled:false,featured_badge_key:null,ui_theme:'default',unlocked_themes:[{key:'default',title:'Numatytoji',min_practices:0}]};
 }
 async function getMotivationSummary(classId){
  if(!classId)return motivationDefault(false);
@@ -1920,6 +1943,19 @@ async function getPracticeReward(attemptId){
 function masteryFor(summary,topicId){
  return (summary?.topic_mastery||[]).find(x=>x.topic_id===topicId)||null;
 }
+function motivationBadgeByKey(summary,key){
+ return (summary?.badges||[]).find(b=>b.key===key)||null;
+}
+function applyMotivationSkin(summary){
+ const html=document.documentElement;
+ if(summary?.enabled&&summary?.cosmetics_enabled&&summary?.ui_theme&&summary.ui_theme!=='default')html.dataset.studentSkin=summary.ui_theme;
+ else delete html.dataset.studentSkin;
+}
+function milestonePrivilege(summary){
+ const n=Number(summary?.completed_practices)||0;
+ const map={10:'Vandenynas',20:'Miškas',30:'Violetinė',50:'Naktis',100:'Aurora',200:'Auksinė',300:'Deimantinė',500:'Meistro',1000:'Legendos'};
+ return map[n]||null;
+}
 function motivationProgressText(s){
  return s?.next_level_xp==null?`${Number(s.total_xp)||0} XP · aukščiausias lygis`:`${Number(s.total_xp)||0} / ${Number(s.next_level_xp)||0} XP`;
 }
@@ -1935,9 +1971,8 @@ function renderMotivationCard(s){
   <div class="xpTrack"><span style="width:${Math.max(0,Math.min(100,Number(s.level_progress_percent)||0))}%"></span></div>
   <div class="motivationMiniGrid">
    <div><strong>🔥 ${Number(s.streak_days)||0}</strong><span>dienų serija</span></div>
-   <div><strong>🎯 ${weekly} / ${weeklyGoal}</strong><span>savaitės tikslas</span></div>
-   <div><strong>🏅 ${Number(s.badges_unlocked)||0}</strong><span>ženkliukai</span></div>
-   <div><strong>${Number(s.best_score)||0}%</strong><span>geriausia treniruotė</span></div>
+   <div><strong>🎯 ${weekly} / ${weeklyGoal}</strong><span>treniruotės šią savaitę</span></div>
+   <div><strong>🏅 ${Number(s.badges_unlocked)||0}</strong><span>atrakinti ženkliukai</span></div>
   </div>
   <div class="classChallengeMini">
    <div class="grow"><b>🤝 Klasės savaitės iššūkis</b><span>${classNow} / ${classGoal} treniruočių</span></div>
@@ -1948,11 +1983,17 @@ function renderMotivationCard(s){
 }
 function detectNewBadge(summary,pct){
  if(!summary)return null;
- if(Number(summary.completed_practices)===1)return {icon:'🌱',title:'Pirmas žingsnis'};
+ const n=Number(summary.completed_practices)||0;
+ const milestones={
+  10:{icon:'🌟',title:'Startuolis'},20:{icon:'🧭',title:'Aktyvus'},30:{icon:'⚡',title:'Įsibėgėjęs'},
+  50:{icon:'🥉',title:'Atkaklus'},100:{icon:'🥈',title:'Patyręs'},200:{icon:'🥇',title:'Pažengęs'},
+  300:{icon:'💎',title:'Žinovas'},500:{icon:'👑',title:'Meistras'},1000:{icon:'🏆',title:'Legenda'}
+ };
+ if(milestones[n])return milestones[n];
+ if(n===1)return {icon:'🌱',title:'Pirmas žingsnis'};
  if(Number(pct)===100&&Number(summary.perfect_count)===1)return {icon:'🎯',title:'Be klaidų'};
- if(Number(summary.completed_practices)===10)return {icon:'🧠',title:'Atkaklus'};
  if(Number(summary.weekly_practices)===3)return {icon:'⭐',title:'Savaitės tikslas'};
- if(Number(summary.streak_days)===3)return {icon:'🔥',title:'Įsibėgėjęs'};
+ if(Number(summary.streak_days)===3)return {icon:'🔥',title:'3 dienų serija'};
  if(Number(summary.streak_days)===7)return {icon:'🔥',title:'7 dienų serija'};
  return null;
 }
@@ -1964,7 +2005,8 @@ function renderPracticeMotivationReward(reward,topicId,pct){
  box.innerHTML=`<div class="rewardXp"><span>Už treniruotę</span><strong>+${Number(reward.xp_gained)||0} XP</strong></div>
   <div class="rewardLevel"><div class="grow"><b>${Number(s.level_no)||1} lygis · ${esc(s.level_name||'Pradedantysis')}</b><span>${motivationProgressText(s)}</span></div><div class="miniProgress"><span style="width:${Math.max(0,Math.min(100,Number(s.level_progress_percent)||0))}%"></span></div></div>
   <div class="rewardFacts"><span>🔥 Serija: <b>${Number(s.streak_days)||0} d.</b></span><span>🎯 Savaitė: <b>${Math.min(Number(s.weekly_practices)||0,3)}/3</b></span>${m?`<span>📈 Temos įvaldymas: <b>${Number(m.mastery_percent)||0}%</b></span>`:''}</div>
-  ${badge?`<div class="newBadge"><span>${badge.icon}</span><div><small>NAUJAS ŽENKLIUKAS</small><b>${esc(badge.title)}</b></div></div>`:''}`;
+  ${badge?`<div class="newBadge"><span>${badge.icon}</span><div><small>NAUJAS ŽENKLIUKAS</small><b>${esc(badge.title)}</b></div></div>`:''}
+  ${s.cosmetics_enabled&&milestonePrivilege(s)?`<div class="newBadge privilegeUnlock"><span>🎨</span><div><small>NAUJA PRIVILEGIJA</small><b>Atrakinta tema „${esc(milestonePrivilege(s))}“</b></div></div>`:''}`;
 }
 async function renderAchievements(){
  stopTeacherPresenceRefresh();
@@ -1980,23 +2022,87 @@ async function renderAchievements(){
   $('achievementsContent').innerHTML=`<div class="pageHero"><button class="back" id="backAchievements">← Mano klasė</button><span class="kicker">🏆 PASIEKIMAI</span><h1>Motyvacinė sistema neįjungta</h1><p>Šiai paskyrai mokytojas motyvacinės sistemos dar neįjungė.</p></div><div class="panel"><div class="emptyState">Žinių treniruotes gali atlikti kaip įprastai. XP, lygiai ir ženkliukai bus rodomi tik tada, kai mokytojas įjungs sistemą.</div></div>`;
   show('achievements');$('backAchievements').onclick=()=>appBack(()=>renderStudent());return;
  }
+ applyMotivationSkin(s);
+ if($('classmatesNav'))$('classmatesNav').classList.toggle('hidden',!(s.enabled&&s.classmates_visible));
  const badges=s.badges||[],mastery=s.topic_mastery||[];
+ const milestoneBadges=badges.filter(b=>/^m\d+$/.test(b.key||'')&&b.unlocked);
+ const selectedBadge=s.featured_badge_key||'auto';
+ const themes=s.unlocked_themes||[{key:'default',title:'Numatytoji',min_practices:0}];
  $('achievementsContent').innerHTML=`<div class="pageHero"><button class="back" id="backAchievements">← Mano klasė</button><span class="kicker">🏆 PASIEKIMAI</span><h1>Tavo mokymosi progresas</h1><p>XP gauni už žinių treniruotes. Atsiskaitymų pažymiai XP nekeičia.</p></div>
  ${renderMotivationCard(s)}
  <div class="contentGrid achievementsGrid"><div class="stack">
   <div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">ŽENKLIUKAI</span><h2>Atrakinti pasiekimai</h2></div><span class="badge">${Number(s.badges_unlocked)||0}/${badges.length}</span></div>
-   <div class="badgeGrid">${badges.map(b=>`<article class="achievementBadge ${b.unlocked?'unlocked':'locked'}"><div class="badgeIcon">${b.unlocked?esc(b.icon||'🏅'):'?'}</div><div><b>${b.unlocked?esc(b.title):'???'}</b><p>${b.unlocked?esc(b.description):'Dar neatrakinta'}</p></div></article>`).join('')}</div>
+   <div class="badgeGrid">${badges.map(b=>`<article class="achievementBadge ${b.unlocked?'unlocked':'locked'}"><div class="badgeIcon">${b.unlocked?esc(b.icon||'🏅'):'🔒'}</div><div><b>${esc(b.title||'Pasiekimas')}</b><p>${esc(b.description||'Dar neatrakinta')}</p></div></article>`).join('')}</div>
   </div>
   <div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">TEMŲ ĮVALDYMAS</span><h2>Kaip sekasi pagal temas</h2></div></div>
    ${mastery.length?`<div class="masteryList">${mastery.map(m=>{const title=topicById(m.topic_id)?.title||m.topic_id;return `<div class="masteryRow"><div class="masteryHead"><b>${esc(title)}</b><strong>${Number(m.mastery_percent)||0}%</strong></div><div class="masteryTrack"><span style="width:${Math.max(0,Math.min(100,Number(m.mastery_percent)||0))}%"></span></div><div class="subtle">Paskutinių iki 5 treniruočių vidurkis · geriausias ${Number(m.best_score)||0}%</div></div>`}).join('')}</div>`:'<div class="emptyState">Atlik bent vieną žinių treniruotę – čia atsiras temos įvaldymas.</div>'}
   </div>
  </div><div class="stack">
-  <div class="panel"><span class="kicker">KAIP RENKAMAS XP</span><h3>Atlygis už mokymąsi</h3><p class="muted">10 klausimų treniruotėje gali gauti iki maždaug 100 XP pagal rezultatą. 100 % rezultatas duoda papildomą premiją. Taip pat yra premija už pirmą dienos treniruotę, asmeninį pagerėjimą ir savaitės tikslą.</p><div class="notice"><b>XP „farminti“ neapsimoka:</b> tą pačią temą kartojant daug kartų tą pačią dieną, už vėlesnius bandymus XP palaipsniui mažėja.</div></div>
-  <div class="panel"><span class="kicker">BENDRAS TIKSLAS</span><h3>🤝 Klasės savaitės iššūkis</h3><p class="muted">Čia nėra mokinių reitingo. Visa klasė kartu renka treniruotes į bendrą tikslą.</p><div class="masteryHead"><b>${Number(s.class_weekly_practices)||0} / ${Number(s.class_challenge_goal)||3}</b><strong>${Number(s.class_challenge_percent)||0}%</strong></div><div class="masteryTrack"><span style="width:${Math.max(0,Math.min(100,Number(s.class_challenge_percent)||0))}%"></span></div></div>
+  <div class="panel privilegePanel"><span class="kicker">PRIVILEGIJOS</span><h3>Profilio išvaizda</h3>
+   <label class="motivationPrefLabel">Ženkliukas prie tavo vardo
+    <select id="featuredMotivationBadge">
+     <option value="auto" ${selectedBadge==='auto'||!s.featured_badge_key?'selected':''}>Automatiškai aukščiausias</option>
+     ${milestoneBadges.map(b=>`<option value="${esc(b.key)}" ${s.featured_badge_key===b.key?'selected':''}>${esc(b.icon||'🏅')} ${esc(b.title)}</option>`).join('')}
+    </select>
+   </label>
+   ${s.cosmetics_enabled?`<label class="motivationPrefLabel">Aplinkos tema
+    <select id="motivationTheme">${themes.map(t=>`<option value="${esc(t.key)}" ${s.ui_theme===t.key?'selected':''}>${esc(t.title)}</option>`).join('')}</select>
+   </label><div class="subtle">Naujos temos atrakinamos ilgalaikiais 10, 20, 30, 50, 100, 200, 300, 500 ir 1000 treniruočių pasiekimais.</div>`:'<div class="notice"><b>Kosmetinės privilegijos dar išjungtos.</b> Mokytojas gali jas įjungti motyvacinės sistemos nustatymuose.</div>'}
+  </div>
+  <div class="panel"><span class="kicker">KAIP RENKAMAS XP</span><h3>Atlygis už mokymąsi</h3><p class="muted">Savaitės tikslas – atlikti 3 žinių treniruotes per savaitę. Pvz., 0/3 reiškia, kad šią savaitę dar neatlikta nė viena iš trijų. 10 klausimų treniruotėje gali gauti iki maždaug 100 XP pagal rezultatą. 100 % rezultatas duoda papildomą premiją. Taip pat yra premija už pirmą dienos treniruotę, asmeninį pagerėjimą ir savaitės tikslą.</p><div class="notice"><b>Pakartotinės treniruotės:</b> tą pačią temą kartojant kelis kartus tą pačią dieną, už vėlesnius bandymus skiriama mažiau XP.</div></div>
+  <div class="panel"><span class="kicker">BENDRAS TIKSLAS</span><h3>🤝 Klasės savaitės iššūkis</h3><p class="muted">Visa klasė kartu renka treniruotes į bendrą savaitės tikslą.</p><div class="masteryHead"><b>${Number(s.class_weekly_practices)||0} / ${Number(s.class_challenge_goal)||3}</b><strong>${Number(s.class_challenge_percent)||0}%</strong></div><div class="masteryTrack"><span style="width:${Math.max(0,Math.min(100,Number(s.class_challenge_percent)||0))}%"></span></div></div>
  </div></div>`;
  show('achievements');
  $('backAchievements').onclick=()=>appBack(()=>renderStudent());
  if($('openAchievements'))$('openAchievements').onclick=()=>{};
+ if($('featuredMotivationBadge'))$('featuredMotivationBadge').onchange=async e=>{
+  e.target.disabled=true;
+  const value=e.target.value==='auto'?null:e.target.value;
+  const {error}=await sb.rpc('set_my_featured_motivation_badge',{p_class_id:c.id,p_badge_key:value});
+  if(error){e.target.disabled=false;return toast(error.message)}
+  toast('Ženkliukas prie vardo atnaujintas.');
+  renderAchievements();
+ };
+ if($('motivationTheme'))$('motivationTheme').onchange=async e=>{
+  e.target.disabled=true;
+  const {error}=await sb.rpc('set_my_motivation_theme',{p_class_id:c.id,p_theme:e.target.value});
+  if(error){e.target.disabled=false;return toast(error.message)}
+  toast('Aplinkos tema pakeista.');
+  renderAchievements();
+ };
+}
+
+
+async function renderClassmates(){
+ stopTeacherPresenceRefresh();
+ setPresenceContext('Mano klasė',null);
+ setCurrentRestore(()=>renderClassmates());
+ const c=await getStudentClass();
+ if(!c)return renderStudent();
+
+ const s=await getMotivationSummary(c.id);
+ applyMotivationSkin(s);
+ if(!s.enabled||!s.classmates_visible){
+  if($('classmatesNav'))$('classmatesNav').classList.add('hidden');
+  $('classmatesContent').innerHTML=`<div class="pageHero"><button class="back" id="backClassmates">← Mano klasė</button><span class="kicker">👥 KLASĖ</span><h1>Klasės draugų vaizdas neįjungtas</h1><p>Šią motyvacinės sistemos dalį valdo mokytojas.</p></div>`;
+  show('classmates');$('backClassmates').onclick=()=>appBack(()=>renderStudent());return;
+ }
+
+ const {data,error}=await sb.rpc('get_my_class_motivation_peers',{p_class_id:c.id});
+ if(error)return toast(error.message);
+ const peers=Array.isArray(data)?data:[];
+ $('classmatesContent').innerHTML=`<div class="pageHero"><button class="back" id="backClassmates">← Mano klasė</button><span class="kicker">👥 ${esc(c.name)}</span><h1>Mano klasė</h1><p>Čia rodomi tik motyvacinės sistemos statuso ženkliukai. Pažymiai, XP skaičius ir atsiskaitymų rezultatai klasės draugams nerodomi.</p></div>
+ <div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">KLASĖS DRAUGAI</span><h2>${peers.length} mok.</h2></div></div>
+  <div class="classmateGrid">${peers.map(p=>`<article class="classmateCard ${p.is_me?'me':''}">
+   <div class="classmateAvatar">${esc((p.full_name||'?').trim().split(/\\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase()||'?')}</div>
+   <div class="classmateInfo"><div><b>${esc(p.full_name||'Mokinys')}</b>${p.is_me?'<span class="youPill">Tu</span>':''}</div>
+    ${p.motivation_enabled?(p.badge_title?`<span>${esc(p.badge_icon||'🏅')} ${esc(p.badge_title)}</span>`:'<span>Pirmasis ilgalaikis ženkliukas – nuo 10 treniruočių</span>'):'<span>Motyvacinė sistema išjungta</span>'}
+   </div>
+   ${p.badge_icon?`<div class="classmateStatusIcon" title="${esc(p.badge_title||'')}">${esc(p.badge_icon)}</div>`:''}
+  </article>`).join('')}</div>
+ </div>`;
+ show('classmates');
+ $('backClassmates').onclick=()=>appBack(()=>renderStudent());
 }
 
 /* ================= STUDENT ================= */
@@ -2023,7 +2129,9 @@ async function renderStudent(){
   sb.from('direct_submissions').select('*').eq('student_id',me.id).eq('class_id',c.id).order('submitted_at',{ascending:false}),
   getMotivationSummary(c.id)
  ]);
+ applyMotivationSkin(motivation);
  if($('achievementsNav'))$('achievementsNav').classList.toggle('hidden',!motivation?.enabled);
+ if($('classmatesNav'))$('classmatesNav').classList.toggle('hidden',!(motivation?.enabled&&motivation?.classmates_visible));
  if(directErr)return toast(directErr.message);
 
  const secs=(sessions||[]).reduce((n,x)=>n+(x.duration_seconds||0),0),best=(attempts||[]).length?Math.max(...attempts.map(x=>x.score_percent||0)):0;
