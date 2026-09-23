@@ -296,3 +296,11 @@ Tai pašalina `new row violates row-level security policy for table "classes"` k
 - Pataisyti 8 SVG balanso pozicijos variantai, kad klausimas ir atsakymų tipas sutaptų (pvz. plėtinys -> .svg).
 - Oficialūs formatų pavadinimai gali likti anglų kalba tik ten, kur tikrinama santrumpos reikšmė.
 - Jau užbaigti arba atsakyti istoriniai klausimai neperrašomi; pataisomi tik dar neatsakyti aktyvių bandymų klausimai.
+
+## v5.10 – kompaktiškesnė mokytojo rezultatų lentelė ir studento pastabų dizainas
+- Atsiskaitymų rezultatų lentelėje ilga temos antraštė rodoma vienoje eilutėje su daugtaškiu.
+- Paspaudus temos pavadinimą jis išsiskleidžia pilnai, neplatinant visos lentelės.
+- Mokinio temos puslapyje „Pranešimai ir nuorodos“ pakeisti į vizualiai atskirą „Mokytojo pastabos“ bloką.
+- Pastabos ir nuorodos aiškiai atskiriamos pagal tipą, pateikiamos kompaktiškiau ir nebeatrodo kaip pagrindinės mokymosi kortelės.
+- Tas pats vaizdas rodomas ir mokytojo „Mokinio vaizdas“ peržiūroje.
+- Supabase SQL pakeitimų nereikia.

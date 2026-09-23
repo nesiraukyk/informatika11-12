@@ -56,6 +56,33 @@ const normalizeAnswer=(v,type)=>{if(type==='multi')return [...(Array.isArray(v)?
 const answerEquals=(a,b,type)=>JSON.stringify(normalizeAnswer(a,type))===JSON.stringify(normalizeAnswer(b,type));
 const qTypeLabel=t=>({single:'Vienas atsakymas',multi:'Keli atsakymai',odd:'Kuris netinka',matching:'Sujungimas'})[t]||'Klausimas';
 const fmtDate=d=>d?new Date(d).toLocaleString('lt-LT'):'–';
+
+function renderStudentTeacherUpdates(posts=[]){
+ if(!posts?.length)return '';
+ return `<section class="teacherUpdatesSection">
+  <div class="teacherUpdatesHeader">
+   <div class="grow"><span class="kicker">IŠ MOKYTOJO</span><h2>Mokytojo pastabos</h2><p>Papildomi komentarai, priminimai ir nuorodos šiai temai.</p></div>
+   <span class="teacherUpdatesCount">${posts.length}</span>
+  </div>
+  <div class="teacherUpdatesList">
+   ${posts.map(p=>{
+    const hasLink=!!p.url,hasBody=!!String(p.body||'').trim();
+    const kind=hasLink?(hasBody?'NUORODA + PASTABA':'NUORODA'):'PASTABA';
+    const icon=hasLink?'↗':'i';
+    return `<article class="teacherUpdateItem">
+     <div class="teacherUpdateIcon ${hasLink?'link':''}">${icon}</div>
+     <div class="teacherUpdateContent">
+      <div class="teacherUpdateMeta"><span>${kind}</span><time>${fmtDate(p.created_at)}</time></div>
+      <h3>${esc(p.title)}</h3>
+      ${hasBody?`<p>${esc(p.body)}</p>`:''}
+      ${hasLink?`<a class="teacherUpdateLink" href="${esc(p.url)}" target="_blank" rel="noopener noreferrer">Atidaryti nuorodą <span>↗</span></a>`:''}
+     </div>
+    </article>`;
+   }).join('')}
+  </div>
+ </section>`;
+}
+
 let me=null,profile=null,currentClass=null,activitySessionId=null,heartbeatTimer=null;
 let presenceActivity='Platforma',presenceTopicId=null,presenceClassId=null,teacherPresenceTimer=null;
 let quiz={topicId:null,classId:null,mode:null,items:[],index:0,answers:[],attemptId:null,startMs:0,last:null,completed:false};
@@ -1349,11 +1376,13 @@ async function renderTeacherAssessments(c,students,attempts){
     ? '<span class="badge ok">Pakartojimas leistas</span>'
     : `<button class="smallBtn" data-grant-assessment-retry="${x.student_id}" data-retry-topic="${esc(x.topic_id)}" data-retry-name="${esc(st?.full_name||'Mokinys')}">Leisti pakartoti</button>`;
   }
-  return `<tr><td><b>${esc(st?.full_name||'Mokinys')}</b></td><td>${esc(topicById(x.topic_id)?.title||x.topic_id)}</td><td><b>${attemptNoById[x.id]||1}</b></td><td><span class="badge ${done?'ok':''}">${done?'Baigtas':'Vyksta / nebaigtas'}</span></td><td><b>${result}</b></td><td>${duration}${done?'':' (iki dabar)'}</td><td><b>${countBy[x.id]||0}</b></td><td>${studentVisibility}</td><td>${fmtDate(x.started_at)}</td><td><div class="actions"><button class="smallBtn" data-assessment-result="${x.id}" data-assessment-student="${x.student_id}">Peržiūrėti atsakymus</button>${retryAction}</div></td></tr>`;
+  const fullTopicTitle=topicById(x.topic_id)?.title||x.topic_id;
+  return `<tr><td><b>${esc(st?.full_name||'Mokinys')}</b></td><td class="assessmentTopicCell"><button type="button" class="assessmentTopicToggle" data-toggle-assessment-topic title="${esc(fullTopicTitle)}"><span class="assessmentTopicText">${esc(fullTopicTitle)}</span><span class="assessmentTopicChevron" aria-hidden="true">⌄</span></button></td><td><b>${attemptNoById[x.id]||1}</b></td><td><span class="badge ${done?'ok':''}">${done?'Baigtas':'Vyksta / nebaigtas'}</span></td><td><b>${result}</b></td><td>${duration}${done?'':' (iki dabar)'}</td><td><b>${countBy[x.id]||0}</b></td><td>${studentVisibility}</td><td>${fmtDate(x.started_at)}</td><td><div class="actions"><button class="smallBtn" data-assessment-result="${x.id}" data-assessment-student="${x.student_id}">Peržiūrėti atsakymus</button>${retryAction}</div></td></tr>`;
  }).join('');
  host.innerHTML=`<div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">ATSISKAITYMŲ REZULTATAI</span><h2>Mokinių atsiskaitymai</h2><p class="muted">Pagal nutylėjimą mokinys turi vieną bandymą. Paspaudus „Leisti pakartoti“ jam atrakinamas tik vienas kitas bandymas. Ankstesni rezultatai lieka istorijoje, o naujam bandymui sistema pirmiausia parenka anksčiau nematytus lygiaverčius klausimų variantus.</p></div><span class="badge">${rows.length} band.</span></div>
  <div class="tableWrap"><table class="dataTable"><thead><tr><th>Mokinys</th><th>Tema</th><th>Bandymas</th><th>Būsena</th><th>Rezultatas</th><th>Laikas</th><th>Išėjo iš lango</th><th>Mokiniams</th><th>Pradėta</th><th></th></tr></thead><tbody>${body}</tbody></table></div></div>`;
  document.querySelectorAll('[data-assessment-result]').forEach(b=>b.onclick=()=>showAssessmentAttemptDetail(b.dataset.assessmentResult,b.dataset.assessmentStudent,c.id));
+ document.querySelectorAll('[data-toggle-assessment-topic]').forEach(b=>b.onclick=()=>{b.classList.toggle('expanded');b.setAttribute('aria-expanded',b.classList.contains('expanded')?'true':'false')});
  document.querySelectorAll('[data-grant-assessment-retry]').forEach(b=>b.onclick=()=>grantAssessmentRetry(c,b.dataset.grantAssessmentRetry,b.dataset.retryTopic,b.dataset.retryName,b));
 }
 
@@ -1920,10 +1949,7 @@ async function openStudentTopic(topicId,c,access){
  let existing=[];if(assignments?.length)({data:existing}=await sb.from('submissions').select('*').eq('student_id',me.id).in('assignment_id',assignments.map(x=>x.id)).order('submitted_at',{ascending:false}));
  $('topicContent').innerHTML=`<div class="pageHero"><button class="back" id="backStudent">← Mano klasė</button><span class="kicker">${esc(t?.code||'TEMA')}</span><h1>${esc(t?.title||topicId)}</h1>${topicDescription(t)?`<p>${esc(topicDescription(t))}</p>`:''}</div>
  <div class="contentGrid"><div class="stack">
-  ${(topicPosts||[]).length?`<div class="panel classPostsPanel">
-   <div class="sectionTitle"><div class="grow"><span class="kicker">IŠ MOKYTOJO</span><h2>Pranešimai ir nuorodos</h2></div><span class="badge">${(topicPosts||[]).length}</span></div>
-   ${(topicPosts||[]).map(p=>`<div class="classPost"><div class="postMeta">${fmtDate(p.created_at)}</div><h3>${esc(p.title)}</h3>${p.body?`<p>${esc(p.body)}</p>`:''}${p.url?`<a class="postLink" href="${esc(p.url)}" target="_blank" rel="noopener noreferrer">Atidaryti nuorodą ↗</a>`:''}</div>`).join('')}
-  </div>`:''}
+  ${renderStudentTeacherUpdates(topicPosts||[])}
   <div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">PRAKTIKA</span><h2>Žinių treniruotė</h2></div><span class="badge ${a.practice_open?'ok':''}">${a.practice_open?'Atidaryta':'Užrakinta'}</span></div>
    ${c.grade_level==='10'?renderGrade10StudentPracticePicker(practiceBlocks||[],a.practice_open):`<p class="muted"><b>Praktikuotis gali tiek kartų, kiek nori.</b> Kiekvieną kartą sistema iš didesnio klausimų banko atsitiktinai parenka 10 klausimų ir sumaišo atsakymų variantus, todėl bandymai nėra vienodi. Po kiekvieno atsakymo gausi paaiškinimą, o rezultatas ir atlikimo laikas bus išsaugoti tavo paskyroje.</p><button class="primary" id="startPracticeTopic" ${a.practice_open?'':'disabled'}>Pradėti 10 klausimų praktiką</button>`}
   </div>
@@ -2004,10 +2030,7 @@ async function renderTeacherTopicPreview(topicId,c,access,backFn=null){
  $('teacherContent').innerHTML=`<div class="previewBanner"><b>👁 Mokinio vaizdo peržiūra</b><span>Veiksmai, kurie kurtų mokinio rezultatą ar pateiktų darbą, yra išjungti.</span></div>
  <div class="pageHero"><button class="back" id="backPreviewTopic">← Mokinio klasės vaizdas</button><span class="kicker">${esc(t?.code||'TEMA')}</span><h1>${esc(t?.title||topicId)}</h1>${topicDescription(t)?`<p>${esc(topicDescription(t))}</p>`:''}</div>
  <div class="contentGrid"><div class="stack">
-  ${(topicPosts||[]).length?`<div class="panel classPostsPanel">
-   <div class="sectionTitle"><div class="grow"><span class="kicker">IŠ MOKYTOJO</span><h2>Pranešimai ir nuorodos</h2></div><span class="badge">${(topicPosts||[]).length}</span></div>
-   ${(topicPosts||[]).map(p=>`<div class="classPost"><div class="postMeta">${fmtDate(p.created_at)}</div><h3>${esc(p.title)}</h3>${p.body?`<p>${esc(p.body)}</p>`:''}${p.url?`<a class="postLink" href="${esc(p.url)}" target="_blank" rel="noopener noreferrer">Atidaryti nuorodą ↗</a>`:''}</div>`).join('')}
-  </div>`:''}
+  ${renderStudentTeacherUpdates(topicPosts||[])}
   <div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">PRAKTIKA</span><h2>Žinių treniruotė</h2></div><span class="badge ${a.practice_open?'ok':''}">${a.practice_open?'Atidaryta':'Užrakinta'}</span></div>
    <p class="muted"><b>Praktikuotis galima neribotai.</b> Kiekvieną kartą parenkami atsitiktiniai klausimai ir sumaišomi atsakymai.</p><button class="primary" disabled>${a.practice_open?'Pradėti 10 klausimų praktiką':'Praktika užrakinta'}</button>
   </div>

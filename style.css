@@ -370,3 +370,149 @@ textarea{
 .questionNavActions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
 .saveStatus{font-size:12px;color:var(--muted);font-weight:750}.saveStatus.saved{color:var(--ok)}.saveStatus.saving{color:var(--p)}.saveStatus.local{color:var(--bad)}
 @media(max-width:620px){.questionActions{grid-template-columns:1fr}.questionNavActions{justify-content:stretch}.questionNavActions button{flex:1}.questionNavBtn{width:32px;height:32px}}
+
+
+/* ===== v5.10 · kompaktiškesni rezultatai + mokytojo pastabų dizainas ===== */
+.assessmentTopicCell{
+  width:220px;
+  max-width:220px;
+  white-space:normal!important;
+}
+.assessmentTopicToggle{
+  width:100%;
+  display:flex;
+  align-items:flex-start;
+  gap:6px;
+  padding:2px 0;
+  border:0;
+  background:transparent;
+  color:var(--ink);
+  text-align:left;
+  font:inherit;
+  font-weight:650;
+}
+.assessmentTopicText{
+  display:block;
+  flex:1;
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.assessmentTopicChevron{
+  flex:0 0 auto;
+  color:var(--muted);
+  font-size:15px;
+  line-height:1.2;
+  transition:transform .16s ease;
+}
+.assessmentTopicToggle:hover .assessmentTopicText{color:var(--p)}
+.assessmentTopicToggle.expanded .assessmentTopicText{
+  white-space:normal;
+  overflow:visible;
+  text-overflow:clip;
+  line-height:1.35;
+}
+.assessmentTopicToggle.expanded .assessmentTopicChevron{transform:rotate(180deg)}
+
+.teacherUpdatesSection{
+  margin:2px 0 8px;
+  padding:17px 18px;
+  border:1px solid color-mix(in srgb,var(--p) 20%,var(--line));
+  border-left:4px solid var(--p);
+  border-radius:18px;
+  background:color-mix(in srgb,var(--p) 5%,var(--surface));
+}
+.teacherUpdatesHeader{
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+  padding-bottom:10px;
+}
+.teacherUpdatesHeader .grow{flex:1}
+.teacherUpdatesHeader h2{margin:2px 0 3px;font-size:20px}
+.teacherUpdatesHeader p{margin:0;color:var(--muted);font-size:12px;line-height:1.45}
+.teacherUpdatesCount{
+  min-width:28px;
+  height:28px;
+  padding:0 8px;
+  display:grid;
+  place-items:center;
+  border-radius:999px;
+  background:var(--surface);
+  border:1px solid var(--line);
+  color:var(--muted);
+  font-size:12px;
+  font-weight:900;
+}
+.teacherUpdatesList{display:grid}
+.teacherUpdateItem{
+  display:grid;
+  grid-template-columns:36px minmax(0,1fr);
+  gap:11px;
+  padding:13px 0;
+  border-top:1px solid color-mix(in srgb,var(--p) 12%,var(--line));
+}
+.teacherUpdateItem:first-child{border-top:0}
+.teacherUpdateIcon{
+  width:34px;
+  height:34px;
+  display:grid;
+  place-items:center;
+  border-radius:11px;
+  background:var(--surface);
+  border:1px solid var(--line);
+  color:var(--p);
+  font-weight:950;
+}
+.teacherUpdateIcon.link{
+  background:color-mix(in srgb,var(--p) 9%,var(--surface));
+  border-color:color-mix(in srgb,var(--p) 22%,var(--line));
+}
+.teacherUpdateContent{min-width:0}
+.teacherUpdateMeta{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+  color:var(--muted);
+  font-size:11px;
+  font-weight:750;
+}
+.teacherUpdateMeta span{
+  color:var(--p);
+  font-size:10px;
+  letter-spacing:.08em;
+  font-weight:900;
+}
+.teacherUpdateContent h3{
+  margin:4px 0 4px;
+  font-size:16px;
+  line-height:1.35;
+}
+.teacherUpdateContent p{
+  margin:0 0 7px;
+  color:var(--muted);
+  white-space:pre-wrap;
+  line-height:1.5;
+  font-size:13px;
+}
+.teacherUpdateLink{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  margin-top:3px;
+  padding:7px 10px;
+  border:1px solid color-mix(in srgb,var(--p) 25%,var(--line));
+  border-radius:10px;
+  background:var(--surface);
+  color:var(--p);
+  text-decoration:none;
+  font-size:12px;
+  font-weight:850;
+}
+.teacherUpdateLink:hover{background:color-mix(in srgb,var(--p) 6%,var(--surface))}
+@media(max-width:760px){
+  .assessmentTopicCell{width:180px;max-width:180px}
+  .teacherUpdatesSection{padding:15px}
+}
