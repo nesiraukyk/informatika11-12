@@ -332,3 +332,14 @@ Tai pašalina `new row violates row-level security policy for table "classes"` k
 - Išlieka vieno atsakymo, kelių atsakymų, „kuris netinka“ ir sujungimo klausimai.
 - Atsakymai kaip ir anksčiau automatiškai saugomi, iki I dalies pateikimo juos galima keisti.
 - II dalies logotipo praktinė užduotis lieka atskira ir nekeičiama.
+
+## v5.14 – motyvacinė sistema mokiniams
+- XP skiriamas tik už užbaigtas „Žinių treniruotes“, ne už atsiskaitymus.
+- 7 lygiai: Pradedantysis, Smalsuolis, Tyrinėtojas, Pažengęs, Žinovas, Ekspertas, Meistras.
+- Ženkliukai, mokymosi dienų serija, savaitės tikslas (3 treniruotės), dienos misija.
+- Temos įvaldymas skaičiuojamas pagal paskutines iki 5 tos temos treniruočių.
+- Bendras klasės savaitės iššūkis be viešo mokinių reitingo.
+- Po treniruotės iškart rodoma, kiek XP gauta ir kaip pasikeitė progresas.
+- Apsauga nuo XP „farminimo“: kartojant tą pačią temą tą pačią dieną vėlesni bandymai duoda mažiau XP.
+- Sistema progresą paskaičiuoja ir iš anksčiau užbaigtų praktikų; duomenys nedubliuojami atskiroje XP lentelėje.
+- Į ZIP įtraukti `CNAME` (`ngg-informatika.lt`) ir `.nojekyll`, kad GitHub Pages domeno nustatymai nedingtų keičiant versiją.

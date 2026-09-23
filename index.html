@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Informatika 10–12</title>
-<link rel="stylesheet" href="style.css?v=5.13">
+<link rel="stylesheet" href="style.css?v=5.14">
 </head>
 <body>
 <header class="topbar hidden" id="appHeader">
@@ -12,6 +12,7 @@
     <button class="brand" id="brandHome" data-route="dashboard"><span class="brandMark">IT</span><span><b>Informatika</b><small id="headerRole">Mokymosi platforma</small></span></button>
     <div class="navRight">
       <button class="navBtn" id="homeNav" data-route="student">Pradžia</button>
+      <button class="navBtn" id="achievementsNav" data-route="achievements">🏆 Pasiekimai</button>
       <button class="navBtn" id="teacherNav" data-route="teacher">Mokytojo aplinka</button>
       <button class="navBtn" id="studentNav" data-route="student">Mano klasė</button>
       <button class="navBtn" data-route="profile">Paskyra</button>
@@ -113,6 +114,7 @@
       <div><strong id="wrongCount">0</strong><span>klaidingai</span></div>
       <div><strong id="resultGoal">80%</strong><span>tikslas</span></div>
     </div>
+    <div id="motivationResult" class="motivationResult hidden"></div>
     <div class="resultActions">
       <button class="primary" id="retryQuiz">Bandyti dar kartą</button>
       <button class="ghost" id="reviewErrors">Peržiūrėti klaidas</button>
@@ -120,6 +122,10 @@
     </div>
   </div>
   <div id="errorsReview" class="panel hidden"></div>
+</section>
+
+<section id="view-achievements" class="view hidden">
+  <div id="achievementsContent"></div>
 </section>
 
 <section id="view-profile" class="view hidden">
@@ -131,10 +137,10 @@
 <div id="toast" class="toast hidden"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase-config.js?v=5.13"></script>
-<script src="config.js?v=5.13"></script>
-<script src="questions.js?v=5.13"></script>
-<script src="assessment.js?v=5.13"></script>
-<script src="app.js?v=5.13"></script>
+<script src="supabase-config.js?v=5.14"></script>
+<script src="config.js?v=5.14"></script>
+<script src="questions.js?v=5.14"></script>
+<script src="assessment.js?v=5.14"></script>
+<script src="app.js?v=5.14"></script>
 </body>
 </html>

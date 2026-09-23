@@ -601,3 +601,31 @@ textarea{
  .gradientSamples{grid-template-columns:repeat(2,minmax(0,1fr))}
  .sequenceRow{grid-template-columns:1fr}
 }
+
+
+/* ===== v5.14 · motyvacinė sistema ===== */
+.motivationCard{
+  margin:0 0 22px;
+  padding:21px;
+  border:1px solid color-mix(in srgb,var(--p) 24%,var(--line));
+  border-radius:22px;
+  background:linear-gradient(135deg,color-mix(in srgb,var(--p) 8%,var(--surface)),var(--surface));
+  box-shadow:var(--shadow);
+}
+.motivationTop{display:flex;align-items:center;gap:18px}.motivationTop>div:first-child{flex:1}.motivationTop h2{margin:3px 0 3px}.motivationTop p{margin:0;color:var(--muted);font-size:13px}
+.xpOrb{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;background:var(--p);color:white;line-height:1;text-align:center;box-shadow:0 10px 30px color-mix(in srgb,var(--p) 25%,transparent)}
+.xpOrb strong{font-size:22px}.xpOrb span{font-size:10px;font-weight:900;letter-spacing:.08em}
+.xpTrack,.masteryTrack,.miniProgress{height:9px;border-radius:999px;background:var(--line);overflow:hidden}.xpTrack{margin:15px 0}.xpTrack span,.masteryTrack span,.miniProgress span{display:block;height:100%;border-radius:inherit;background:var(--p)}
+.motivationMiniGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.motivationMiniGrid>div{padding:11px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}.motivationMiniGrid strong{display:block;font-size:15px}.motivationMiniGrid span{font-size:11px;color:var(--muted)}
+.classChallengeMini{display:flex;align-items:center;gap:14px;margin-top:12px;padding:11px 12px;border:1px dashed color-mix(in srgb,var(--p) 32%,var(--line));border-radius:14px}.classChallengeMini .grow{display:flex;flex-direction:column}.classChallengeMini b{font-size:13px}.classChallengeMini span{font-size:11px;color:var(--muted)}.classChallengeMini .miniProgress{width:150px;flex:0 0 150px}
+.motivationActions{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:13px}
+.topicMasteryBox{margin:10px 0 14px;padding:13px;border:1px solid var(--line);border-radius:14px;background:var(--surface2)}.topicMasteryBox.empty{display:flex;flex-direction:column;gap:4px;color:var(--muted)}.topicMasteryBox.empty b{color:var(--ink)}
+.masteryHead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:7px}.masteryHead strong{color:var(--p)}.masteryTrack{margin-bottom:6px}
+.achievementsGrid{align-items:start}.badgeGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.achievementBadge{display:flex;gap:12px;align-items:center;padding:13px;border:1px solid var(--line);border-radius:15px;background:var(--surface2)}.achievementBadge.locked{opacity:.58;filter:grayscale(.7)}.achievementBadge.unlocked{border-color:color-mix(in srgb,var(--p) 28%,var(--line));background:color-mix(in srgb,var(--p) 5%,var(--surface))}.badgeIcon{width:46px;height:46px;flex:0 0 46px;border-radius:14px;display:grid;place-items:center;background:var(--surface);border:1px solid var(--line);font-size:24px;font-weight:950}.achievementBadge p{margin:3px 0 0;color:var(--muted);font-size:11px;line-height:1.4}
+.masteryList{display:grid;gap:14px}.masteryRow{padding:12px 0;border-bottom:1px solid var(--line)}.masteryRow:last-child{border-bottom:0}
+.motivationResult{margin:18px 0 20px;text-align:left;border:1px solid color-mix(in srgb,var(--p) 28%,var(--line));border-radius:18px;padding:16px;background:color-mix(in srgb,var(--p) 5%,var(--surface))}
+.rewardXp{display:flex;align-items:center;justify-content:space-between;gap:12px}.rewardXp span{font-size:12px;color:var(--muted);font-weight:800}.rewardXp strong{font-size:25px;color:var(--p)}
+.rewardLevel{display:flex;align-items:center;gap:12px;margin-top:10px}.rewardLevel .grow{display:flex;flex-direction:column}.rewardLevel .grow span{font-size:11px;color:var(--muted)}.rewardLevel .miniProgress{width:145px;flex:0 0 145px}
+.rewardFacts{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.rewardFacts span{font-size:11px;padding:7px 9px;border:1px solid var(--line);border-radius:999px;background:var(--surface)}
+.newBadge{display:flex;align-items:center;gap:11px;margin-top:13px;padding:11px;border-radius:14px;background:var(--surface);border:1px solid color-mix(in srgb,var(--p) 25%,var(--line))}.newBadge>span{font-size:28px}.newBadge div{display:flex;flex-direction:column}.newBadge small{color:var(--p);font-weight:900;letter-spacing:.06em}.newBadge b{font-size:15px}
+@media(max-width:760px){.motivationMiniGrid{grid-template-columns:repeat(2,1fr)}.classChallengeMini{align-items:flex-start;flex-direction:column}.classChallengeMini .miniProgress{width:100%;flex:auto}.badgeGrid{grid-template-columns:1fr}.motivationActions{align-items:flex-start;flex-direction:column}.rewardLevel{align-items:flex-start;flex-direction:column}.rewardLevel .miniProgress{width:100%;flex:auto}}

@@ -256,6 +256,7 @@ function route(name){
  if(name==='dashboard')return renderDashboard();
  if(name==='teacher')return profile?.role==='teacher'||profile?.role==='admin'?renderTeacher():renderStudent();
  if(name==='student')return renderStudent();
+ if(name==='achievements')return profile?.role==='student'?renderAchievements():renderTeacher();
  if(name==='profile')return renderProfile();
  show(name);
 }
@@ -270,6 +271,7 @@ function setHeader(){
  // Mokinys turi vieną aiškią pradžios nuorodą, kuri visada atidaro jo klasę.
  $('homeNav').classList.toggle('hidden',isTeacher);
  $('homeNav').dataset.route='student';
+ if($('achievementsNav'))$('achievementsNav').classList.toggle('hidden',isTeacher);
  $('teacherNav').classList.toggle('hidden',!isTeacher);
  $('teacherNav').textContent=profile.role==='admin'?'Administratoriaus skydelis':'Mokytojo aplinka';
  $('studentNav').classList.add('hidden');
@@ -1848,6 +1850,100 @@ async function deleteAssignmentSubmission(id,c,assignmentId,who='student',topicI
 }
 
 
+
+/* ================= MOTYVACIJA ================= */
+function motivationDefault(){
+ return {total_xp:0,level_no:1,level_name:'Pradedantysis',level_min_xp:0,next_level_xp:250,level_progress_percent:0,completed_practices:0,perfect_count:0,best_score:0,today_practices:0,streak_days:0,weekly_practices:0,weekly_goal:3,badges:[],badges_unlocked:0,topic_mastery:[],class_weekly_practices:0,class_challenge_goal:3,class_challenge_percent:0};
+}
+async function getMotivationSummary(classId){
+ if(!classId)return motivationDefault();
+ const {data,error}=await sb.rpc('get_my_motivation_summary',{p_class_id:classId});
+ if(error){console.warn('Motyvacija:',error.message);return motivationDefault()}
+ return data||motivationDefault();
+}
+async function getPracticeReward(attemptId){
+ if(!attemptId)return null;
+ const {data,error}=await sb.rpc('get_my_practice_reward',{p_attempt_id:attemptId});
+ if(error){console.warn('XP:',error.message);return null}
+ return data||null;
+}
+function masteryFor(summary,topicId){
+ return (summary?.topic_mastery||[]).find(x=>x.topic_id===topicId)||null;
+}
+function motivationProgressText(s){
+ return s?.next_level_xp==null?`${Number(s.total_xp)||0} XP · aukščiausias lygis`:`${Number(s.total_xp)||0} / ${Number(s.next_level_xp)||0} XP`;
+}
+function renderMotivationCard(s){
+ s=s||motivationDefault();
+ const weekly=Math.min(Number(s.weekly_practices)||0,Number(s.weekly_goal)||3),weeklyGoal=Number(s.weekly_goal)||3;
+ const classNow=Number(s.class_weekly_practices)||0,classGoal=Number(s.class_challenge_goal)||3;
+ return `<section class="motivationCard">
+  <div class="motivationTop">
+   <div><span class="kicker">TAVO PROGRESAS</span><h2>${Number(s.level_no)||1} lygis · ${esc(s.level_name||'Pradedantysis')}</h2><p>${motivationProgressText(s)}</p></div>
+   <div class="xpOrb"><strong>${Number(s.total_xp)||0}</strong><span>XP</span></div>
+  </div>
+  <div class="xpTrack"><span style="width:${Math.max(0,Math.min(100,Number(s.level_progress_percent)||0))}%"></span></div>
+  <div class="motivationMiniGrid">
+   <div><strong>🔥 ${Number(s.streak_days)||0}</strong><span>dienų serija</span></div>
+   <div><strong>🎯 ${weekly} / ${weeklyGoal}</strong><span>savaitės tikslas</span></div>
+   <div><strong>🏅 ${Number(s.badges_unlocked)||0}</strong><span>ženkliukai</span></div>
+   <div><strong>${Number(s.best_score)||0}%</strong><span>geriausia treniruotė</span></div>
+  </div>
+  <div class="classChallengeMini">
+   <div class="grow"><b>🤝 Klasės savaitės iššūkis</b><span>${classNow} / ${classGoal} treniruočių</span></div>
+   <div class="miniProgress"><span style="width:${Math.max(0,Math.min(100,Number(s.class_challenge_percent)||0))}%"></span></div>
+  </div>
+  <div class="motivationActions"><button class="ghost" id="openAchievements">🏆 Mano pasiekimai</button><span class="subtle">${Number(s.today_practices)||0?'Dienos misija įvykdyta ✓':'Dienos misija: atlik 1 treniruotę'}</span></div>
+ </section>`;
+}
+function detectNewBadge(summary,pct){
+ if(!summary)return null;
+ if(Number(summary.completed_practices)===1)return {icon:'🌱',title:'Pirmas žingsnis'};
+ if(Number(pct)===100&&Number(summary.perfect_count)===1)return {icon:'🎯',title:'Be klaidų'};
+ if(Number(summary.completed_practices)===10)return {icon:'🧠',title:'Atkaklus'};
+ if(Number(summary.weekly_practices)===3)return {icon:'⭐',title:'Savaitės tikslas'};
+ if(Number(summary.streak_days)===3)return {icon:'🔥',title:'Įsibėgėjęs'};
+ if(Number(summary.streak_days)===7)return {icon:'🔥',title:'7 dienų serija'};
+ return null;
+}
+function renderPracticeMotivationReward(reward,topicId,pct){
+ const box=$('motivationResult');if(!box)return;
+ if(!reward?.summary){box.classList.add('hidden');box.innerHTML='';return}
+ const s=reward.summary,m=masteryFor(s,topicId),badge=detectNewBadge(s,pct);
+ box.classList.remove('hidden');
+ box.innerHTML=`<div class="rewardXp"><span>Už treniruotę</span><strong>+${Number(reward.xp_gained)||0} XP</strong></div>
+  <div class="rewardLevel"><div class="grow"><b>${Number(s.level_no)||1} lygis · ${esc(s.level_name||'Pradedantysis')}</b><span>${motivationProgressText(s)}</span></div><div class="miniProgress"><span style="width:${Math.max(0,Math.min(100,Number(s.level_progress_percent)||0))}%"></span></div></div>
+  <div class="rewardFacts"><span>🔥 Serija: <b>${Number(s.streak_days)||0} d.</b></span><span>🎯 Savaitė: <b>${Math.min(Number(s.weekly_practices)||0,3)}/3</b></span>${m?`<span>📈 Temos įvaldymas: <b>${Number(m.mastery_percent)||0}%</b></span>`:''}</div>
+  ${badge?`<div class="newBadge"><span>${badge.icon}</span><div><small>NAUJAS ŽENKLIUKAS</small><b>${esc(badge.title)}</b></div></div>`:''}`;
+}
+async function renderAchievements(){
+ stopTeacherPresenceRefresh();
+ setPresenceContext('Pasiekimai',null);
+ setCurrentRestore(()=>renderAchievements());
+ const c=await getStudentClass();
+ if(!c)return renderStudent();
+ $('achievementsContent').innerHTML='<div class="pageHero"><span class="kicker">PASIEKIMAI</span><h1>Kraunama...</h1></div>';
+ await loadClassTopics(c.id);
+ const s=await getMotivationSummary(c.id);
+ const badges=s.badges||[],mastery=s.topic_mastery||[];
+ $('achievementsContent').innerHTML=`<div class="pageHero"><button class="back" id="backAchievements">← Mano klasė</button><span class="kicker">🏆 PASIEKIMAI</span><h1>Tavo mokymosi progresas</h1><p>XP gauni už žinių treniruotes. Atsiskaitymų pažymiai XP nekeičia.</p></div>
+ ${renderMotivationCard(s)}
+ <div class="contentGrid achievementsGrid"><div class="stack">
+  <div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">ŽENKLIUKAI</span><h2>Atrakinti pasiekimai</h2></div><span class="badge">${Number(s.badges_unlocked)||0}/${badges.length}</span></div>
+   <div class="badgeGrid">${badges.map(b=>`<article class="achievementBadge ${b.unlocked?'unlocked':'locked'}"><div class="badgeIcon">${b.unlocked?esc(b.icon||'🏅'):'?'}</div><div><b>${b.unlocked?esc(b.title):'???'}</b><p>${b.unlocked?esc(b.description):'Dar neatrakinta'}</p></div></article>`).join('')}</div>
+  </div>
+  <div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">TEMŲ ĮVALDYMAS</span><h2>Kaip sekasi pagal temas</h2></div></div>
+   ${mastery.length?`<div class="masteryList">${mastery.map(m=>{const title=topicById(m.topic_id)?.title||m.topic_id;return `<div class="masteryRow"><div class="masteryHead"><b>${esc(title)}</b><strong>${Number(m.mastery_percent)||0}%</strong></div><div class="masteryTrack"><span style="width:${Math.max(0,Math.min(100,Number(m.mastery_percent)||0))}%"></span></div><div class="subtle">Paskutinių iki 5 treniruočių vidurkis · geriausias ${Number(m.best_score)||0}%</div></div>`}).join('')}</div>`:'<div class="emptyState">Atlik bent vieną žinių treniruotę – čia atsiras temos įvaldymas.</div>'}
+  </div>
+ </div><div class="stack">
+  <div class="panel"><span class="kicker">KAIP RENKAMAS XP</span><h3>Atlygis už mokymąsi</h3><p class="muted">10 klausimų treniruotėje gali gauti iki maždaug 100 XP pagal rezultatą. 100 % rezultatas duoda papildomą premiją. Taip pat yra premija už pirmą dienos treniruotę, asmeninį pagerėjimą ir savaitės tikslą.</p><div class="notice"><b>XP „farminti“ neapsimoka:</b> tą pačią temą kartojant daug kartų tą pačią dieną, už vėlesnius bandymus XP palaipsniui mažėja.</div></div>
+  <div class="panel"><span class="kicker">BENDRAS TIKSLAS</span><h3>🤝 Klasės savaitės iššūkis</h3><p class="muted">Čia nėra mokinių reitingo. Visa klasė kartu renka treniruotes į bendrą tikslą.</p><div class="masteryHead"><b>${Number(s.class_weekly_practices)||0} / ${Number(s.class_challenge_goal)||3}</b><strong>${Number(s.class_challenge_percent)||0}%</strong></div><div class="masteryTrack"><span style="width:${Math.max(0,Math.min(100,Number(s.class_challenge_percent)||0))}%"></span></div></div>
+ </div></div>`;
+ show('achievements');
+ $('backAchievements').onclick=()=>appBack(()=>renderStudent());
+ if($('openAchievements'))$('openAchievements').onclick=()=>{};
+}
+
 /* ================= STUDENT ================= */
 async function getStudentClass(){
  const {data:mem}=await sb.from('class_members').select('class_id,joined_at').eq('student_id',me.id).order('joined_at',{ascending:true});
@@ -1865,11 +1961,12 @@ async function renderStudent(){
  await loadClassTopics(c.id);
  await startHeartbeat(c.id);
  setPresenceContext('Klasės pradžia',null);
- const [{data:access},{data:attempts},{data:sessions},{data:direct,error:directErr}]=await Promise.all([
+ const [{data:access},{data:attempts},{data:sessions},{data:direct,error:directErr},motivation]=await Promise.all([
   sb.from('topic_access').select('*').eq('class_id',c.id),
   sb.from('practice_attempts').select('*').eq('student_id',me.id).eq('class_id',c.id).eq('mode','practice'),
   sb.from('activity_sessions').select('*').eq('user_id',me.id).eq('class_id',c.id),
-  sb.from('direct_submissions').select('*').eq('student_id',me.id).eq('class_id',c.id).order('submitted_at',{ascending:false})
+  sb.from('direct_submissions').select('*').eq('student_id',me.id).eq('class_id',c.id).order('submitted_at',{ascending:false}),
+  getMotivationSummary(c.id)
  ]);
  if(directErr)return toast(directErr.message);
 
@@ -1877,6 +1974,7 @@ async function renderStudent(){
  const openTopics=activeClassTopics.filter(t=>(access||[]).find(a=>a.topic_id===t.id)?.is_open);
 
  $('studentContent').innerHTML=`<div class="pageHero"><span class="kicker">PRADŽIA · ${esc(c.name)}</span><h1>Sveiki, ${esc(profile.full_name||'mokiny')}.</h1><p>Čia yra tavo klasė: atidarytos temos, žinių treniruotės, mokymosi failai ir darbų pateikimas.</p></div>
+ ${renderMotivationCard(motivation)}
  <div class="dashboardGrid"><div class="metric"><strong>${(attempts||[]).length}</strong><span>bandymų</span></div><div class="metric"><strong>${(attempts||[]).length?best+'%':'–'}</strong><span>geriausias rezultatas</span></div><div class="metric"><strong>${fmtSec(secs)}</strong><span>aktyvus laikas</span></div><div class="metric"><strong>${fmtDate(profile.last_seen_at||profile.last_login_at)}</strong><span>paskutinis aktyvumas</span></div></div>
 
 
@@ -1889,6 +1987,7 @@ async function renderStudent(){
  <div class="sectionHead"><span class="kicker">TEMOS</span><h2>Mokymosi turinys</h2></div>
  <div class="studentTopics">${activeClassTopics.length?activeClassTopics.map(t=>{const a=(access||[]).find(x=>x.topic_id===t.id)||{};return `<article class="topicStudentCard ${a.is_open?'':'locked'}"><span class="badge ${a.is_open?'ok':''}">${a.is_open?'ATIDARYTA':'🔒 UŽRAKINTA'}</span><div style="font-size:30px;margin-top:12px">${t.icon||'💻'}</div><h3>${esc(t.title)}</h3><p>${esc(topicMeta(t)||'Mokymosi tema')}</p><button class="${a.is_open?'primary':'ghost'}" data-stopic="${t.id}" ${a.is_open?'':'disabled'}>${a.is_open?'Atidaryti':'Užrakinta'}</button></article>`}).join(''):'<div class="panel emptyState"><b>Mokytojas šiai klasei temų dar nesukūrė.</b></div>'}</div>`;
 
+ if($('openAchievements'))$('openAchievements').onclick=()=>navigateTo(()=>renderAchievements());
  if($('directSubmitBtn'))$('directSubmitBtn').onclick=()=>openDirectSubmissionModal(c,openTopics);
  document.querySelectorAll('[data-my-direct]').forEach(b=>b.onclick=()=>downloadDirectSubmission(b.dataset.myDirect));
  document.querySelectorAll('[data-my-del-direct]').forEach(b=>b.onclick=()=>deleteDirectSubmission(b.dataset.myDelDirect,c,'student'));
@@ -1996,11 +2095,13 @@ async function openStudentTopic(topicId,c,access){
   c.grade_level==='11'?sb.rpc('get_my_assessment_status',{p_class_id:c.id,p_topic_id:topicId}):Promise.resolve({data:[]})
  ]);
  const assessmentStatus=assessmentStatusRow(assessmentStatusData);
+ const motivation=await getMotivationSummary(c.id),topicMastery=masteryFor(motivation,topicId);
  let existing=[];if(assignments?.length)({data:existing}=await sb.from('submissions').select('*').eq('student_id',me.id).in('assignment_id',assignments.map(x=>x.id)).order('submitted_at',{ascending:false}));
  $('topicContent').innerHTML=`<div class="pageHero"><button class="back" id="backStudent">← Mano klasė</button><span class="kicker">${esc(t?.code||'TEMA')}</span><h1>${esc(t?.title||topicId)}</h1>${topicDescription(t)?`<p>${esc(topicDescription(t))}</p>`:''}</div>
  <div class="contentGrid"><div class="stack">
   ${renderStudentTeacherUpdates(topicPosts||[])}
   <div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">PRAKTIKA</span><h2>Žinių treniruotė</h2></div><span class="badge ${a.practice_open?'ok':''}">${a.practice_open?'Atidaryta':'Užrakinta'}</span></div>
+   ${topicMastery?`<div class="topicMasteryBox"><div class="masteryHead"><span>Temos įvaldymas</span><strong>${Number(topicMastery.mastery_percent)||0}%</strong></div><div class="masteryTrack"><span style="width:${Math.max(0,Math.min(100,Number(topicMastery.mastery_percent)||0))}%"></span></div><div class="subtle">Skaičiuojama pagal paskutines iki 5 treniruočių · geriausias rezultatas ${Number(topicMastery.best_score)||0}%</div></div>`:'<div class="topicMasteryBox empty"><b>Temos įvaldymas</b><span>Atlik pirmą treniruotę – čia atsiras tavo progresas.</span></div>'}
    ${c.grade_level==='10'?renderGrade10StudentPracticePicker(practiceBlocks||[],a.practice_open):`<p class="muted"><b>Praktikuotis gali tiek kartų, kiek nori.</b> Kiekvieną kartą sistema iš didesnio klausimų banko atsitiktinai parenka 10 klausimų ir sumaišo atsakymų variantus, todėl bandymai nėra vienodi. Po kiekvieno atsakymo gausi paaiškinimą, o rezultatas ir atlikimo laikas bus išsaugoti tavo paskyroje.</p><button class="primary" id="startPracticeTopic" ${a.practice_open?'':'disabled'}>Pradėti 10 klausimų praktiką</button>`}
   </div>
   <div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">MOKYMOSI FAILAI</span><h2>Failai atsisiuntimui</h2></div></div>
@@ -2387,7 +2488,7 @@ async function submitAssessmentPracticalFinal(state,fileState={}){
 
 async function finishQuiz(){
  if(quiz.mode==='assessment-secure')return finishAssessmentTheory();
- let total=quiz.items.length,correct=quiz.items.reduce((n,q,i)=>n+(q.correct!=null&&answerEquals(quiz.answers[i],q.correct,qType(q))?1:0),0),pct=total?Math.round(correct/total*100):0,seconds=Math.max(1,Math.round((Date.now()-quiz.startMs)/1000)),pass=quiz.mode==='assessment-secure'?CFG.assessmentPassPercent:CFG.practicePassPercent,focusEvents=0,resultsReleased=true,completedStudents=0,totalStudents=0;
+ let total=quiz.items.length,correct=quiz.items.reduce((n,q,i)=>n+(q.correct!=null&&answerEquals(quiz.answers[i],q.correct,qType(q))?1:0),0),pct=total?Math.round(correct/total*100):0,seconds=Math.max(1,Math.round((Date.now()-quiz.startMs)/1000)),pass=quiz.mode==='assessment-secure'?CFG.assessmentPassPercent:CFG.practicePassPercent,focusEvents=0,resultsReleased=true,completedStudents=0,totalStudents=0,motivationReward=null;
  if(quiz.mode==='assessment-secure'){
   try{await flushAssessmentSaves()}catch(e){return toast('Nepavyko išsaugoti paskutinių atsakymų. Atsiskaitymas dar nepateiktas.')}
   const {data,error}=await sb.rpc('finish_assessment',{p_attempt_id:quiz.attemptId});if(error)return toast(error.message);
@@ -2407,12 +2508,15 @@ async function finishQuiz(){
   const {data,error}=await sb.rpc('finish_grade10_practice',{p_attempt_id:quiz.attemptId});if(error)return toast(error.message);const r=Array.isArray(data)?data[0]:data;if(r){total=Number(r.total_questions)||total;correct=Number(r.correct_answers)||0;pct=Number(r.score_percent)||0;seconds=Number(r.duration_seconds)||seconds}
  }else await sb.from('practice_attempts').update({completed_at:new Date().toISOString(),duration_seconds:seconds,correct_answers:correct,score_percent:pct}).eq('id',quiz.attemptId);
 
+ if(String(quiz.mode).startsWith('practice'))motivationReward=await getPracticeReward(quiz.attemptId);
+
  setPresenceContext(`Rezultatų peržiūra: ${topicById(quiz.topicId)?.title||quiz.topicId}`,quiz.topicId);
  quiz.last={...quiz,correct,total,pct,seconds,pass,focusEvents,resultsReleased,completedStudents,totalStudents};
  $('errorsReview').classList.add('hidden');
  $('retryQuiz').classList.toggle('hidden',quiz.mode==='assessment-secure');
 
  if(quiz.mode==='assessment-secure'&&!resultsReleased){
+  if($('motivationResult')){$('motivationResult').classList.add('hidden');$('motivationResult').innerHTML=''}
   $('resultPercent').textContent='—';$('scoreCircle').style.setProperty('--score','0%');
   $('correctCount').textContent='—';$('wrongCount').textContent='—';$('resultGoal').textContent='—';
   $('resultTitle').textContent='Atsiskaitymas pateiktas';
@@ -2423,6 +2527,8 @@ async function finishQuiz(){
 
  $('resultPercent').textContent=pct+'%';$('scoreCircle').style.setProperty('--score',pct+'%');$('correctCount').textContent=correct;$('wrongCount').textContent=total-correct;$('resultGoal').textContent=pass+'%';$('resultTitle').textContent=pct>=pass?(pct===100?'Puiku – 100%!':'Tikslas pasiektas!'):'Dar pasipraktikuok';
  $('resultSubtitle').textContent=quiz.mode==='assessment-secure'?`Atsiskaitymo trukmė: ${fmtDurationDetailed(seconds)}. Užfiksuoti išėjimo / fokuso įvykiai: ${focusEvents}.`:`Bandymo trukmė: ${fmtDurationDetailed(seconds)}.`;
+ if(String(quiz.mode).startsWith('practice'))renderPracticeMotivationReward(motivationReward,quiz.topicId,pct);
+ else if($('motivationResult')){$('motivationResult').classList.add('hidden');$('motivationResult').innerHTML=''}
  if(quiz.mode==='assessment-secure'){
   $('reviewErrors').textContent='Peržiūrėti savo atsakymus';
   $('reviewErrors').classList.remove('hidden');
