@@ -278,3 +278,14 @@ Tai pašalina `new row violates row-level security policy for table "classes"` k
 - Mokinio kortelėje aiškiai rodoma, kai mokytojas leido pakartotinį bandymą.
 - Mokinį pašalinant iš klasės nauju mygtuku, ištrinami visi jo tos klasės praktikos ir atsiskaitymų bandymai (kartu su atsakymais, laiku ir fokuso įvykiais). Pateikti failai ir Auth paskyra lieka.
 - Reikia paleisti `PATCH_v5_7_RETRY_AND_STUDENT_CLEANUP.sql` po v5.6.
+
+## v5.8 – atsiskaitymo UX ir automatinis išsaugojimas
+- Mokytojo lentelėje prie mokinio rodoma tik „Prisijungęs“, be dabartinės vietos / veiklos teksto.
+- Baigus atsiskaitymą mokiniui rodoma neutrali žinutė „Rezultatas bus paskelbtas vėliau“.
+- Pasirinktas atsakymas atsiskaityme aiškiai paryškinamas.
+- Atsiskaitymo atsakymus galima keisti iki galutinio darbo pateikimo.
+- Nebereikia spausti „Patvirtinti atsakymą“ po kiekvieno klausimo: pasirinkimas išsaugomas automatiškai.
+- Atsakymai saugomi Supabase iš karto ir papildomai lokaliai tame pačiame įrenginyje, todėl netyčia perkrovus puslapį tęsiamas tas pats bandymas.
+- Atsiskaityme pridėti „Ankstesnis“, „Kitas“ ir 1–30 klausimų navigatorius; atsakyti klausimai pažymimi.
+- Mygtukas „Išeiti“ nebaigia atsiskaitymo: išėjimas užfiksuojamas, o mokinys gali tęsti tą patį bandymą vėliau.
+- Galutinis pateikimas lieka atskiras veiksmas ir po jo atsakymų keisti nebegalima.

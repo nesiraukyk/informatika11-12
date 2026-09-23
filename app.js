@@ -60,6 +60,7 @@ let me=null,profile=null,currentClass=null,activitySessionId=null,heartbeatTimer
 let presenceActivity='Platforma',presenceTopicId=null,presenceClassId=null,teacherPresenceTimer=null;
 let quiz={topicId:null,classId:null,mode:null,items:[],index:0,answers:[],attemptId:null,startMs:0,last:null,completed:false};
 let assessmentAccessToken=null,assessmentBlurTimer=null;
+let assessmentSaveQueue=Promise.resolve(),assessmentDirtyQuestionIds=new Set();
 
 let uiBackStack=[],restoringBack=false,historyGuardReady=false,currentRestore=null;
 
@@ -323,8 +324,8 @@ async function refreshTeacherOnlinePanel(classIds,classes,students){
  const rows=Object.values(latest).filter(p=>presenceIsOnline(p));
  rows.sort((a,b)=>new Date(b.last_seen_at)-new Date(a.last_seen_at));
  host.innerHTML=`<div class="sectionTitle"><div class="grow"><span class="kicker">PRISIJUNGĘ DABAR</span><h3>Aktyvūs mokiniai</h3></div><span class="badge ${rows.length?'ok':''}">${rows.length}</span></div>
- <p class="muted">Būsena atnaujinama kas 15 s. „Prisijungęs“ reiškia, kad mokinio naršyklė buvo aktyvi per paskutines 90 s.</p>
- ${rows.length?rows.map(p=>{const st=students.find(s=>s.id===p.user_id),c=classes.find(x=>x.id===p.class_id);return `<div class="studentRow"><div class="grow"><b>● ${esc(st?.full_name||'Mokinys')}</b><div class="subtle">${esc(c?.name||'Klasė')} · ${esc(p.activity_label||'Platforma')}</div></div><span class="badge ok">${presenceAgo(p)}</span></div>`}).join(''):'<div class="emptyState">Šiuo metu aktyvių mokinių nėra.</div>'}`;
+ <p class="muted">Būsena atnaujinama kas 15 s.</p>
+ ${rows.length?rows.map(p=>{const st=students.find(s=>s.id===p.user_id),c=classes.find(x=>x.id===p.class_id);return `<div class="studentRow"><div class="grow"><b>${esc(st?.full_name||'Mokinys')}</b><div class="subtle">${esc(c?.name||'Klasė')}</div></div><span class="badge ok">● Prisijungęs</span></div>`}).join(''):'<div class="emptyState">Šiuo metu aktyvių mokinių nėra.</div>'}`;
 }
 function startTeacherDashboardPresence(classIds,classes,students){
  stopTeacherPresenceRefresh();
@@ -340,7 +341,7 @@ async function refreshClassPresence(classId){
  document.querySelectorAll('[data-presence-user]').forEach(el=>{
   const p=latest[el.dataset.presenceUser];
   el.innerHTML=presenceIsOnline(p)
-   ?`<span class="badge ok">● Prisijungęs</span><div class="subtle">${esc(p.activity_label||'Platforma')} · ${presenceAgo(p)}</div>`
+   ?'<span class="badge ok">● Prisijungęs</span>'
    :'<span class="subtle">Neprisijungęs</span>';
  });
 }
@@ -2047,27 +2048,90 @@ function pickBalancedQuestions(pool,n){
  while(chosen.length<n){const rem=shuffle(pool.filter(q=>!chosen.includes(q))).sort((x,y)=>(catCounts[x.category]||0)-(catCounts[y.category]||0));if(!rem.length)break;const q=rem[0];chosen.push(q);catCounts[q.category]=(catCounts[q.category]||0)+1;}
  return shuffle(chosen);
 }
+
+function assessmentDraftStorageKey(attemptId){return `informatika_assessment_draft_${attemptId}`}
+function assessmentAnswerHasValue(q,answer){
+ const type=qType(q);
+ if(answer===null||answer===undefined)return false;
+ if(type==='multi')return Array.isArray(answer)&&answer.length>0;
+ if(type==='matching')return answer&&typeof answer==='object'&&Object.keys(answer).length>0;
+ return Number.isFinite(Number(answer));
+}
+function assessmentAnswerComplete(q,answer){
+ const type=qType(q);
+ if(!assessmentAnswerHasValue(q,answer))return false;
+ if(type==='matching'){
+  const left=q.options?.left||[];
+  return left.every((_x,i)=>answer?.[String(i)]!==undefined&&answer?.[String(i)]!==null&&answer?.[String(i)]!=='');
+ }
+ return true;
+}
+function saveAssessmentDraftLocal(){
+ if(quiz.mode!=='assessment-secure'||!quiz.attemptId)return;
+ try{localStorage.setItem(assessmentDraftStorageKey(quiz.attemptId),JSON.stringify({answers:quiz.answers,updatedAt:Date.now()}))}catch(_e){}
+}
+function loadAssessmentDraftLocal(attemptId){
+ try{const raw=localStorage.getItem(assessmentDraftStorageKey(attemptId));if(!raw)return null;const parsed=JSON.parse(raw);return Array.isArray(parsed?.answers)?parsed.answers:null}catch(_e){return null}
+}
+function clearAssessmentDraftLocal(attemptId){try{localStorage.removeItem(assessmentDraftStorageKey(attemptId))}catch(_e){}}
+function setAssessmentSaveStatus(text,state=''){
+ const el=$('questionSaveStatus');if(!el)return;el.textContent=text||'';el.className=`saveStatus ${state}`.trim();
+}
+function queueAssessmentAnswerSave(q,answer){
+ if(quiz.mode!=='assessment-secure'||!quiz.attemptId)return;
+ const type=qType(q),normalized=normalizeAnswer(answer,type),snapshot=JSON.stringify(normalized),attemptId=quiz.attemptId;
+ assessmentDirtyQuestionIds.add(q.id);saveAssessmentDraftLocal();
+ if(quiz.items[quiz.index]?.id===q.id)setAssessmentSaveStatus('Išsaugoma…','saving');
+ assessmentSaveQueue=assessmentSaveQueue.catch(()=>{}).then(async()=>{
+  const {error}=await sb.rpc('submit_assessment_answer',{p_attempt_id:attemptId,p_attempt_question_id:q.id,p_answer:normalized});
+  if(error)throw error;
+  const qi=quiz.items.findIndex(x=>x.id===q.id);
+  if(qi>=0&&JSON.stringify(normalizeAnswer(quiz.answers[qi],type))===snapshot)assessmentDirtyQuestionIds.delete(q.id);
+  if(quiz.mode==='assessment-secure'&&quiz.items[quiz.index]?.id===q.id)setAssessmentSaveStatus('Išsaugota','saved');
+ }).catch(err=>{if(quiz.mode==='assessment-secure'&&quiz.items[quiz.index]?.id===q.id)setAssessmentSaveStatus('Išsaugota šiame įrenginyje','local');console.warn('Assessment autosave:',err)});
+}
+async function flushAssessmentSaves(){
+ await assessmentSaveQueue.catch(()=>{});
+ const dirty=[...assessmentDirtyQuestionIds];
+ for(const id of dirty){
+  const qi=quiz.items.findIndex(q=>q.id===id);if(qi<0)continue;
+  const q=quiz.items[qi],answer=quiz.answers[qi];
+  if(!assessmentAnswerHasValue(q,answer)){assessmentDirtyQuestionIds.delete(id);continue}
+  const {error}=await sb.rpc('submit_assessment_answer',{p_attempt_id:quiz.attemptId,p_attempt_question_id:q.id,p_answer:normalizeAnswer(answer,qType(q))});
+  if(error)throw error;assessmentDirtyQuestionIds.delete(id);
+ }
+ saveAssessmentDraftLocal();
+}
+function renderAssessmentQuestionNav(){
+ const nav=$('assessmentQuestionNav');if(!nav)return;
+ if(quiz.mode!=='assessment-secure'){nav.classList.add('hidden');nav.innerHTML='';return}
+ nav.classList.remove('hidden');
+ nav.innerHTML=quiz.items.map((q,i)=>{const complete=assessmentAnswerComplete(q,quiz.answers[i]),has=assessmentAnswerHasValue(q,quiz.answers[i]);return `<button type="button" class="questionNavBtn ${i===quiz.index?'current':''} ${complete?'answered':has?'partial':''}" data-qnav="${i}" title="${complete?'Atsakyta':has?'Atsakymas nebaigtas':'Neatsakyta'}">${i+1}</button>`}).join('');
+ nav.querySelectorAll('[data-qnav]').forEach(b=>b.onclick=()=>{quiz.index=Number(b.dataset.qnav);renderQ()});
+}
+
 function prepareClientQuestion(q){
  const type=qType(q),out={...q,type};
  if(type==='single'||type==='odd'||type==='multi')out.shown=shuffle((q.options||[]).map((text,original)=>({text,original})));
  return out;
 }
 function renderQuestionInput(q){
- const type=qType(q);
+ const type=qType(q),isAssessment=quiz.mode==='assessment-secure',saved=quiz.answers[quiz.index];
  if(type==='single'||type==='odd'){
-  $('answers').innerHTML=(q.shown||[]).map((o,i)=>`<button class="answer" data-v="${o.original}"><b>${String.fromCharCode(65+i)}.</b> ${esc(o.text)}</button>`).join('');
-  document.querySelectorAll('.answer').forEach(b=>b.onclick=()=>submitQuestionAnswer(Number(b.dataset.v)));
-  return;
+  $('answers').innerHTML=(q.shown||[]).map((o,i)=>`<button class="answer ${isAssessment&&Number(saved)===Number(o.original)?'selected':''}" data-v="${o.original}"><b>${String.fromCharCode(65+i)}.</b> ${esc(o.text)}</button>`).join('');
+  document.querySelectorAll('.answer').forEach(b=>b.onclick=()=>{const value=Number(b.dataset.v);if(isAssessment){quiz.answers[quiz.index]=value;document.querySelectorAll('.answer').forEach(x=>x.classList.toggle('selected',Number(x.dataset.v)===value));renderAssessmentQuestionNav();queueAssessmentAnswerSave(q,value);return}submitQuestionAnswer(value)});return;
  }
  if(type==='multi'){
-  $('answers').innerHTML=`<div class="multiHint">Pažymėk visus teisingus atsakymus.</div>${(q.shown||[]).map((o,i)=>`<label class="multiAnswer"><input type="checkbox" data-multi-v="${o.original}"><span><b>${String.fromCharCode(65+i)}.</b> ${esc(o.text)}</span></label>`).join('')}<button class="primary confirmAnswerBtn" id="confirmMultiAnswer">Patvirtinti atsakymą</button>`;
-  $('confirmMultiAnswer').onclick=()=>{const vals=[...document.querySelectorAll('[data-multi-v]:checked')].map(x=>Number(x.dataset.multiV)).sort((a,b)=>a-b);if(!vals.length)return toast('Pasirink bent vieną atsakymą.');submitQuestionAnswer(vals)};
-  return;
+  const selected=new Set(Array.isArray(saved)?saved.map(Number):[]);
+  $('answers').innerHTML=`<div class="multiHint">Pažymėk visus teisingus atsakymus.</div>${(q.shown||[]).map((o,i)=>`<label class="multiAnswer ${isAssessment&&selected.has(Number(o.original))?'selected':''}"><input type="checkbox" data-multi-v="${o.original}" ${isAssessment&&selected.has(Number(o.original))?'checked':''}><span><b>${String.fromCharCode(65+i)}.</b> ${esc(o.text)}</span></label>`).join('')}${isAssessment?'':'<button class="primary confirmAnswerBtn" id="confirmMultiAnswer">Patvirtinti atsakymą</button>'}`;
+  if(isAssessment){document.querySelectorAll('[data-multi-v]').forEach(ch=>ch.onchange=()=>{const vals=[...document.querySelectorAll('[data-multi-v]:checked')].map(x=>Number(x.dataset.multiV)).sort((a,b)=>a-b);quiz.answers[quiz.index]=vals;document.querySelectorAll('.multiAnswer').forEach(l=>l.classList.toggle('selected',l.querySelector('input')?.checked===true));renderAssessmentQuestionNav();queueAssessmentAnswerSave(q,vals)})}
+  else $('confirmMultiAnswer').onclick=()=>{const vals=[...document.querySelectorAll('[data-multi-v]:checked')].map(x=>Number(x.dataset.multiV)).sort((a,b)=>a-b);if(!vals.length)return toast('Pasirink bent vieną atsakymą.');submitQuestionAnswer(vals)};return;
  }
  if(type==='matching'){
-  const left=q.options?.left||[],right=q.options?.right||[];
-  $('answers').innerHTML=`<div class="multiHint">Kiekvienai sąvokai parink tinkamą porą.</div><div class="matchingGrid">${left.map((l,i)=>`<label class="matchingRow"><span>${esc(l)}</span><select data-match="${i}"><option value="">— pasirink —</option>${right.map((r,j)=>`<option value="${j}">${esc(r)}</option>`).join('')}</select></label>`).join('')}</div><button class="primary confirmAnswerBtn" id="confirmMatchingAnswer">Patvirtinti atsakymą</button>`;
-  $('confirmMatchingAnswer').onclick=()=>{const ans={};let ok=true;document.querySelectorAll('[data-match]').forEach(s=>{if(s.value==='')ok=false;else ans[s.dataset.match]=Number(s.value)});if(!ok)return toast('Sujunk visas poras.');submitQuestionAnswer(ans)};
+  const left=q.options?.left||[],right=q.options?.right||[],existing=saved&&typeof saved==='object'?saved:{};
+  $('answers').innerHTML=`<div class="multiHint">Kiekvienai sąvokai parink tinkamą porą.</div><div class="matchingGrid">${left.map((l,i)=>`<label class="matchingRow ${isAssessment&&existing[String(i)]!==undefined?'selected':''}"><span>${esc(l)}</span><select data-match="${i}"><option value="">— pasirink —</option>${right.map((r,j)=>`<option value="${j}" ${isAssessment&&Number(existing[String(i)])===j?'selected':''}>${esc(r)}</option>`).join('')}</select></label>`).join('')}</div>${isAssessment?'':'<button class="primary confirmAnswerBtn" id="confirmMatchingAnswer">Patvirtinti atsakymą</button>'}`;
+  if(isAssessment){document.querySelectorAll('[data-match]').forEach(sel=>sel.onchange=()=>{const ans={};document.querySelectorAll('[data-match]').forEach(x=>{if(x.value!=='')ans[x.dataset.match]=Number(x.value)});quiz.answers[quiz.index]=ans;document.querySelectorAll('.matchingRow').forEach(l=>l.classList.toggle('selected',l.querySelector('select')?.value!==''));renderAssessmentQuestionNav();queueAssessmentAnswerSave(q,ans)})}
+  else $('confirmMatchingAnswer').onclick=()=>{const ans={};let ok=true;document.querySelectorAll('[data-match]').forEach(s=>{if(s.value==='')ok=false;else ans[s.dataset.match]=Number(s.value)});if(!ok)return toast('Sujunk visas poras.');submitQuestionAnswer(ans)};
  }
 }
 function markPracticeAnswer(q,answer,ok){
@@ -2099,12 +2163,14 @@ async function startSecureAssessment(topicId,classId){
   const {data,error}=await sb.rpc('start_assessment',{p_class_id:classId,p_topic_id:topicId});if(error)return toast(error.message);
   const rows=data||[];if(!rows.length)return toast('Atsiskaitymo klausimų bankas tuščias.');
   const {data:sessionData}=await sb.auth.getSession();assessmentAccessToken=sessionData?.session?.access_token||null;
-  const answers=rows.map(r=>r.student_answer===null||r.student_answer===undefined?null:r.student_answer);
-  const firstUnanswered=answers.findIndex(a=>a===null);
-  quiz={topicId,classId,mode:'assessment-secure',items:rows.map(r=>prepareClientQuestion({id:r.attempt_question_id,question:r.question_text,options:r.options,correct:null,explanation:'',category:r.category||'',difficulty:r.difficulty||'',type:r.question_type||'single'})),index:firstUnanswered>=0?firstUnanswered:Math.max(0,rows.length-1),answers,attemptId:rows[0].attempt_id,startMs:Date.now(),last:null,completed:false};
-  $('quizMode').textContent='ATSISKAITYMAS';$('quizTitle').textContent=topicById(topicId).title;show('quiz');
-  if(firstUnanswered<0)return finishQuiz();
-  renderQ();
+  const items=rows.map(r=>prepareClientQuestion({id:r.attempt_question_id,question:r.question_text,options:r.options,correct:null,explanation:'',category:r.category||'',difficulty:r.difficulty||'',type:r.question_type||'single'}));
+  const serverAnswers=rows.map(r=>r.student_answer===null||r.student_answer===undefined?null:r.student_answer),localAnswers=loadAssessmentDraftLocal(rows[0].attempt_id);
+  const answers=serverAnswers.map((a,i)=>{const local=Array.isArray(localAnswers)?localAnswers[i]:null;return assessmentAnswerHasValue(items[i],local)?local:a});
+  assessmentDirtyQuestionIds=new Set();assessmentSaveQueue=Promise.resolve();
+  quiz={topicId,classId,mode:'assessment-secure',items,index:0,answers,attemptId:rows[0].attempt_id,startMs:Date.now(),last:null,completed:false};
+  const firstIncomplete=items.findIndex((q,i)=>!assessmentAnswerComplete(q,answers[i]));quiz.index=firstIncomplete>=0?firstIncomplete:0;saveAssessmentDraftLocal();
+  if(Array.isArray(localAnswers))items.forEach((q,i)=>{if(assessmentAnswerHasValue(q,localAnswers[i])&&!answerEquals(localAnswers[i],serverAnswers[i],qType(q)))queueAssessmentAnswerSave(q,localAnswers[i])});
+  $('quizMode').textContent='ATSISKAITYMAS';$('quizTitle').textContent=topicById(topicId).title;show('quiz');renderQ();
  }finally{assessmentStartPending=false}
 }
 
@@ -2118,17 +2184,18 @@ async function startQuiz(topicId,classId,mode,count){
  $('quizMode').textContent='PRAKTIKA';$('quizTitle').textContent=topicById(topicId).title;show('quiz');renderQ();
 }
 function renderQ(){
- const q=quiz.items[quiz.index];$('quizCounter').textContent=`${quiz.index+1}/${quiz.items.length}`;$('progressBar').style.width=`${quiz.index/quiz.items.length*100}%`;
+ const q=quiz.items[quiz.index];$('quizCounter').textContent=`${quiz.index+1}/${quiz.items.length}`;$('progressBar').style.width=`${(quiz.index+1)/quiz.items.length*100}%`;
  const live=quiz.items.slice(0,quiz.index).reduce((n,item,i)=>n+(item.correct!=null&&answerEquals(quiz.answers[i],item.correct,qType(item))?1:0),0);$('quizScoreLive').textContent=String(quiz.mode).startsWith('practice')?`Teisingai: ${live}`:'';
- $('questionCategory').textContent=[q.category,qTypeLabel(qType(q))].filter(Boolean).join(' · ');$('questionDifficulty').textContent=q.difficulty||'';$('questionText').textContent=q.question;$('feedback').classList.add('hidden');$('nextQuestion').classList.add('hidden');renderQuestionInput(q);
+ $('questionCategory').textContent=[q.category,qTypeLabel(qType(q))].filter(Boolean).join(' · ');$('questionDifficulty').textContent=q.difficulty||'';$('questionText').textContent=q.question;$('feedback').classList.add('hidden');renderQuestionInput(q);
+ const isAssessment=quiz.mode==='assessment-secure';$('quitQuiz').textContent=isAssessment?'Išeiti':'Baigti';$('prevQuestion').classList.toggle('hidden',!isAssessment||quiz.index===0);
+ if(isAssessment){$('nextQuestion').textContent=quiz.index===quiz.items.length-1?'Pateikti atsiskaitymą':'Kitas klausimas →';$('nextQuestion').classList.remove('hidden');setAssessmentSaveStatus(assessmentAnswerHasValue(q,quiz.answers[quiz.index])?'Išsaugota':'Atsakymai išsaugomi automatiškai',assessmentAnswerHasValue(q,quiz.answers[quiz.index])?'saved':'')}
+ else{$('nextQuestion').classList.add('hidden');setAssessmentSaveStatus('')}
+ renderAssessmentQuestionNav();
 }
 async function submitQuestionAnswer(answer){
  if(quiz.answers[quiz.index]!==null)return;const q=quiz.items[quiz.index],type=qType(q);
  if(quiz.mode==='assessment-secure'){
-  document.querySelectorAll('#answers button,#answers input,#answers select').forEach(el=>el.disabled=true);
-  const {error}=await sb.rpc('submit_assessment_answer',{p_attempt_id:quiz.attemptId,p_attempt_question_id:q.id,p_answer:normalizeAnswer(answer,type)});
-  if(error){document.querySelectorAll('#answers button,#answers input,#answers select').forEach(el=>el.disabled=false);return toast(error.message)}
-  quiz.answers[quiz.index]=answer;$('feedback').className='feedback neutralFeedback';$('feedback').innerHTML='<b>✓ Atsakymas išsaugotas.</b><br>Teisingumas bus parodytas tik tada, kai visi klasės mokiniai baigs atsiskaitymą.';$('nextQuestion').textContent=quiz.index===quiz.items.length-1?'Baigti atsiskaitymą':'Kitas klausimas →';$('nextQuestion').classList.remove('hidden');return;
+  quiz.answers[quiz.index]=answer;queueAssessmentAnswerSave(q,answer);renderQ();return;
  }
  if(quiz.mode==='practice-g10'){
   document.querySelectorAll('#answers button,#answers input,#answers select').forEach(el=>el.disabled=true);
@@ -2138,11 +2205,32 @@ async function submitQuestionAnswer(answer){
  const ok=answerEquals(answer,q.correct,type);quiz.answers[quiz.index]=answer;markPracticeAnswer(q,answer,ok);$('feedback').className='feedback';$('feedback').innerHTML=`<b>${ok?'✓ Teisingai':'✕ Neteisingai'}</b><br>${esc(q.explanation)}`;$('nextQuestion').textContent=quiz.index===quiz.items.length-1?'Baigti bandymą':'Kitas klausimas →';$('nextQuestion').classList.remove('hidden');
  await sb.from('attempt_answers').insert({attempt_id:quiz.attemptId,question_id:q.id,question_type:type,selected_index:(type==='single'||type==='odd')?Number(answer):null,correct_index:(type==='single'||type==='odd')?Number(q.correct):null,selected_answer:normalizeAnswer(answer,type),correct_answer:normalizeAnswer(q.correct,type),is_correct:ok});
 }
-$('nextQuestion').onclick=()=>{if(quiz.index===quiz.items.length-1)finishQuiz();else{quiz.index++;renderQ()}};
-$('quitQuiz').onclick=async()=>{if(!confirm(quiz.mode==='assessment-secure'?'Baigti atsiskaitymą neatsakius į visus klausimus? Neatsakyti klausimai bus laikomi klaidingais.':'Baigti bandymą nebaigus?'))return;if(quiz.mode==='assessment-secure'){await logAssessmentExit('quit');await sb.rpc('finish_assessment',{p_attempt_id:quiz.attemptId});quiz.completed=true;}renderStudent()};
+$('prevQuestion').onclick=()=>{if(quiz.mode==='assessment-secure'&&quiz.index>0){quiz.index--;renderQ()}};
+$('nextQuestion').onclick=async()=>{
+ if(quiz.mode==='assessment-secure'){
+  if(quiz.index<quiz.items.length-1){quiz.index++;renderQ();return}
+  const unanswered=quiz.items.reduce((n,q,i)=>n+(assessmentAnswerComplete(q,quiz.answers[i])?0:1),0);
+  const msg=unanswered?`Liko neatsakytų arba nebaigtų klausimų: ${unanswered}. Ar tikrai pateikti atsiskaitymą? Po pateikimo atsakymų keisti nebegalėsi.`:'Ar tikrai pateikti atsiskaitymą? Po pateikimo atsakymų keisti nebegalėsi.';
+  if(!confirm(msg))return;
+  try{setAssessmentSaveStatus('Išsaugomi paskutiniai pakeitimai…','saving');await flushAssessmentSaves()}catch(e){toast('Nepavyko išsaugoti paskutinių atsakymų. Patikrink interneto ryšį ir bandyk dar kartą.');return}
+  return finishQuiz();
+ }
+ if(quiz.index===quiz.items.length-1)finishQuiz();else{quiz.index++;renderQ()}
+};
+$('quitQuiz').onclick=async()=>{
+ if(quiz.mode==='assessment-secure'){
+  if(!confirm('Išeiti iš atsiskaitymo? Tavo pasirinkti atsakymai išsaugomi automatiškai ir vėliau galėsi tęsti tą patį bandymą. Išėjimas bus užfiksuotas.'))return;
+  try{await flushAssessmentSaves()}catch(_e){}
+  await logAssessmentExit('quit');
+  quiz={topicId:null,classId:null,mode:null,items:[],index:0,answers:[],attemptId:null,startMs:0,last:null,completed:false};
+  return renderStudent();
+ }
+ if(!confirm('Baigti bandymą nebaigus?'))return;renderStudent();
+};
 async function finishQuiz(){
  let total=quiz.items.length,correct=quiz.items.reduce((n,q,i)=>n+(q.correct!=null&&answerEquals(quiz.answers[i],q.correct,qType(q))?1:0),0),pct=total?Math.round(correct/total*100):0,seconds=Math.max(1,Math.round((Date.now()-quiz.startMs)/1000)),pass=quiz.mode==='assessment-secure'?CFG.assessmentPassPercent:CFG.practicePassPercent,focusEvents=0,resultsReleased=true,completedStudents=0,totalStudents=0;
  if(quiz.mode==='assessment-secure'){
+  try{await flushAssessmentSaves()}catch(e){return toast('Nepavyko išsaugoti paskutinių atsakymų. Atsiskaitymas dar nepateiktas.')}
   const {data,error}=await sb.rpc('finish_assessment',{p_attempt_id:quiz.attemptId});if(error)return toast(error.message);
   const r=Array.isArray(data)?data[0]:data;
   if(r){
@@ -2155,6 +2243,7 @@ async function finishQuiz(){
    if(resultsReleased){correct=Number(r.correct_answers)||0;pct=Number(r.score_percent)||0}
   }
   quiz.completed=true;
+  clearAssessmentDraftLocal(quiz.attemptId);
  }else if(quiz.mode==='practice-g10'){
   const {data,error}=await sb.rpc('finish_grade10_practice',{p_attempt_id:quiz.attemptId});if(error)return toast(error.message);const r=Array.isArray(data)?data[0]:data;if(r){total=Number(r.total_questions)||total;correct=Number(r.correct_answers)||0;pct=Number(r.score_percent)||0;seconds=Number(r.duration_seconds)||seconds}
  }else await sb.from('practice_attempts').update({completed_at:new Date().toISOString(),duration_seconds:seconds,correct_answers:correct,score_percent:pct}).eq('id',quiz.attemptId);
@@ -2168,7 +2257,7 @@ async function finishQuiz(){
   $('resultPercent').textContent='—';$('scoreCircle').style.setProperty('--score','0%');
   $('correctCount').textContent='—';$('wrongCount').textContent='—';$('resultGoal').textContent='—';
   $('resultTitle').textContent='Atsiskaitymas pateiktas';
-  $('resultSubtitle').textContent=`Tavo rezultatas ir teisingi atsakymai bus parodyti, kai visi klasės mokiniai baigs atsiskaitymą. Šiuo metu baigė ${completedStudents}/${totalStudents}. Tavo trukmė: ${fmtDurationDetailed(seconds)}. Užfiksuoti išėjimo / fokuso įvykiai: ${focusEvents}.`;
+  $('resultSubtitle').textContent=`Rezultatas bus paskelbtas vėliau. Tavo trukmė: ${fmtDurationDetailed(seconds)}. Užfiksuoti išėjimo / fokuso įvykiai: ${focusEvents}.`;
   $('reviewErrors').classList.add('hidden');
   show('results');return;
  }
