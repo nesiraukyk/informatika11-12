@@ -2477,5 +2477,482 @@ window.PRACTICE_QUESTIONS = [
     "source_session": "pagrindinė",
     "source_question": "5",
     "source_note": "Adaptuota pagal oficialią VBE užduotį."
-  }
+  },
+{
+  "id": "kr-pres-001",
+  "topic": "kriptografija",
+  "question": "Koks yra pagrindinis kriptografijos tikslas?",
+  "options": [
+    "Apsaugoti informaciją nuo nepageidaujamos prieigos ir pakeitimo",
+    "Padidinti monitoriaus raišką",
+    "Sumažinti visų failų dydį",
+    "Automatiškai kurti atsargines kopijas"
+  ],
+  "correct": 0,
+  "explanation": "Kriptografija taikoma informacijai apsaugoti nuo asmenų, kurie neturi teisės jos matyti ar modifikuoti.",
+  "difficulty": "Lengvas",
+  "category": "Prezentacija · Kriptografijos pagrindai"
+},
+{
+  "id": "kr-pres-002",
+  "topic": "kriptografija",
+  "question": "Kas kriptografijoje vadinama raktu?",
+  "options": [
+    "Informacija, metodas ar reikšmė, naudojama šifruoti arba iššifruoti žinutę",
+    "Tik vartotojo prisijungimo vardas",
+    "Failo plėtinys",
+    "Interneto protokolo pavadinimas"
+  ],
+  "correct": 0,
+  "explanation": "Raktas naudojamas šifravimo arba iššifravimo operacijai atlikti.",
+  "difficulty": "Lengvas",
+  "category": "Prezentacija · Kriptografijos pagrindai"
+},
+{
+  "id": "kr-pres-003",
+  "topic": "kriptografija",
+  "question": "Ką atlieka šifravimo algoritmas?",
+  "options": [
+    "Pradinę žinutę, naudodamas raktą, paverčia užšifruota forma",
+    "Atkuria ištrintą failą",
+    "Suspaudžia paveikslėlį",
+    "Patikrina kompiuterio temperatūrą"
+  ],
+  "correct": 0,
+  "explanation": "Šifravimo algoritmas pradinę informaciją paverčia užšifruota forma, naudodamas raktą.",
+  "difficulty": "Lengvas",
+  "category": "Prezentacija · Kriptografijos pagrindai"
+},
+{
+  "id": "kr-pres-004",
+  "topic": "kriptografija",
+  "question": "Ką atlieka iššifravimo (dešifravimo) algoritmas?",
+  "options": [
+    "Naudodamas tinkamą raktą atkuria pradinę žinutę iš užšifruotos formos",
+    "Sukuria atsarginę kopiją",
+    "Pervadina failą",
+    "Pakeičia monitoriaus spalvas"
+  ],
+  "correct": 0,
+  "explanation": "Iššifravimo algoritmas iš užšifruotų duomenų, naudodamas tinkamą raktą, atkuria pradinę informaciją.",
+  "difficulty": "Lengvas",
+  "category": "Prezentacija · Kriptografijos pagrindai"
+},
+{
+  "id": "kr-pres-005",
+  "topic": "kriptografija",
+  "question": "Kuo pasižymi simetrinis šifravimas?",
+  "options": [
+    "Tas pats slaptas raktas naudojamas ir šifruoti, ir iššifruoti",
+    "Šifravimui raktas nereikalingas",
+    "Visada naudojami trys raktai",
+    "Viešasis raktas naudojamas iššifravimui, o privatusis – glaudinimui"
+  ],
+  "correct": 0,
+  "explanation": "Simetrinio šifravimo dalyviai turi tą patį slaptą raktą.",
+  "difficulty": "Lengvas",
+  "category": "Prezentacija · Simetrinis šifravimas"
+},
+{
+  "id": "kr-pres-006",
+  "topic": "kriptografija",
+  "question": "Kuo pasižymi asimetrinis šifravimas?",
+  "options": [
+    "Naudojama matematiškai susijusi viešojo ir privataus rakto pora",
+    "Naudojamas tik vienas bendras slaptas raktas",
+    "Raktai apskritai nenaudojami",
+    "Šifravimas galimas tik neprisijungus prie interneto"
+  ],
+  "correct": 0,
+  "explanation": "Asimetrinėje kriptografijoje naudojami du skirtingi, tarpusavyje susiję raktai – viešasis ir privatusis.",
+  "difficulty": "Lengvas",
+  "category": "Prezentacija · Asimetrinis šifravimas"
+},
+{
+  "id": "kr-pres-007",
+  "topic": "kriptografija",
+  "question": "Kokia hibridinės kriptografijos esmė?",
+  "options": [
+    "Asimetrinė kriptografija naudojama simetriniam raktui apsaugoti, o duomenys šifruojami simetriškai",
+    "Visi duomenys šifruojami tik Cezario šifru",
+    "Naudojami du vienodi viešieji raktai",
+    "Šifravimas pakeičiamas failų glaudinimu"
+  ],
+  "correct": 0,
+  "explanation": "Hibridinė sistema derina asimetrinio raktų apsikeitimo patogumą ir simetrinio šifravimo greitį.",
+  "difficulty": "Vidutinis",
+  "category": "Prezentacija · Hibridinis šifravimas"
+},
+{
+  "id": "kr-pres-008",
+  "topic": "kriptografija",
+  "question": "Koks svarbus simetrinio šifravimo privalumas?",
+  "options": [
+    "Jis paprastai greitesnis ir reikalauja mažiau skaičiavimo išteklių",
+    "Jam nereikia jokio rakto",
+    "Privatų raktą galima skelbti viešai",
+    "Jis visada automatiškai patvirtina tapatybę"
+  ],
+  "correct": 0,
+  "explanation": "Simetriniai algoritmai paprastai pasižymi didele greitaveika ir efektyvumu.",
+  "difficulty": "Lengvas",
+  "category": "Prezentacija · Simetrinis šifravimas"
+},
+{
+  "id": "kr-pres-009",
+  "topic": "kriptografija",
+  "question": "Kokia pagrindinė simetrinio šifravimo saugumo problema?",
+  "options": [
+    "Reikia saugiai perduoti ir saugoti bendrą slaptą raktą",
+    "Negalima šifruoti failų",
+    "Šifruotas tekstas visada būna per trumpas",
+    "Būtina viešai skelbti raktą"
+  ],
+  "correct": 0,
+  "explanation": "Jei bendras raktas perimamas, pašalinis asmuo gali iššifruoti juo apsaugotus duomenis.",
+  "difficulty": "Vidutinis",
+  "category": "Prezentacija · Simetrinis šifravimas"
+},
+{
+  "id": "kr-pres-010",
+  "topic": "kriptografija",
+  "question": "Koks asimetrinio šifravimo trūkumas, palyginti su simetriniu?",
+  "options": [
+    "Jis paprastai lėtesnis ir reikalauja daugiau kompiuterio išteklių",
+    "Jis negali naudoti viešojo rakto",
+    "Jis neveikia internete",
+    "Jis negali būti naudojamas elektroniniam parašui"
+  ],
+  "correct": 0,
+  "explanation": "Asimetrinės operacijos dažniausiai yra lėtesnės ir skaičiavimo požiūriu brangesnės.",
+  "difficulty": "Vidutinis",
+  "category": "Prezentacija · Asimetrinis šifravimas"
+},
+{
+  "id": "kr-pres-011",
+  "topic": "kriptografija",
+  "question": "Kokio tipo šifravimo algoritmas yra AES?",
+  "options": [
+    "Simetrinio",
+    "Asimetrinio",
+    "Tik maišos",
+    "Failų glaudinimo"
+  ],
+  "correct": 0,
+  "explanation": "AES yra plačiai naudojamas simetrinio šifravimo algoritmas.",
+  "difficulty": "Lengvas",
+  "category": "Prezentacija · AES"
+},
+{
+  "id": "kr-pres-012",
+  "topic": "kriptografija",
+  "type": "multi",
+  "question": "Kurie pateikti pavyzdžiai prezentacijoje siejami su simetrinės kriptografijos taikymu?",
+  "options": [
+    "Šifruoti standieji diskai",
+    "Šifruotos žinutės ir pokalbiai",
+    "VPN duomenų perdavimas",
+    "Monitoriaus raiškos keitimas"
+  ],
+  "correct": [
+    0,
+    1,
+    2
+  ],
+  "explanation": "Simetrinis šifravimas taikomas duomenų saugojimui ir greitam komunikacijos srauto šifravimui.",
+  "difficulty": "Vidutinis",
+  "category": "Prezentacija · Simetrinio šifravimo taikymas"
+},
+{
+  "id": "kr-pres-013",
+  "topic": "kriptografija",
+  "question": "Kuris Wi‑Fi saugumo pavyzdys prezentacijoje siejamas su simetrine kriptografija ir AES?",
+  "options": [
+    "WPA / WPA2",
+    "HTML",
+    "JPEG",
+    "SMTP be apsaugos"
+  ],
+  "correct": 0,
+  "explanation": "Prezentacijoje WPA ir WPA2 pateikiami kaip belaidžio tinklo saugumo pavyzdžiai, kuriuose gali būti naudojamas AES.",
+  "difficulty": "Vidutinis",
+  "category": "Prezentacija · Simetrinio šifravimo taikymas"
+},
+{
+  "id": "kr-pres-014",
+  "topic": "kriptografija",
+  "question": "Kodėl simetrinis šifravimas dažnai pasirenkamas dideliems duomenų kiekiams?",
+  "options": [
+    "Dėl greitaveikos ir efektyvumo",
+    "Nes jam nereikia rakto",
+    "Nes visada naudoja viešąjį raktą",
+    "Nes automatiškai sukuria sertifikatą"
+  ],
+  "correct": 0,
+  "explanation": "Simetriniai algoritmai paprastai yra greitesni už asimetrinius ir tinka dideliems duomenų kiekiams.",
+  "difficulty": "Vidutinis",
+  "category": "Prezentacija · Simetrinis šifravimas"
+},
+{
+  "id": "kr-pres-015",
+  "topic": "kriptografija",
+  "question": "Kokia „Nonce“ paskirtis AES EAX režimo pavyzdyje?",
+  "options": [
+    "Padėti užtikrinti, kad tas pats pranešimas su tuo pačiu raktu skirtingais šifravimais duotų skirtingą šifro tekstą",
+    "Saugoti vartotojo vardą",
+    "Pakeisti privatų raktą viešuoju",
+    "Sumažinti failo dydį"
+  ],
+  "correct": 0,
+  "explanation": "Nonce suteikia šifravimo operacijai unikalumo; jo negalima netinkamai kartoti su tuo pačiu raktu.",
+  "difficulty": "Sunkesnis",
+  "category": "Prezentacija · AES EAX"
+},
+{
+  "id": "kr-pres-016",
+  "topic": "kriptografija",
+  "question": "Kokia „Tag“ paskirtis AES EAX režimo pavyzdyje?",
+  "options": [
+    "Padėti patikrinti pranešimo autentiškumą ir vientisumą",
+    "Nurodyti failo plėtinį",
+    "Padidinti interneto spartą",
+    "Generuoti viešąjį raktą"
+  ],
+  "correct": 0,
+  "explanation": "Autentifikavimo žyma leidžia patikrinti, ar šifruoti duomenys nebuvo pakeisti ar pažeisti.",
+  "difficulty": "Sunkesnis",
+  "category": "Prezentacija · AES EAX"
+},
+{
+  "id": "kr-pres-017",
+  "topic": "kriptografija",
+  "question": "Kas turėtų nutikti AES EAX iššifravimo metu, jei šifruotas tekstas buvo pakeistas ir autentifikavimo žyma nebeatitinka?",
+  "options": [
+    "Duomenys turi būti atmesti kaip nepatikimi / pažeisti",
+    "Programa turi tyliai pakeisti raktą",
+    "Duomenys turi būti laikomi teisingais",
+    "Turi būti sukurtas naujas viešasis raktas"
+  ],
+  "correct": 0,
+  "explanation": "Nesėkminga Tag patikra rodo, kad duomenys buvo pakeisti arba pažeisti.",
+  "difficulty": "Sunkesnis",
+  "category": "Prezentacija · AES EAX"
+},
+{
+  "id": "kr-pres-018",
+  "topic": "kriptografija",
+  "type": "multi",
+  "question": "Kam gali būti naudojamas viešasis raktas?",
+  "options": [
+    "Duomenims užšifruoti konkrečiam rakto poros savininkui",
+    "Elektroniniam parašui patikrinti",
+    "Slaptai saugoti vietoje privataus rakto",
+    "Iššifruoti duomenis, užšifruotus tuo pačiu viešuoju raktu"
+  ],
+  "correct": [
+    0,
+    1
+  ],
+  "explanation": "Viešasis raktas gali būti platinamas: jis naudojamas gavėjui skirtiems duomenims užšifruoti arba parašui tikrinti.",
+  "difficulty": "Vidutinis",
+  "category": "Prezentacija · Viešasis ir privatusis raktas"
+},
+{
+  "id": "kr-pres-019",
+  "topic": "kriptografija",
+  "type": "multi",
+  "question": "Kam gali būti naudojamas privatusis raktas?",
+  "options": [
+    "Atitinkamu viešuoju raktu užšifruotiems duomenims iššifruoti",
+    "Elektroniniam parašui sukurti",
+    "Viešai skelbti internete",
+    "Failams suspausti"
+  ],
+  "correct": [
+    0,
+    1
+  ],
+  "explanation": "Privatusis raktas saugomas paslaptyje ir naudojamas iššifravimui bei parašo kūrimo operacijoms.",
+  "difficulty": "Vidutinis",
+  "category": "Prezentacija · Viešasis ir privatusis raktas"
+},
+{
+  "id": "kr-pres-020",
+  "topic": "kriptografija",
+  "question": "Kodėl viešąjį raktą galima platinti viešai?",
+  "options": [
+    "Iš viešojo rakto praktiškai neturėtų būti įmanoma lengvai apskaičiuoti atitinkamo privataus rakto",
+    "Nes viešasis raktas niekada nenaudojamas",
+    "Nes viešasis ir privatusis raktai yra vienodi",
+    "Nes viešasis raktas po naudojimo išsitrina"
+  ],
+  "correct": 0,
+  "explanation": "Asimetrinės sistemos sukurtos taip, kad viešąjį raktą būtų galima platinti neatskleidžiant privataus rakto.",
+  "difficulty": "Sunkesnis",
+  "category": "Prezentacija · Viešasis ir privatusis raktas"
+},
+{
+  "id": "kr-pres-021",
+  "topic": "kriptografija",
+  "question": "Kas yra skaitmeninis sertifikatas?",
+  "options": [
+    "Elektroninis dokumentas, siejantis viešąjį raktą su asmens, sistemos ar organizacijos identifikatoriumi",
+    "Bet kuris PDF dokumentas",
+    "Slaptažodžių sąrašas",
+    "Atsarginė disko kopija"
+  ],
+  "correct": 0,
+  "explanation": "Sertifikatas padeda patvirtinti, kam priklauso konkretus viešasis raktas.",
+  "difficulty": "Vidutinis",
+  "category": "Prezentacija · Sertifikatai"
+},
+{
+  "id": "kr-pres-022",
+  "topic": "kriptografija",
+  "question": "Koks sertifikavimo centro (CA) vaidmuo?",
+  "options": [
+    "Patvirtinti sertifikatu viešojo rakto ir subjekto tapatybės sąsają",
+    "Generuoti visų vartotojų slaptažodžius",
+    "Viešai saugoti visų privačius raktus",
+    "Suspausti interneto srautą"
+  ],
+  "correct": 0,
+  "explanation": "CA yra pasitikėta šalis, kuri išduoda / pasirašo sertifikatus ir taip patvirtina tapatybės bei viešojo rakto sąsają.",
+  "difficulty": "Vidutinis",
+  "category": "Prezentacija · Sertifikatai"
+},
+{
+  "id": "kr-pres-023",
+  "topic": "kriptografija",
+  "question": "Kur prezentacijoje asimetrinė kriptografija siejama su saugiu naršyklės ir serverio ryšiu?",
+  "options": [
+    "TLS/SSL protokoluose",
+    "BMP paveikslėliuose",
+    "CSV lentelėse",
+    "ZIP archyvuose"
+  ],
+  "correct": 0,
+  "explanation": "TLS/SSL naudoja viešojo rakto kriptografijos mechanizmus autentifikavimui ir saugaus ryšio parametrams nustatyti.",
+  "difficulty": "Vidutinis",
+  "category": "Prezentacija · Asimetrinio šifravimo taikymas"
+},
+{
+  "id": "kr-pres-024",
+  "topic": "kriptografija",
+  "question": "Kuris standartas ar priemonių šeima prezentacijoje minima saugiam elektroninių žinučių šifravimui?",
+  "options": [
+    "PGP / GPG (OpenPGP)",
+    "JPEG",
+    "CSS",
+    "FTP be apsaugos"
+  ],
+  "correct": 0,
+  "explanation": "PGP/GPG ir OpenPGP naudojami duomenų bei elektroninių žinučių šifravimui ir pasirašymui.",
+  "difficulty": "Lengvas",
+  "category": "Prezentacija · OpenPGP"
+},
+{
+  "id": "kr-pres-025",
+  "topic": "kriptografija",
+  "question": "Kuris algoritmas prezentacijoje pateikiamas kaip asimetrinės kriptografijos pavyzdys?",
+  "options": [
+    "RSA",
+    "AES",
+    "ZIP",
+    "PNG"
+  ],
+  "correct": 0,
+  "explanation": "RSA yra asimetrinės kriptografijos algoritmas, naudojantis viešojo ir privataus rakto porą.",
+  "difficulty": "Lengvas",
+  "category": "Prezentacija · RSA"
+},
+{
+  "id": "kr-pres-026",
+  "topic": "kriptografija",
+  "question": "Hibridinio šifravimo pavyzdyje Benas nori nusiųsti Agnei slaptą žinutę. Kuo jis užšifruoja pačią žinutę?",
+  "options": [
+    "Nauju simetriniu raktu",
+    "Agnės privačiuoju raktu",
+    "Savo viešuoju raktu",
+    "Sertifikavimo centro slaptažodžiu"
+  ],
+  "correct": 0,
+  "explanation": "Hibridiniame šifravime pats duomenų turinys šifruojamas greitu simetriniu raktu.",
+  "difficulty": "Vidutinis",
+  "category": "Prezentacija · Hibridinis šifravimas"
+},
+{
+  "id": "kr-pres-027",
+  "topic": "kriptografija",
+  "question": "Kuo hibridinio šifravimo pavyzdyje Benas užšifruoja Agnei skirtą simetrinį raktą?",
+  "options": [
+    "Agnės viešuoju raktu",
+    "Agnės privačiuoju raktu",
+    "Savo privačiuoju raktu kaip vieninteliu šifru",
+    "Pačiu simetriniu raktu dar kartą"
+  ],
+  "correct": 0,
+  "explanation": "Gavėjo viešasis raktas naudojamas simetriniam raktui apsaugoti, kad jį atkurti galėtų atitinkamo privataus rakto savininkas.",
+  "difficulty": "Vidutinis",
+  "category": "Prezentacija · Hibridinis šifravimas"
+},
+{
+  "id": "kr-pres-028",
+  "topic": "kriptografija",
+  "question": "Kuriuo raktu Agnė iššifruoja jos viešuoju raktu užšifruotą Beno simetrinį raktą?",
+  "options": [
+    "Savo privačiuoju raktu",
+    "Savo viešuoju raktu",
+    "Beno viešuoju raktu",
+    "Nauju atsitiktiniu simetriniu raktu"
+  ],
+  "correct": 0,
+  "explanation": "Duomenys, užšifruoti Agnės viešuoju raktu, atkuriami atitinkamu Agnės privačiuoju raktu.",
+  "difficulty": "Vidutinis",
+  "category": "Prezentacija · Hibridinis šifravimas"
+},
+{
+  "id": "kr-pres-029",
+  "topic": "kriptografija",
+  "type": "matching",
+  "question": "Sujunkite kriptografijos priemonę su jai būdinga paskirtimi.",
+  "options": {
+    "left": [
+      "AES",
+      "RSA",
+      "Skaitmeninis sertifikatas",
+      "OpenPGP"
+    ],
+    "right": [
+      "Simetrinis duomenų šifravimas",
+      "Asimetrinė viešojo / privataus rakto kriptografija",
+      "Viešojo rakto susiejimas su tapatybe",
+      "Duomenų šifravimo ir pasirašymo standartas"
+    ]
+  },
+  "correct": {
+    "0": 0,
+    "1": 1,
+    "2": 2,
+    "3": 3
+  },
+  "explanation": "AES yra simetrinis algoritmas, RSA – asimetrinis, sertifikatas sieja viešąjį raktą su tapatybe, o OpenPGP apibrėžia šifravimo ir pasirašymo mechanizmus.",
+  "difficulty": "Sunkesnis",
+  "category": "Prezentacija · Apibendrinimas"
+},
+{
+  "id": "kr-pres-030",
+  "topic": "kriptografija",
+  "question": "Kodėl praktinėse sistemose dažnai derinamas simetrinis ir asimetrinis šifravimas?",
+  "options": [
+    "Kad būtų galima suderinti greitą duomenų šifravimą su patogesniu saugiu rakto apsikeitimu",
+    "Kad nereikėtų jokių raktų",
+    "Kad visi privatūs raktai taptų vieši",
+    "Kad šifravimas veiktų tik neprisijungus prie tinklo"
+  ],
+  "correct": 0,
+  "explanation": "Hibridinis sprendimas leidžia duomenis šifruoti efektyviai simetriškai, o simetrinį raktą apsaugoti viešojo rakto kriptografija.",
+  "difficulty": "Sunkesnis",
+  "category": "Prezentacija · Hibridinis šifravimas"
+}
 ];

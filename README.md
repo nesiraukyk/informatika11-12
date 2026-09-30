@@ -383,6 +383,14 @@ Tai pašalina `new row violates row-level security policy for table "classes"` k
 - Kiti v5.17 klausimai, motyvacinė sistema ir sąsaja nekeisti.
 - Jau pradėti atsiskaitymai lieka su savo ankstesniais klausimų snapshot'ais; nauji bandymai naudos v5.18 formuluotes.
 
+
+## v5.20 – Kriptografijos klausimų banko išplėtimas
+
+- Prie 23 esamų kriptografijos klausimų pridėta 30 naujų klausimų pagal pateiktą 11 klasės kriptografijos prezentaciją.
+- Kriptografijos temos banke dabar yra 53 klausimai.
+- Temos: simetrinis, asimetrinis ir hibridinis šifravimas, AES/EAX, Nonce, Tag, viešasis ir privatusis raktas, sertifikatai/CA, TLS/SSL, OpenPGP, RSA ir hibridinio šifravimo eiga.
+- `index.html` turto versijos pakeltos iki `v=5.20`, kad naršyklė neimtų seno `questions.js` iš talpyklos.
+
 ## v5.19 – VBE 2016–2026 kriptografijos klausimai
 - Į temos `Kriptografinės sistemos, viešasis ir privatusis raktas` žinių treniruotės banką pridėti 23 klausimai, adaptuoti pagal oficialias 2016–2026 m. informatikos / informacinių technologijų VBE užduotis ir vertinimo instrukcijas.
 - Apimtos pagrindinės ir tos pakartotinės sesijos, kuriose rasta su kriptografija tiesiogiai susijusių užduočių.
