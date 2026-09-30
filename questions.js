@@ -1998,5 +1998,484 @@ window.PRACTICE_QUESTIONS = [
     "explanation": "Maketo tankis, erdvė, kontrastas ir elementų derinimas tiesiogiai veikia aiškumą bei vizualinį vientisumą.",
     "difficulty": "Sunkesnis",
     "category": "Dizaino principai"
+  },
+  {
+    "id": "kr-vbe-2016-p-01",
+    "topic": "kriptografija",
+    "question": "Kuri iš šių priemonių gali būti naudojama elektroniniams dokumentams pasirašyti elektroniniu parašu?",
+    "options": [
+      "Asmens tapatybės kortelė su lustu",
+      "Paprasta nuolaidų kortelė",
+      "Kompaktinis diskas",
+      "Popierinis mokinio pažymėjimas"
+    ],
+    "correct": 0,
+    "explanation": "Elektroniniam parašui gali būti naudojama saugi elektroninės atpažinties priemonė, pavyzdžiui, asmens tapatybės kortelė su lustu.",
+    "difficulty": "Lengvas",
+    "category": "VBE 2016 · pagrindinė · 1",
+    "source_year": 2016,
+    "source_session": "pagrindinė",
+    "source_question": "1",
+    "source_note": "Adaptuota pagal oficialią VBE užduotį."
+  },
+  {
+    "id": "kr-vbe-2016-p-07",
+    "topic": "kriptografija",
+    "type": "matching",
+    "question": "Sujunkite elektroninio parašo naudojimo atvejį elektroninėje bankininkystėje su jo paskirtimi.",
+    "options": {
+      "left": [
+        "Prisijungimas prie elektroninio banko",
+        "Pavedimo ar nurodymo patvirtinimas"
+      ],
+      "right": [
+        "Patvirtinama asmens tapatybė",
+        "Patvirtinamas ir pasirašomas konkretus nurodymas"
+      ]
+    },
+    "correct": {
+      "0": 0,
+      "1": 1
+    },
+    "explanation": "Elektroninis parašas gali būti naudojamas tapatybei patvirtinti ir konkrečiam veiksmui ar dokumentui pasirašyti.",
+    "difficulty": "Vidutinis",
+    "category": "VBE 2016 · pagrindinė · 7",
+    "source_year": 2016,
+    "source_session": "pagrindinė",
+    "source_question": "7",
+    "source_note": "Adaptuota pagal oficialią VBE užduotį."
+  },
+  {
+    "id": "kr-vbe-2016-k-01",
+    "topic": "kriptografija",
+    "question": "Kuri priemonė NĖRA elektroninio parašo kūrimo priemonė?",
+    "options": [
+      "Elektroninė tapatybės kortelė",
+      "Mobiliojo parašo priemonė",
+      "Lustinė kortelė",
+      "Kompaktinis diskas"
+    ],
+    "correct": 3,
+    "explanation": "Kompaktinis diskas pats savaime nėra elektroninio parašo kūrimo ar saugaus rakto laikymo priemonė.",
+    "difficulty": "Lengvas",
+    "category": "VBE 2016 · pakartotinė · 1",
+    "source_year": 2016,
+    "source_session": "pakartotinė",
+    "source_question": "1",
+    "source_note": "Adaptuota pagal oficialią VBE užduotį."
+  },
+  {
+    "id": "kr-vbe-2016-k-07",
+    "topic": "kriptografija",
+    "type": "multi",
+    "question": "Pasirinkite VISAS elektroninio parašo paskirtis.",
+    "options": [
+      "Patvirtinti pasirašančio asmens tapatybę",
+      "Padėti patikrinti, ar pasirašyti duomenys po pasirašymo nebuvo pakeisti",
+      "Automatiškai sumažinti failo dydį",
+      "Visada paslėpti dokumento turinį nuo visų kitų asmenų"
+    ],
+    "correct": [
+      0,
+      1
+    ],
+    "explanation": "Elektroninis parašas siejamas su pasirašančiojo tapatybe ir pasirašytų duomenų autentiškumu bei vientisumu. Pats parašas nėra failų glaudinimo ar turinio šifravimo priemonė.",
+    "difficulty": "Vidutinis",
+    "category": "VBE 2016 · pakartotinė · 7",
+    "source_year": 2016,
+    "source_session": "pakartotinė",
+    "source_question": "7",
+    "source_note": "Adaptuota pagal oficialią VBE užduotį."
+  },
+  {
+    "id": "kr-vbe-2017-p-02",
+    "topic": "kriptografija",
+    "question": "Kaip vadinami elektroniniu būdu pateikti duomenys, kurie prijungiami prie kitų elektroninių duomenų ir naudojami pasirašančiajam patvirtinti?",
+    "options": [
+      "Elektroninis parašas",
+      "Atsarginė kopija",
+      "Failo glaudinimas",
+      "Ugniasienė"
+    ],
+    "correct": 0,
+    "explanation": "Tai elektroninio parašo esmė – elektroniniai duomenys susiejami su kitais duomenimis ir naudojami pasirašančiajam bei pasirašymui patvirtinti.",
+    "difficulty": "Lengvas",
+    "category": "VBE 2017 · pagrindinė · 2",
+    "source_year": 2017,
+    "source_session": "pagrindinė",
+    "source_question": "2",
+    "source_note": "Adaptuota pagal oficialią VBE užduotį."
+  },
+  {
+    "id": "kr-vbe-2017-k-02",
+    "topic": "kriptografija",
+    "question": "El. paštu gautas elektroniniu parašu pasirašytas dokumentas. Kas padeda patikrinti, ar jo turinys po pasirašymo nebuvo pakeistas?",
+    "options": [
+      "Elektroninis parašas",
+      "Failo pavadinimas",
+      "Dokumento šriftas",
+      "El. laiško tema"
+    ],
+    "correct": 0,
+    "explanation": "Elektroninio parašo tikrinimas leidžia nustatyti pasirašyto dokumento vientisumą – ar duomenys po pasirašymo nebuvo pakeisti.",
+    "difficulty": "Vidutinis",
+    "category": "VBE 2017 · pakartotinė · 2",
+    "source_year": 2017,
+    "source_session": "pakartotinė",
+    "source_question": "2",
+    "source_note": "Adaptuota pagal oficialią VBE užduotį."
+  },
+  {
+    "id": "kr-vbe-2019-p-03",
+    "topic": "kriptografija",
+    "question": "Kokią funkciją elektroninis parašas gali atlikti prisijungiant prie elektroninės bankininkystės?",
+    "options": [
+      "Patvirtinti asmens tapatybę",
+      "Suspausti perduodamus duomenis",
+      "Padidinti interneto greitį",
+      "Sukurti atsarginę kopiją"
+    ],
+    "correct": 0,
+    "explanation": "Prisijungiant prie elektroninės bankininkystės elektroninė atpažintis ar parašo priemonė gali būti naudojama asmens tapatybei patvirtinti.",
+    "difficulty": "Lengvas",
+    "category": "VBE 2019 · pagrindinė · 3",
+    "source_year": 2019,
+    "source_session": "pagrindinė",
+    "source_question": "3",
+    "source_note": "Adaptuota pagal oficialią VBE užduotį."
+  },
+  {
+    "id": "kr-vbe-2020-p-03",
+    "topic": "kriptografija",
+    "type": "multi",
+    "question": "Slaptažodyje „2pildooom“ jau yra mažųjų raidžių ir skaitmuo. Kokių DVIEJŲ tipų simbolių dar trūksta, kad jis atitiktų užduotyje nurodytus stipraus slaptažodžio reikalavimus?",
+    "options": [
+      "Didžiosios raidės",
+      "Specialiojo simbolio, pvz., ! arba #",
+      "Dar vienos mažosios raidės",
+      "Dar vieno skaitmens"
+    ],
+    "correct": [
+      0,
+      1
+    ],
+    "explanation": "Egzamino vertinimo instrukcijoje nurodyta, kad šiame slaptažodyje trūksta bent vienos didžiosios raidės ir bent vieno specialiojo simbolio.",
+    "difficulty": "Vidutinis",
+    "category": "VBE 2020 · pagrindinė · 3",
+    "source_year": 2020,
+    "source_session": "pagrindinė",
+    "source_question": "3",
+    "source_note": "Adaptuota pagal oficialią VBE užduotį."
+  },
+  {
+    "id": "kr-vbe-2021-p-02",
+    "topic": "kriptografija",
+    "question": "Kuris veiksmas geriausiai apsaugo nuo duomenų praradimo sugedus laikmenai? Šifravimas šios problemos neišsprendžia.",
+    "options": [
+      "Reguliariai kurti atsargines kopijas",
+      "Tik užšifruoti failus",
+      "Pervadinti failų plėtinius",
+      "Sumažinti failų dydį"
+    ],
+    "correct": 0,
+    "explanation": "Šifravimas saugo duomenų konfidencialumą, bet neapsaugo nuo fizinio laikmenos gedimo. Nuo duomenų praradimo padeda atsarginės kopijos.",
+    "difficulty": "Vidutinis",
+    "category": "VBE 2021 · pagrindinė · 2",
+    "source_year": 2021,
+    "source_session": "pagrindinė",
+    "source_question": "2",
+    "source_note": "Adaptuota pagal oficialią VBE užduotį; įtraukta, nes joje šifravimas lyginamas su atsarginėmis kopijomis."
+  },
+  {
+    "id": "kr-vbe-2021-p-03",
+    "topic": "kriptografija",
+    "type": "multi",
+    "question": "Ką elektroninis parašas padeda patvirtinti apie elektroninius duomenis?",
+    "options": [
+      "Duomenų autentiškumą",
+      "Duomenų vientisumą",
+      "Kad failas būtinai yra užšifruotas",
+      "Kad failo dydis sumažintas"
+    ],
+    "correct": [
+      0,
+      1
+    ],
+    "explanation": "Elektroninis parašas padeda patvirtinti pasirašytų duomenų autentiškumą ir vientisumą.",
+    "difficulty": "Vidutinis",
+    "category": "VBE 2021 · pagrindinė · 3",
+    "source_year": 2021,
+    "source_session": "pagrindinė",
+    "source_question": "3",
+    "source_note": "Adaptuota pagal oficialią VBE užduotį."
+  },
+  {
+    "id": "kr-vbe-2022-p-06",
+    "topic": "kriptografija",
+    "type": "multi",
+    "question": "Pasirinkite VISUS saugius veiksmus, kai elektroninis dokumentas pasirašomas interneto svetainėje.",
+    "options": [
+      "Patikrinti, ar naudojama patikima svetainė ir teisingas jos adresas",
+      "Patikrinti HTTPS ryšį ir svetainės sertifikatą",
+      "Prieš patvirtinant peržiūrėti pasirašomą dokumentą",
+      "Nepaisant įspėjimų tęsti darbą bet kurioje svetainėje"
+    ],
+    "correct": [
+      0,
+      1,
+      2
+    ],
+    "explanation": "Saugiai pasirašant svarbu naudotis patikima svetaine, tikrinti saugų HTTPS ryšį ir sertifikatą bei įsitikinti, ką konkrečiai pasirašome.",
+    "difficulty": "Sunkesnis",
+    "category": "VBE 2022 · pagrindinė · 6",
+    "source_year": 2022,
+    "source_session": "pagrindinė",
+    "source_question": "6",
+    "source_note": "Adaptuota pagal oficialią VBE užduotį."
+  },
+  {
+    "id": "kr-vbe-2022-k-01",
+    "topic": "kriptografija",
+    "question": "Kuris apibūdinimas tiksliausiai nusako elektroninį parašą?",
+    "options": [
+      "Elektroniniai duomenys, susieti su kitais elektroniniais duomenimis ir naudojami pasirašymui",
+      "Bet kuris nuskenuotas ranka parašytas vardas",
+      "Tik failo slaptažodis",
+      "Bet kuris paveikslėlis su žmogaus vardu"
+    ],
+    "correct": 0,
+    "explanation": "Elektroninis parašas yra elektroniniai duomenys, kurie susiejami su pasirašomais elektroniniais duomenimis ir naudojami pasirašant.",
+    "difficulty": "Lengvas",
+    "category": "VBE 2022 · pakartotinė · 1",
+    "source_year": 2022,
+    "source_session": "pakartotinė",
+    "source_question": "1",
+    "source_note": "Adaptuota pagal oficialią VBE užduotį."
+  },
+  {
+    "id": "kr-vbe-2022-k-04-1",
+    "topic": "kriptografija",
+    "question": "Kokią problemą pirmiausia padeda spręsti duomenų šifravimas?",
+    "options": [
+      "Neleisti pašaliniams perskaityti duomenų be leidimo",
+      "Apsaugoti laikmeną nuo fizinio gedimo",
+      "Automatiškai sukurti atsarginę kopiją",
+      "Padidinti failo atsisiuntimo greitį"
+    ],
+    "correct": 0,
+    "explanation": "Šifravimas skirtas duomenų konfidencialumui – be tinkamo rakto ar prieigos duomenys neturėtų būti perskaitomi.",
+    "difficulty": "Lengvas",
+    "category": "VBE 2022 · pakartotinė · 4.1",
+    "source_year": 2022,
+    "source_session": "pakartotinė",
+    "source_question": "4.1",
+    "source_note": "Adaptuota pagal oficialią VBE užduotį."
+  },
+  {
+    "id": "kr-vbe-2023-k-03",
+    "topic": "kriptografija",
+    "question": "Kaip vadinami elektroniniai duomenys, prijungti ar logiškai susieti su kitais elektroniniais duomenimis ir naudojami pasirašančiajam patvirtinti?",
+    "options": [
+      "Elektroninis parašas",
+      "Slapukas",
+      "Atsarginė kopija",
+      "Antivirusinė programa"
+    ],
+    "correct": 0,
+    "explanation": "Tai elektroninio parašo apibrėžimo esmė.",
+    "difficulty": "Lengvas",
+    "category": "VBE 2023 · pakartotinė · 3",
+    "source_year": 2023,
+    "source_session": "pakartotinė",
+    "source_question": "3",
+    "source_note": "Adaptuota pagal oficialią VBE užduotį."
+  },
+  {
+    "id": "kr-vbe-2023-k-06-2",
+    "topic": "kriptografija",
+    "question": "Kuris veiksmas tiesiogiai padidina el. paštu siunčiamų jautrių duomenų konfidencialumą?",
+    "options": [
+      "Užšifruoti siunčiamą failą arba pranešimą",
+      "Pakeisti failo pavadinimą",
+      "Padidinti šrifto dydį",
+      "Persiųsti tą patį laišką dar kartą"
+    ],
+    "correct": 0,
+    "explanation": "Šifravimas yra viena iš priemonių, kuri padeda apsaugoti jautrių duomenų turinį nuo neįgaliotų asmenų.",
+    "difficulty": "Vidutinis",
+    "category": "VBE 2023 · pakartotinė · 6.2",
+    "source_year": 2023,
+    "source_session": "pakartotinė",
+    "source_question": "6.2",
+    "source_note": "Adaptuota pagal oficialią VBE užduotį; šifravimas buvo vienas iš priimtinų atsakymų."
+  },
+  {
+    "id": "kr-vbe-2024-p-03",
+    "topic": "kriptografija",
+    "question": "Naršyklėje svetainės adresas prasideda „http://“, o ne „https://“. Kokia su perduodamų duomenų sauga susijusi rizika?",
+    "options": [
+      "Ryšys gali būti nešifruotas, todėl perduodamus duomenis lengviau perimti",
+      "Svetainė būtinai ištrina visus slapukus",
+      "Kompiuterio diskas automatiškai užšifruojamas",
+      "Interneto ryšys tampa greitesnis"
+    ],
+    "correct": 0,
+    "explanation": "HTTPS naudoja TLS apsaugotą ryšį. Naudojant paprastą HTTP nėra tokios transporto lygmens šifravimo ir serverio autentifikavimo apsaugos.",
+    "difficulty": "Vidutinis",
+    "category": "VBE 2024 · pagrindinė · 3",
+    "source_year": 2024,
+    "source_session": "pagrindinė",
+    "source_question": "3",
+    "source_note": "Adaptuota pagal oficialią VBE užduotį."
+  },
+  {
+    "id": "kr-vbe-2024-p-07-1",
+    "topic": "kriptografija",
+    "question": "Kam elektroniniu parašu pasirašytame dokumente naudojama kvalifikuota laiko žyma?",
+    "options": [
+      "Patvirtinti, kad duomenys egzistavo ir buvo pasirašyti iki nurodyto laiko",
+      "Sumažinti dokumento failo dydį",
+      "Paslėpti dokumento pavadinimą",
+      "Pakeisti viešąjį raktą privačiuoju"
+    ],
+    "correct": 0,
+    "explanation": "Laiko žyma padeda patikimai susieti pasirašymą su konkrečiu laiku, įskaitant parašo sertifikato galiojimo laikotarpio patikrinimą.",
+    "difficulty": "Sunkesnis",
+    "category": "VBE 2024 · pagrindinė · 7.1",
+    "source_year": 2024,
+    "source_session": "pagrindinė",
+    "source_question": "7.1",
+    "source_note": "Adaptuota pagal oficialią VBE užduotį."
+  },
+  {
+    "id": "kr-vbe-2024-p-07-2",
+    "topic": "kriptografija",
+    "question": "Kokią teisinę galią Europos Sąjungoje turi kvalifikuotas elektroninis parašas?",
+    "options": [
+      "Tokią pačią kaip ranka rašytas parašas",
+      "Tik informacinę, be teisinės galios",
+      "Galioja tik el. pašto laiškams",
+      "Galioja tik tol, kol dokumentas atidarytas naršyklėje"
+    ],
+    "correct": 0,
+    "explanation": "Kvalifikuotas elektroninis parašas turi tokią pačią teisinę galią kaip ranka rašytas parašas ir yra pripažįstamas ES.",
+    "difficulty": "Vidutinis",
+    "category": "VBE 2024 · pagrindinė · 7.2",
+    "source_year": 2024,
+    "source_session": "pagrindinė",
+    "source_question": "7.2",
+    "source_note": "Adaptuota pagal oficialią VBE užduotį."
+  },
+  {
+    "id": "kr-vbe-2025-p-04-1",
+    "topic": "kriptografija",
+    "type": "matching",
+    "question": "Sujunkite asimetrinio šifravimo raktą su jam būdingu naudojimu.",
+    "options": {
+      "left": [
+        "Viešasis raktas",
+        "Privatusis raktas"
+      ],
+      "right": [
+        "Gali būti platinamas kitiems ir naudojamas operacijai, kurios rezultatą gali apdoroti atitinkamas privatusis raktas",
+        "Saugomas paslaptyje jo savininko ir naudojamas tik savininko atliekamoms kriptografinėms operacijoms"
+      ]
+    },
+    "correct": {
+      "0": 0,
+      "1": 1
+    },
+    "explanation": "Asimetrinėje kriptografijoje naudojama raktų pora: viešasis raktas gali būti skelbiamas, o privatusis turi likti jo savininko paslaptyje.",
+    "difficulty": "Sunkesnis",
+    "category": "VBE 2025 · pagrindinė · 4.1",
+    "source_year": 2025,
+    "source_session": "pagrindinė",
+    "source_question": "4.1",
+    "source_note": "Adaptuota pagal oficialią VBE užduotį."
+  },
+  {
+    "id": "kr-vbe-2025-p-04-2",
+    "topic": "kriptografija",
+    "question": "Kuris iš šių algoritmų yra asimetrinio šifravimo algoritmas?",
+    "options": [
+      "RSA",
+      "AES",
+      "SHA-256",
+      "ZIP"
+    ],
+    "correct": 0,
+    "explanation": "RSA yra asimetrinės kriptografijos algoritmas. 2025 m. oficialioje vertinimo medžiagoje pažymėta, kad šis konkretus egzamino klausimas neatitiko programos, todėl taškas buvo skirtas visiems kandidatams.",
+    "difficulty": "Sunkesnis",
+    "category": "VBE 2025 · pagrindinė · 4.2",
+    "source_year": 2025,
+    "source_session": "pagrindinė",
+    "source_question": "4.2",
+    "source_note": "Adaptuota pagal oficialią VBE užduotį; oficialioje vertinimo medžiagoje nurodyta, kad klausimas neatitiko programos."
+  },
+  {
+    "id": "kr-vbe-2025-k-04-1",
+    "topic": "kriptografija",
+    "question": "Kokią teisinę galią turi kvalifikuotas elektroninis parašas?",
+    "options": [
+      "Tokią pačią kaip ranka rašytas parašas",
+      "Jokią – jis naudojamas tik prisijungti",
+      "Galioja tik paveikslėliams",
+      "Galioja tik mokyklos dokumentams"
+    ],
+    "correct": 0,
+    "explanation": "Kvalifikuotas elektroninis parašas teisiškai prilyginamas ranka rašytam parašui.",
+    "difficulty": "Lengvas",
+    "category": "VBE 2025 · pakartotinė · 4.1",
+    "source_year": 2025,
+    "source_session": "pakartotinė",
+    "source_question": "4.1",
+    "source_note": "Adaptuota pagal oficialią VBE užduotį."
+  },
+  {
+    "id": "kr-vbe-2025-k-04-2",
+    "topic": "kriptografija",
+    "type": "multi",
+    "question": "Kurios iš šių priemonių gali būti naudojamos kvalifikuotam elektroniniam parašui, jei paslauga ir konkreti paskyra atitinka kvalifikuoto parašo reikalavimus?",
+    "options": [
+      "Asmens tapatybės kortelė",
+      "Mobilusis parašas",
+      "Kvalifikuotas „Smart-ID“",
+      "Paprastas el. pašto slaptažodis"
+    ],
+    "correct": [
+      0,
+      1,
+      2
+    ],
+    "explanation": "Kvalifikuotam elektroniniam parašui naudojamos sertifikuotos elektroninės atpažinties ir parašo priemonės; paprastas el. pašto slaptažodis toks nėra.",
+    "difficulty": "Vidutinis",
+    "category": "VBE 2025 · pakartotinė · 4.2",
+    "source_year": 2025,
+    "source_session": "pakartotinė",
+    "source_question": "4.2",
+    "source_note": "Adaptuota pagal oficialią VBE užduotį."
+  },
+  {
+    "id": "kr-vbe-2026-p-05",
+    "topic": "kriptografija",
+    "type": "multi",
+    "question": "Ką padeda patvirtinti kvalifikuotas elektroninis spaudas?",
+    "options": [
+      "Dokumento kilmę – su kokia organizacija jis susijęs",
+      "Dokumento vientisumą – kad po spaudo uždėjimo duomenys nebuvo pakeisti",
+      "Kad dokumentą perskaitė visi gavėjai",
+      "Kad dokumentas yra slapta užšifruotas ir niekas kitas jo negali atverti"
+    ],
+    "correct": [
+      0,
+      1
+    ],
+    "explanation": "Kvalifikuotas elektroninis spaudas siejamas su juridinio asmens ar organizacijos dokumento kilme ir duomenų vientisumu.",
+    "difficulty": "Sunkesnis",
+    "category": "VBE 2026 · pagrindinė · 5",
+    "source_year": 2026,
+    "source_session": "pagrindinė",
+    "source_question": "5",
+    "source_note": "Adaptuota pagal oficialią VBE užduotį."
   }
 ];

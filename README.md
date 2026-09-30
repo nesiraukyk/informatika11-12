@@ -382,3 +382,13 @@ Tai pašalina `new row violates row-level security policy for table "classes"` k
 - Galutinio failo parengimas internetui: baigti redaguoti → išsaugoti SVG → eksportuoti PNG → patikrinti PNG.
 - Kiti v5.17 klausimai, motyvacinė sistema ir sąsaja nekeisti.
 - Jau pradėti atsiskaitymai lieka su savo ankstesniais klausimų snapshot'ais; nauji bandymai naudos v5.18 formuluotes.
+
+## v5.19 – VBE 2016–2026 kriptografijos klausimai
+- Į temos `Kriptografinės sistemos, viešasis ir privatusis raktas` žinių treniruotės banką pridėti 23 klausimai, adaptuoti pagal oficialias 2016–2026 m. informatikos / informacinių technologijų VBE užduotis ir vertinimo instrukcijas.
+- Apimtos pagrindinės ir tos pakartotinės sesijos, kuriose rasta su kriptografija tiesiogiai susijusių užduočių.
+- Temos: elektroninis parašas, elektroninio parašo vientisumo / tapatybės funkcijos, šifravimas, HTTPS, laiko žyma, viešasis ir privatusis raktas, asimetrinė kriptografija, kvalifikuotas elektroninis parašas ir elektroninis spaudas.
+- 2018 m. pagrindinėje sesijoje tiesioginio kriptografijos klausimo nerasta; 2023 m. pagrindinėje sesijoje taip pat nerasta, tačiau pakartotinėje buvo įtrauktų klausimų.
+- 2025 m. pagrindinės sesijos 4.2 klausimas paliktas kaip istorinis VBE klausimas su paaiškinimu, kad oficialioje vertinimo medžiagoje jis pažymėtas kaip neatitikęs programos.
+- Klausimų tekstai svetainėje yra adaptuoti / perfrazuoti pagal oficialias užduotis, išlaikant tikrinamą sąvoką ir oficialų atsakymo principą.
+- Supabase SQL šiai versijai nereikia – klausimai yra viešame `questions.js` praktikos banke.
+- Custom domenas šiuo metu nenaudojamas: `CNAME` iš v5.19 ZIP pašalintas. GitHub Pages adresas lieka `https://nesiraukyk.github.io/informatika11-12/`.
