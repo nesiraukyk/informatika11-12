@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Informatika 10–12</title>
-<link rel="stylesheet" href="style.css?v=5.20">
+<link rel="stylesheet" href="style.css?v=5.19">
 </head>
 <body>
 <header class="topbar hidden" id="appHeader">
@@ -49,19 +49,63 @@
       </ul>
     </div>
     <div class="authCard">
-      <div class="authTabs">
+      <div class="authTabs" id="authTabs">
         <button class="tab active" id="tabLogin">Prisijungti</button>
         <button class="tab" id="tabSignup">Mokinio registracija</button>
       </div>
-      <form id="loginForm" autocomplete="off">
-        <label>El. paštas<input type="email" id="loginEmail" name="login_user_identifier" required autocomplete="off" autocapitalize="none" spellcheck="false"></label>
-        <label>Slaptažodis<input type="password" id="loginPassword" name="login_secret" required autocomplete="new-password"></label>
+      <form id="loginForm" autocomplete="on">
+        <label>El. paštas<input type="email" id="loginEmail" name="username" required autocomplete="username" autocapitalize="none" spellcheck="false"></label>
+        <label>Slaptažodis
+          <div class="passwordField">
+            <input type="password" id="loginPassword" name="password" required autocomplete="current-password">
+            <button type="button" class="passwordPeek" data-password-target="loginPassword" aria-label="Rodyti slaptažodį">Rodyti</button>
+          </div>
+        </label>
+        <label class="rememberLoginRow"><input type="checkbox" id="rememberLogin" checked> Prisiminti el. paštą šiame įrenginyje</label>
         <button class="primary wide" type="submit">Prisijungti</button>
+        <button class="authTextButton" id="forgotPasswordBtn" type="button">Pamiršau slaptažodį</button>
+        <p class="formHint">Naršyklė gali pasiūlyti išsaugoti slaptažodį. Svetainė pati slaptažodžio nesaugo.</p>
       </form>
-      <form id="signupForm" class="hidden">
-        <label>Vardas ir pavardė<input type="text" id="signupName" required></label>
-        <label>El. paštas<input type="email" id="signupEmail" required></label>
-        <label>Slaptažodis<input type="password" id="signupPassword" required minlength="8"></label>
+
+      <form id="forgotPasswordForm" class="hidden" autocomplete="on">
+        <div class="authSubhead">
+          <h2>Atkurti slaptažodį</h2>
+          <p>Įrašyk paskyros el. paštą. Į jį gausi slaptažodžio atkūrimo nuorodą.</p>
+        </div>
+        <label>El. paštas<input type="email" id="forgotPasswordEmail" required autocomplete="username" autocapitalize="none" spellcheck="false"></label>
+        <button class="primary wide" type="submit">Siųsti atkūrimo nuorodą</button>
+        <button class="authTextButton" id="backToLoginBtn" type="button">← Grįžti į prisijungimą</button>
+      </form>
+
+      <form id="newPasswordForm" class="hidden" autocomplete="on">
+        <div class="authSubhead">
+          <h2>Naujas slaptažodis</h2>
+          <p>Sukurk naują slaptažodį. Jis turi būti bent 8 simbolių.</p>
+        </div>
+        <label>Naujas slaptažodis
+          <div class="passwordField">
+            <input type="password" id="newPassword" required minlength="8" autocomplete="new-password">
+            <button type="button" class="passwordPeek" data-password-target="newPassword" aria-label="Rodyti slaptažodį">Rodyti</button>
+          </div>
+        </label>
+        <label>Pakartok slaptažodį
+          <div class="passwordField">
+            <input type="password" id="newPasswordRepeat" required minlength="8" autocomplete="new-password">
+            <button type="button" class="passwordPeek" data-password-target="newPasswordRepeat" aria-label="Rodyti slaptažodį">Rodyti</button>
+          </div>
+        </label>
+        <button class="primary wide" type="submit">Išsaugoti naują slaptažodį</button>
+      </form>
+
+      <form id="signupForm" class="hidden" autocomplete="on">
+        <label>Vardas ir pavardė<input type="text" id="signupName" required autocomplete="name"></label>
+        <label>El. paštas<input type="email" id="signupEmail" required autocomplete="email"></label>
+        <label>Slaptažodis
+          <div class="passwordField">
+            <input type="password" id="signupPassword" required minlength="8" autocomplete="new-password">
+            <button type="button" class="passwordPeek" data-password-target="signupPassword" aria-label="Rodyti slaptažodį">Rodyti</button>
+          </div>
+        </label>
         <button class="primary wide" type="submit">Sukurti mokinio paskyrą</button>
         <p class="formHint">Mokytojų paskyros saugumo sumetimais sukuriamos atskirai – mokinys pats negali pasirinkti mokytojo rolės.</p>
       </form>
@@ -142,10 +186,10 @@
 <div id="toast" class="toast hidden"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase-config.js?v=5.20"></script>
-<script src="config.js?v=5.20"></script>
-<script src="questions.js?v=5.20"></script>
-<script src="assessment.js?v=5.20"></script>
-<script src="app.js?v=5.20"></script>
+<script src="supabase-config.js?v=5.19"></script>
+<script src="config.js?v=5.19"></script>
+<script src="questions.js?v=5.19"></script>
+<script src="assessment.js?v=5.19"></script>
+<script src="app.js?v=5.19"></script>
 </body>
 </html>

@@ -110,6 +110,8 @@ let uiBackStack=[],restoringBack=false,historyGuardReady=false,currentRestore=nu
 const IDLE_LOGOUT_MS=30*60*1000;
 const IDLE_WARNING_MS=25*60*1000;
 const IDLE_STORAGE_KEY='informatika_last_activity_at';
+const REMEMBER_EMAIL_KEY='informatika_remember_email';
+let passwordRecoveryMode=false;
 let idleLastActivity=0,idleCheckTimer=null,idleWarningShown=false,idleListenersReady=false,idleSigningOut=false,lastActivityPersistAt=0;
 
 function readIdleActivity(){
@@ -251,6 +253,46 @@ $('modalClose').onclick=closeModal;
 $('modal').onclick=e=>{if(e.target===$('modal'))closeModal()};
 function authMsg(text,error=false){$('authMessage').textContent=text;$('authMessage').className='formMessage '+(error?'error':'')}
 
+function rememberedEmail(){
+ return String(localStorage.getItem(REMEMBER_EMAIL_KEY)||'').trim();
+}
+function setAuthMode(mode='login'){
+ const forms=['loginForm','signupForm','forgotPasswordForm','newPasswordForm'];
+ forms.forEach(id=>{if($(id))$(id).classList.toggle('hidden',id!==mode)});
+ const recovery=mode==='newPasswordForm';
+ if($('authTabs'))$('authTabs').classList.toggle('hidden',recovery);
+ if($('tabLogin'))$('tabLogin').classList.toggle('active',mode==='loginForm');
+ if($('tabSignup'))$('tabSignup').classList.toggle('active',mode==='signupForm');
+ if($('authMessage'))$('authMessage').classList.add('hidden');
+}
+function passwordRecoveryRedirect(){
+ // Veikia tiek github.io projekto kelyje, tiek jei ateityje vėl būtų prijungtas domenas.
+ return `${location.origin}${location.pathname}`;
+}
+function isPasswordRecoveryUrl(){
+ const hash=new URLSearchParams(String(location.hash||'').replace(/^#/,''));
+ const query=new URLSearchParams(location.search);
+ return hash.get('type')==='recovery'||query.get('type')==='recovery';
+}
+function showPasswordRecovery(){
+ passwordRecoveryMode=true;
+ setAuthMode('newPasswordForm');
+ show('auth');
+ setTimeout(()=>$('newPassword')?.focus(),0);
+}
+function restoreRememberedLogin(){
+ const email=rememberedEmail();
+ if($('loginEmail')&&!$('loginEmail').value)$('loginEmail').value=email;
+ if($('rememberLogin'))$('rememberLogin').checked=!!email||$('rememberLogin').checked;
+}
+document.querySelectorAll('[data-password-target]').forEach(btn=>btn.onclick=()=>{
+ const input=$(btn.dataset.passwordTarget);if(!input)return;
+ const showing=input.type==='text';
+ input.type=showing?'password':'text';
+ btn.textContent=showing?'Rodyti':'Slėpti';
+ btn.setAttribute('aria-label',showing?'Rodyti slaptažodį':'Slėpti slaptažodį');
+});
+
 function route(name){
  if(!me && !['auth','setup'].includes(name))return show('auth');
  if(name==='dashboard')return renderDashboard();
@@ -284,19 +326,66 @@ function setHeader(){
 }
 
 $('themeToggle').onclick=()=>{const n=(document.documentElement.dataset.theme||'light')==='dark'?'light':'dark';document.documentElement.dataset.theme=n;localStorage.setItem('inf11v3_theme',n)};
-$('logoutBtn').onclick=async()=>{stopHeartbeat();stopTeacherPresenceRefresh();stopIdleLogout();clearIdleClock();await sb.auth.signOut();delete document.documentElement.dataset.studentSkin;me=null;profile=null;currentClass=null;uiBackStack=[];currentRestore=null;historyGuardReady=false;if($('loginEmail'))$('loginEmail').value='';if($('loginPassword'))$('loginPassword').value='';setHeader();show('auth')};
+$('logoutBtn').onclick=async()=>{stopHeartbeat();stopTeacherPresenceRefresh();stopIdleLogout();clearIdleClock();await sb.auth.signOut();delete document.documentElement.dataset.studentSkin;me=null;profile=null;currentClass=null;uiBackStack=[];currentRestore=null;historyGuardReady=false;if($('loginEmail'))$('loginEmail').value=rememberedEmail();if($('loginPassword'))$('loginPassword').value='';setHeader();setAuthMode('loginForm');show('auth')};
 
-$('tabLogin').onclick=()=>{$('tabLogin').classList.add('active');$('tabSignup').classList.remove('active');$('loginForm').classList.remove('hidden');$('signupForm').classList.add('hidden')};
-$('tabSignup').onclick=()=>{$('tabSignup').classList.add('active');$('tabLogin').classList.remove('active');$('signupForm').classList.remove('hidden');$('loginForm').classList.add('hidden')};
+$('tabLogin').onclick=()=>{passwordRecoveryMode=false;setAuthMode('loginForm');restoreRememberedLogin()};
+$('tabSignup').onclick=()=>{passwordRecoveryMode=false;setAuthMode('signupForm')};
+
+$('forgotPasswordBtn').onclick=()=>{
+ const current=$('loginEmail').value.trim()||rememberedEmail();
+ $('forgotPasswordEmail').value=current;
+ setAuthMode('forgotPasswordForm');
+ setTimeout(()=>$('forgotPasswordEmail')?.focus(),0);
+};
+$('backToLoginBtn').onclick=()=>{setAuthMode('loginForm');restoreRememberedLogin()};
 
 $('loginForm').onsubmit=async e=>{
  e.preventDefault();resetIdleClock();authMsg('Jungiamasi...');
- const {error}=await sb.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPassword').value});
+ const email=$('loginEmail').value.trim();
+ const password=$('loginPassword').value;
+ const {error}=await sb.auth.signInWithPassword({email,password});
  if(error)return authMsg(error.message,true);
- $('loginEmail').value='';
+ if($('rememberLogin')?.checked)localStorage.setItem(REMEMBER_EMAIL_KEY,email);
+ else localStorage.removeItem(REMEMBER_EMAIL_KEY);
  $('loginPassword').value='';
  authMsg('Prisijungta.');
 };
+
+$('forgotPasswordForm').onsubmit=async e=>{
+ e.preventDefault();
+ const email=$('forgotPasswordEmail').value.trim();
+ if(!email)return authMsg('Įrašyk el. paštą.',true);
+ authMsg('Siunčiama slaptažodžio atkūrimo nuoroda...');
+ const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:passwordRecoveryRedirect()});
+ if(error)return authMsg(error.message,true);
+ authMsg('Atkūrimo nuoroda išsiųsta. Patikrink el. paštą (taip pat Spam / Šlamštas aplanką).');
+};
+
+$('newPasswordForm').onsubmit=async e=>{
+ e.preventDefault();
+ const a=$('newPassword').value,b=$('newPasswordRepeat').value;
+ if(a.length<8)return authMsg('Slaptažodis turi būti bent 8 simbolių.',true);
+ if(a!==b)return authMsg('Slaptažodžiai nesutampa.',true);
+ authMsg('Išsaugomas naujas slaptažodis...');
+ const {error}=await sb.auth.updateUser({password:a});
+ if(error)return authMsg(error.message,true);
+ passwordRecoveryMode=false;
+ $('newPassword').value='';$('newPasswordRepeat').value='';
+ authMsg('Slaptažodis pakeistas. Prisijungimas tęsiamas...');
+ history.replaceState(null,'',location.pathname);
+ const {data:{session}}=await sb.auth.getSession();
+ if(session){
+  me=session.user;
+  await loadProfile();
+  setHeader();
+  route('dashboard');
+ }else{
+  setAuthMode('loginForm');
+  restoreRememberedLogin();
+  authMsg('Slaptažodis pakeistas. Prisijunk su nauju slaptažodžiu.');
+ }
+};
+
 $('signupForm').onsubmit=async e=>{
  e.preventDefault();resetIdleClock();authMsg('Kuriama paskyra...');
  const {data,error}=await sb.auth.signUp({
@@ -2749,27 +2838,23 @@ function renderProfile(){
 async function boot(){
  document.documentElement.dataset.theme=localStorage.getItem('inf11v3_theme')||'light';
  if(!configured){show('setup');return}
- const {data:{session}}=await sb.auth.getSession();
 
- if(session){
-  if(idleSessionExpired()){
-   clearIdleClock();
-   await sb.auth.signOut();
-   show('auth');
-   authMsg('Dėl saugumo ankstesnė sesija užbaigta po 30 min. neaktyvumo.');
-  }else{
-   if(!readIdleActivity())resetIdleClock();
-   me=session.user;
-   await loadProfile();
-   setHeader();
-   route('dashboard');
-  }
- }else{
-  clearIdleClock();
-  show('auth');
- }
+ // Supabase recovery nuoroda gali grąžinti laikiną sesiją. Tokiu atveju
+ // pirmiausia rodome naujo slaptažodžio formą, o ne mokinio skydelį.
+ passwordRecoveryMode=isPasswordRecoveryUrl();
 
  sb.auth.onAuthStateChange(async(event,session)=>{
+  if(event==='PASSWORD_RECOVERY'){
+   passwordRecoveryMode=true;
+   me=session?.user||null;
+   profile=null;
+   setHeader();
+   showPasswordRecovery();
+   return;
+  }
+
+  if(passwordRecoveryMode)return;
+
   if(session&&!me){
    if(event==='SIGNED_IN')resetIdleClock();
    else if(idleSessionExpired()){
@@ -2787,8 +2872,42 @@ async function boot(){
    stopIdleLogout();
    me=null;profile=null;
    setHeader();
+   setAuthMode('loginForm');
+   restoreRememberedLogin();
    show('auth');
   }
  });
+
+ const {data:{session}}=await sb.auth.getSession();
+
+ if(passwordRecoveryMode){
+  me=session?.user||null;
+  profile=null;
+  setHeader();
+  showPasswordRecovery();
+  return;
+ }
+
+ if(session){
+  if(idleSessionExpired()){
+   clearIdleClock();
+   await sb.auth.signOut();
+   setAuthMode('loginForm');
+   restoreRememberedLogin();
+   show('auth');
+   authMsg('Dėl saugumo ankstesnė sesija užbaigta po 30 min. neaktyvumo.');
+  }else{
+   if(!readIdleActivity())resetIdleClock();
+   me=session.user;
+   await loadProfile();
+   setHeader();
+   route('dashboard');
+  }
+ }else{
+  clearIdleClock();
+  setAuthMode('loginForm');
+  restoreRememberedLogin();
+  show('auth');
+ }
 }
 boot();

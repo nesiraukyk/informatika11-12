@@ -684,3 +684,27 @@ html[data-student-skin="legend"]{--p:#b56b00;--p2:#744b9e}
  .motivationFeatureOptions{grid-template-columns:1fr}
  .classmateGrid{grid-template-columns:1fr}
 }
+
+
+/* ===== v5.19 · slaptažodžio prisiminimas ir atkūrimas ===== */
+.passwordField{position:relative;margin-top:6px}
+.passwordField input{margin-top:0!important;padding-right:76px!important}
+.passwordPeek{
+ position:absolute;right:7px;top:50%;transform:translateY(-50%);
+ border:0;background:transparent;color:var(--p);font:inherit;font-size:11px;font-weight:900;
+ padding:7px 8px;border-radius:8px;cursor:pointer
+}
+.passwordPeek:hover{background:color-mix(in srgb,var(--p) 9%,transparent)}
+.rememberLoginRow{
+ display:flex!important;align-items:center;gap:8px;color:var(--ink)!important;font-weight:700!important;
+ cursor:pointer
+}
+.rememberLoginRow input{width:auto!important;margin:0!important;accent-color:var(--p)}
+.authTextButton{
+ border:0;background:transparent;color:var(--p);font:inherit;font-weight:850;cursor:pointer;
+ padding:5px 3px;text-align:center
+}
+.authTextButton:hover{text-decoration:underline}
+.authSubhead{margin-bottom:2px}
+.authSubhead h2{margin:0 0 5px;font-size:22px}
+.authSubhead p{margin:0;color:var(--muted);font-size:12px;line-height:1.5}
