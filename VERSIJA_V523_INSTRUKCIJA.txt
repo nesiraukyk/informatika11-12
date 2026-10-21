@@ -1,0 +1,8 @@
+NGG Informatika v5.23
+1. Visa informatika11-12-main/ katalogo TURINĮ įkelkite į GitHub (palikite CNAME).
+2. Klausimų banke yra 30 redaguotų praktikos klausimų temai kriptografija.
+3. Praktinį darbą WORD ir HTML laboratoriją pridėkite per MOKYTOJO PASKYRĄ → klasė → MOKYMOSI FAILAI → Kriptografija → Pridėti failą. Tai būtina, kad jie taptų klasės privačiais ištekliais Supabase Storage.
+4. Mokinių darbų perkėlimas yra MOKYTOJO PASKYRA → klasė → Darbų pateikimas → Pateiktų darbų archyvas → + Naujas aplankas, tuomet kiekvieno failo laukelyje Aplankas pasirinkite tikslinį aplanką. Būtina anksčiau paleista v5.22 SQL migracija.
+5. Ši versija nekeičia assessment_question_templates – tik PRAKTIKOS klausimus. 11 kl. vertinamų testų DB klausimynui reikia atskiros patikrintos migracijos, nes šiame projekte jam dabar yra tik vektorinės grafikos klausimai.
+6. Visų buvusių egzaminų klausimų tiksli atitiktis nėra patvirtinta; pateikiami nauji, autoriniai kriptografijos klausimai.
+7. SQL aplankams pateiktas atskirai šiame archyve kaip v522_SUPABASE_APLANKAI.sql – vykdykite tik jei dar nevykdėte v5.22.

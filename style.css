@@ -770,3 +770,17 @@ html[data-student-skin="legend"]{--p:#b56b00;--p2:#744b9e}
 .folderMoveLabel select{min-width:140px;max-width:200px;min-height:35px;padding:7px;font-size:12px}
 @media(max-width:780px){.teacherTopicDeck,.studentTopics.topicDeck{grid-template-columns:1fr}.teacherTopicCard[open]{grid-column:span 1}.workArchiveItem{align-items:flex-start;flex-wrap:wrap}.workArchiveActions{width:100%;padding-left:50px}.topicCardAction{padding:9px 11px}}
 @media(max-width:410px){.topicCardTop{gap:9px}.topicCardIcon{width:40px;height:40px;min-width:40px}.modernTopicCard{padding:12px}.topicCardTitle h3{font-size:13px}}
+
+/* v5.23 – glaustos temų kortelės ir mokymosi medžiaga */
+.modernTopicCard .topicCardTop{display:flex;align-items:center;gap:12px;width:100%;min-height:52px}
+.modernTopicCard .topicCardTitle{display:flex;justify-content:center;min-height:46px}
+.modernTopicCard .topicCardAction{align-self:center;margin:auto 0 auto auto;display:flex;align-items:center;justify-content:center;flex:0 0 40px;height:40px;width:40px;padding:0;border-radius:13px;font-size:22px;line-height:1;box-shadow:0 2px 9px rgba(10,90,83,.06)}
+.modernTopicCard .topicCardAction:not(:disabled){background:color-mix(in srgb,var(--p) 8%,var(--surface));color:var(--p);border-color:color-mix(in srgb,var(--p) 24%,var(--line))}
+.modernTopicCard .topicCardAction:hover:not(:disabled){transform:translateX(2px);box-shadow:0 4px 16px rgba(10,90,83,.13)}
+.modernTopicCard.locked{opacity:.58}.modernTopicCard.locked .topicCardAction{font-size:17px}
+.resourceDownloadCard{display:flex;align-items:center;gap:13px;margin-top:9px;padding:13px 15px;background:var(--surface);border:1px solid var(--line);border-radius:16px;transition:border-color .16s,box-shadow .16s}
+.resourceDownloadCard:hover{border-color:color-mix(in srgb,var(--p) 25%,var(--line));box-shadow:0 5px 19px rgba(0,0,0,.035)}
+.resourceDownloadCard .grow{min-width:0;flex:1}.resourceDownloadCard .grow b{display:block;font-size:14px;line-height:1.45;overflow-wrap:anywhere}.resourceDownloadCard .subtle{max-width:100%;text-overflow:ellipsis;white-space:nowrap;overflow:hidden;font-size:12px;margin-top:3px}
+.resourceFileGlyph{flex:0 0 42px;width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:var(--surface2);font-size:21px}
+.resourceDownloadCard .resourceDownloadAction{display:grid;place-items:center;flex:0 0 38px;width:38px;height:38px;font-size:22px;padding:0;line-height:1;border-radius:11px}
+@media(max-width:480px){.resourceDownloadCard{padding:11px;gap:9px}.resourceFileGlyph{width:36px;height:36px;flex-basis:36px}.resourceDownloadCard .grow b{font-size:13px}}
