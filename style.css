@@ -708,3 +708,20 @@ html[data-student-skin="legend"]{--p:#b56b00;--p2:#744b9e}
 .authSubhead{margin-bottom:2px}
 .authSubhead h2{margin:0 0 5px;font-size:22px}
 .authSubhead p{margin:0;color:var(--muted);font-size:12px;line-height:1.5}
+
+/* v5.21: aiški pažymių suvestinė ir atskiras mokinio pažymys */
+.assessmentSummaryToolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:17px 0 14px}
+.assessmentSummaryToolbar select{margin:0;min-width:min(320px,100%)}
+.assessmentSummaryTable th:nth-child(4),.assessmentSummaryTable td:nth-child(4){text-align:center}
+.assessmentSummaryTable td{vertical-align:middle}
+.assessmentSummaryTable tr[hidden]{display:none}
+.assessmentSummaryTable td:nth-child(1){min-width:145px}
+.assessmentQuickActions{white-space:nowrap}
+.assessmentQuickActions button+button{margin-left:6px}
+.assessmentGradeBig{display:inline-grid;place-items:center;min-width:44px;min-height:42px;padding:4px 10px;border:1px solid color-mix(in srgb,var(--ok) 28%,var(--line));border-radius:12px;background:color-mix(in srgb,var(--ok) 9%,var(--surface));color:var(--ink);font-size:25px;font-weight:900;font-variant-numeric:tabular-nums}
+.assessmentDetailsDisclosure{border-top:1px solid var(--line);margin-top:20px;padding-top:14px}
+.assessmentDetailsDisclosure summary{cursor:pointer;font-weight:800;color:var(--p);padding:8px 2px}
+.assessmentDetailsDisclosure .tableWrap{margin-top:10px}
+.assessmentStudentGrade{border-color:color-mix(in srgb,var(--ok) 40%,var(--line));background:color-mix(in srgb,var(--ok) 7%,var(--surface))}
+.assessmentStudentGrade strong{color:var(--ink);font-size:40px}
+@media(max-width:640px){.assessmentSummaryToolbar select{flex:1;min-width:0}.assessmentQuickActions{white-space:normal}.assessmentQuickActions button{margin:2px}.assessmentSummaryTable td{padding:9px 7px}.assessmentGradeBig{font-size:21px;min-width:38px;min-height:36px}}

@@ -1,0 +1,16 @@
+NGG INFORMATIKA – v5.21.0
+
+PATAISYTA:
+1) Mokytojo „Atsiskaitymų rezultatai“ – aiški kompaktiška klasės lentelė, tema pasirenkama filtru, pažymys rodomas kaip sveikasis skaičius (pvz., 9). Visi 11 techninių stulpelių paslėpti po „Išsami atsiskaitymų istorija“.
+2) Mokinys, baigęs savo atsiskaitymą ir mokytojui jį įvertinus, pažymį ir komentarą pamato iškart net jei kiti klasėje dar nebaigė.
+3) Teisingi atsakymai, teorijos %, detalūs rezultatai toliau užrakinti iki visų mokinių baigimo.
+4) Mokytojas vis dar gali pažymį keisti. Navigacijos ir slaptažodžio pataisos iš v5.20 išlaikytos.
+
+DIEGIMAS:
+1. Supabase -> SQL Editor -> Run: supabase/20261021_v521_grade_visibility.sql
+   Būtina, nes senas SQL dar riboja pažymio matomumą. Prieš tai reikia būti įdiegusiam ankstesnį v5.20 individualaus vertinimo SQL.
+2. Github nesiraukyk/informatika11-12: ZIP turinį įkelti pagrindiniame aplanke, overwrite esamus. CNAME PALIKTI (ngg-informatika.lt).
+3. Atidaryti https://ngg-informatika.lt ir atnaujinti Ctrl+F5.
+4. Mokytojas -> klasė -> Atsiskaitymų rezultatai -> tema; mokinys -> tema -> Temos testas.
+
+Saugumas: tik pačiam mokiniui grąžinamas jo mokytojo pažymys už pilnai pateiktą bandymą. Klausimai ir teisingi atsakymai neatskleidžiami.

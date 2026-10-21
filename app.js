@@ -1672,6 +1672,30 @@ async function renderTeacherAssessments(c,students,attempts){
  [...rows].sort((a,b)=>new Date(a.started_at)-new Date(b.started_at)).forEach(x=>{const k=keyOf(x);(groups[k]||(groups[k]=[])).push(x)});
  const attemptNoById={},latestByKey={};Object.entries(groups).forEach(([k,list])=>{list.forEach((x,i)=>attemptNoById[x.id]=i+1);latestByKey[k]=list[list.length-1]});
  const retryByKey={};(retryRows||[]).forEach(r=>retryByKey[`${r.student_id}::${r.topic_id}`]=r);
+ // Trumpa suvestinė: viena eilutė vienam mokiniui kiekvienoje atsiskaitymo temoje.
+ // Rodyti ir dar nepateikusius mokinius, kad mokytojas matytų visą klasę.
+ const assessmentTopics=[...new Set(rows.map(x=>x.topic_id))];
+ const studentsSorted=[...(students||[])].sort((a,b)=>String(a.full_name||'').localeCompare(String(b.full_name||''),'lt'));
+ const overviewRows=[];
+ for(const topicId of assessmentTopics){
+  for(const st of studentsSorted){
+   const studentAttempts=rows.filter(x=>x.topic_id===topicId&&x.student_id===st.id);
+   const submitted=studentAttempts.find(x=>x.completed_at)||null; // naujausias pateiktas bandymas
+   const active=studentAttempts.find(x=>!x.completed_at)||null;
+   const graded=submitted?assessmentTeacherGradesByAttempt[submitted.id]:null;
+   const pct=submitted&&submitted.score_percent!=null?`${Math.round(Number(submitted.score_percent))}%`:'—';
+   const status=submitted?(active?'Pateikė · kartoja':'Pateikė'):(active?'Vyksta':'Nepateikė');
+   const grade=graded?`<span class="assessmentGradeBig" aria-label="Pažymys ${Number(graded.grade)}">${Number(graded.grade)}</span>`:(submitted?'<span class="subtle">Neįvertinta</span>':'<span class="subtle">—</span>');
+   const buttons=submitted?`<button class="smallBtn" data-assessment-grade="${submitted.id}" data-assessment-student="${st.id}">${graded?'Keisti':'Įvertinti'}</button><button class="smallBtn" data-assessment-result="${submitted.id}" data-assessment-student="${st.id}">Detalės</button>`:'<span class="subtle">—</span>';
+   overviewRows.push(`<tr data-overview-topic="${esc(topicId)}"><td><b>${esc(st.full_name||'Mokinys')}</b></td><td>${esc(status)}</td><td><b>${pct}</b></td><td>${grade}</td><td class="assessmentQuickActions">${buttons}</td></tr>`);
+  }
+ }
+ const overviewStats=Object.fromEntries(assessmentTopics.map(topicId=>{
+  const completedStudents=new Set(rows.filter(x=>x.topic_id===topicId&&x.completed_at).map(x=>x.student_id));
+  const gradedStudents=new Set(rows.filter(x=>x.topic_id===topicId&&x.completed_at&&assessmentTeacherGradesByAttempt[x.id]).map(x=>x.student_id));
+  return [topicId,{submitted:completedStudents.size,graded:gradedStudents.size,total:studentsSorted.length}];
+ }));
+ const topicChoices=assessmentTopics.map(id=>`<option value="${esc(id)}">${esc(topicById(id)?.title||id)}</option>`).join('');
  const body=rows.map(x=>{
   const st=studentBy[x.student_id],done=!!x.completed_at,k=keyOf(x),group=groups[k]||[],pr=practicalBy[x.id],teacherGrade=assessmentTeacherGradesByAttempt[x.id];
   const duration=done?fmtDurationDetailed(x.duration_seconds):fmtDurationDetailed(Math.max(1,Math.floor((Date.now()-new Date(x.started_at).getTime())/1000)));
@@ -1689,11 +1713,24 @@ async function renderTeacherAssessments(c,students,attempts){
   const completedAttempts=group.filter(a=>a.completed_at).length,hasUnfinished=group.some(a=>!a.completed_at),allowedAttempts=1+Number(retryByKey[k]?.extra_attempts||0),retryAlreadyAvailable=!hasUnfinished&&completedAttempts<allowedAttempts,isLatest=latestByKey[k]?.id===x.id;
   let retryAction='';if(done&&isLatest)retryAction=retryAlreadyAvailable?'<span class="badge ok">Pakartojimas leistas</span>':`<button class="smallBtn" data-grant-assessment-retry="${x.student_id}" data-retry-topic="${esc(x.topic_id)}" data-retry-name="${esc(st?.full_name||'Mokinys')}">Leisti pakartoti</button>`;
   const fullTopicTitle=topicById(x.topic_id)?.title||x.topic_id;
-  const gradeCell=teacherGrade?`<span class="badge ok">${teacherGrade.grade}/10</span>`:(done?'<span class="badge">Neįvertinta</span>':'—');
+  const gradeCell=teacherGrade?`<span class="assessmentGradeBig">${Number(teacherGrade.grade)}</span>`:(done?'<span class="badge">Neįvertinta</span>':'—');
   const gradeAction=done?`<button class="smallBtn" data-assessment-grade="${x.id}" data-assessment-student="${x.student_id}">${teacherGrade?'Keisti pažymį':'Įvertinti'}</button>`:'';
   return `<tr><td><b>${esc(st?.full_name||'Mokinys')}</b></td><td class="assessmentTopicCell"><button type="button" class="assessmentTopicToggle" data-toggle-assessment-topic title="${esc(fullTopicTitle)}"><span class="assessmentTopicText">${esc(fullTopicTitle)}</span><span class="assessmentTopicChevron" aria-hidden="true">⌄</span></button></td><td><b>${attemptNoById[x.id]||1}</b></td><td><span class="badge ${done?'ok':''}">${stateLabel}</span></td><td><b>${result}</b></td><td>${logo}</td><td>${duration}${done?'':' (iki dabar)'}</td><td><b>${countBy[x.id]||0}</b></td><td>${studentVisibility}</td><td>${gradeCell}</td><td><div class="actions"><button class="smallBtn" data-assessment-result="${x.id}" data-assessment-student="${x.student_id}">Peržiūrėti</button>${gradeAction}${retryAction}</div></td></tr>`;
  }).join('');
- host.innerHTML=`<div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">ATSISKAITYMŲ REZULTATAI</span><h2>Mokinių atsiskaitymai</h2><p class="muted">Kiekvieną savo atsiskaitymą pateikusį mokinį gali įvertinti atskirai, nelaukdamas klasės. Mokiniai rezultatą, mokytojo pažymį ir teisingus atsakymus pamatys tik visiems baigus šios temos atsiskaitymą. Logotipo rubrika vertinama per „Peržiūrėti“.</p></div><span class="badge">${rows.length} band.</span></div>${gradeLoadError?`<div class="notice">Individualūs pažymiai dar neprijungti: paleisk pridėtą <code>supabase/20261021_individual_assessment_grades.sql</code> failą per Supabase SQL Editor. ${esc(gradeLoadError.message)}</div>`:''}<div class="tableWrap"><table class="dataTable"><thead><tr><th>Mokinys</th><th>Tema</th><th>Bandymas</th><th>Būsena</th><th>Rezultatas</th><th>Logotipas</th><th>Laikas</th><th>Išėjo</th><th>Mokiniams</th><th>Pažymys</th><th></th></tr></thead><tbody>${body}</tbody></table></div></div>`;
+ host.innerHTML=`<div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">ATSISKAITYMŲ REZULTATAI</span><h2>Visos klasės pažymiai</h2><p class="muted">Pasirink temą ir vienoje vietoje matyk visų mokinių įvertinimus. Pažymį galima įrašyti arba pakeisti iškart po darbo pateikimo. Mokinys savo pažymį mato iškart, o teisingus atsakymus – tik visai klasei baigus.</p></div></div>
+ ${gradeLoadError?`<div class="notice">Pažymių duomenys neprijungti. Patikrink ankstesnį v5.20 SQL diegimą. ${esc(gradeLoadError.message)}</div>`:''}
+ <div class="assessmentSummaryToolbar"><label for="assessmentOverviewTopic"><b>Tema</b></label><select id="assessmentOverviewTopic">${topicChoices}</select><span class="badge" id="assessmentOverviewStats"></span></div>
+ <div class="tableWrap"><table class="dataTable assessmentSummaryTable"><thead><tr><th>Mokinys</th><th>Būsena</th><th>Rezultatas</th><th>Pažymys</th><th>Veiksmai</th></tr></thead><tbody>${overviewRows.join('')}</tbody></table></div>
+ <details class="assessmentDetailsDisclosure"><summary>Išsami atsiskaitymų istorija ir kiti duomenys (${rows.length} band.)</summary><p class="muted">Čia rasi visus bandymus, laiką, išėjimus, praktinę dalį ir rezultatų paskelbimo būseną.</p><div class="tableWrap"><table class="dataTable"><thead><tr><th>Mokinys</th><th>Tema</th><th>Bandymas</th><th>Būsena</th><th>Rezultatas</th><th>Logotipas</th><th>Laikas</th><th>Išėjo</th><th>Atsakymai</th><th>Pažymys</th><th></th></tr></thead><tbody>${body}</tbody></table></div></details></div>`;
+ const overviewSelect=$('assessmentOverviewTopic');
+ const updateAssessmentOverview=()=>{
+  const selected=overviewSelect.value;
+  document.querySelectorAll('[data-overview-topic]').forEach(tr=>{tr.hidden=tr.dataset.overviewTopic!==selected;});
+  const stats=overviewStats[selected];
+  $('assessmentOverviewStats').textContent=stats?`Pateikė ${stats.submitted}/${stats.total} · įvertinta ${stats.graded}`:'';
+ };
+ overviewSelect.onchange=updateAssessmentOverview;
+ updateAssessmentOverview();
  document.querySelectorAll('[data-assessment-result],[data-assessment-grade]').forEach(b=>b.onclick=()=>showAssessmentAttemptDetail(b.dataset.assessmentResult||b.dataset.assessmentGrade,b.dataset.assessmentStudent,c.id));
  document.querySelectorAll('[data-toggle-assessment-topic]').forEach(b=>b.onclick=()=>{b.classList.toggle('expanded');b.setAttribute('aria-expanded',b.classList.contains('expanded')?'true':'false')});
  document.querySelectorAll('[data-grant-assessment-retry]').forEach(b=>b.onclick=()=>grantAssessmentRetry(c,b.dataset.grantAssessmentRetry,b.dataset.retryTopic,b.dataset.retryName,b));
@@ -1828,7 +1865,7 @@ async function showAssessmentAttemptDetail(attemptId,studentId,classId){
  const practicalScore=practical?.practical_score==null?null:Number(practical.practical_score),practicalMax=Number(practical?.practical_max_points||10),overall=practicalScore==null?null:Math.round(((Number(attempt.correct_answers)||0)+practicalScore)*100/Math.max(1,(Number(attempt.total_questions)||0)+practicalMax));
  const theorySeconds=Number(practical?.theory_duration_seconds||0),practicalSeconds=practical?.practical_started_at&&practical?.practical_submitted_at?Math.max(0,Math.round((new Date(practical.practical_submitted_at)-new Date(practical.practical_started_at))/1000)):0;
  const rb=practical?.rubric_scores||{};
- const individualGradePanel=attempt.completed_at?`<div class="panel"><span class="kicker">INDIVIDUALUS VERTINIMAS</span><h3>Mokytojo pažymys (1–10)</h3><p class="muted">Šį mokinį gali įvertinti iš karto – kitų mokinių laukti nereikia. Pažymys ir komentaras mokiniui bus parodyti tik tada, kai visa klasė baigs atsiskaitymą.</p><form id="assessmentTeacherGradeForm" class="formGroup"><label>Pažymys <select id="assessmentTeacherGrade" required><option value="">— pasirink pažymį —</option>${Array.from({length:10},(_v,i)=>i+1).map(n=>`<option value="${n}" ${priorGrade?.grade===n?'selected':''}>${n}</option>`).join('')}</select></label><label>Komentaras mokiniui<textarea id="assessmentTeacherComment" rows="3" maxlength="2000" placeholder="Nebūtina">${esc(priorGrade?.teacher_comment||'')}</textarea></label><button class="primary" type="submit">${priorGrade?'Atnaujinti įvertinimą':'Išsaugoti įvertinimą'}</button></form></div>`:`<div class="panel"><p class="muted">Mokinys dar nepateikė viso atsiskaitymo. Vertinti bus galima iškart po pateikimo.</p></div>`;
+ const individualGradePanel=attempt.completed_at?`<div class="panel"><span class="kicker">INDIVIDUALUS VERTINIMAS</span><h3>Mokytojo pažymys (1–10)</h3><p class="muted">Šį mokinį gali įvertinti iš karto – kitų mokinių laukti nereikia. Pažymys ir komentaras mokiniui rodomi iškart po išsaugojimo. Teisingi atsakymai liks paslėpti iki visų klasės mokinių atsiskaitymo.</p><form id="assessmentTeacherGradeForm" class="formGroup"><label>Pažymys <select id="assessmentTeacherGrade" required><option value="">— pasirink pažymį —</option>${Array.from({length:10},(_v,i)=>i+1).map(n=>`<option value="${n}" ${priorGrade?.grade===n?'selected':''}>${n}</option>`).join('')}</select></label><label>Komentaras mokiniui<textarea id="assessmentTeacherComment" rows="3" maxlength="2000" placeholder="Nebūtina">${esc(priorGrade?.teacher_comment||'')}</textarea></label><button class="primary" type="submit">${priorGrade?'Atnaujinti įvertinimą':'Išsaugoti įvertinimą'}</button></form></div>`:`<div class="panel"><p class="muted">Mokinys dar nepateikė viso atsiskaitymo. Vertinti bus galima iškart po pateikimo.</p></div>`;
  const practicalPanel=practical?`<div class="panel practicalTeacherPanel"><div class="sectionTitle"><div class="grow"><span class="kicker">II DALIS</span><h3>Logotipo kūrimas</h3><p class="muted">${practical.practical_submitted_at?`Pateikta ${fmtDate(practical.practical_submitted_at)}`:(practical.theory_submitted_at?'Teorija baigta, praktinė dalis dar nepateikta.':'Praktinė dalis dar nepradėta.')}</p></div>${practicalScore!=null?`<span class="badge ok">${practicalScore%1?practicalScore.toFixed(1):practicalScore}/${practicalMax}</span>`:''}</div>
  ${pngUrl?`<a href="${pngUrl}" target="_blank" rel="noopener"><img class="assessmentLogoPreview" src="${pngUrl}" alt="Mokinio logotipo PNG peržiūra"></a>`:''}
  <div class="practicalTeacherFiles">${(files||[]).length?(files||[]).map(f=>`<div class="resourceRow"><div class="grow"><b>${f.file_kind.toUpperCase()} · ${esc(f.original_name)}</b><div class="subtle">${fmtFileSize(f.size_bytes)}</div></div><button class="smallBtn" data-assessment-practical-file="${f.id}">Atsisiųsti</button></div>`).join(''):'<div class="emptyState">Failų dar nėra.</div>'}</div>
@@ -2463,7 +2500,7 @@ function renderStudentAssessmentCard(c,a,assessmentSetting,status){
   const retryButton=(a.assessment_open&&retryAllowed)?`<button class="primary" id="startAssessmentTopic">Pradėti ${attemptNo+1} bandymą</button>`:'';
   const retryNotice=retryAllowed?'<div class="notice"><b>Mokytojas leido dar vieną bandymą.</b> Ankstesnis rezultatas išliks istorijoje, o naujam bandymui bus sugeneruotas kitas lygiavertis variantas.</div>':'<p class="subtle">Papildomą bandymą gali atrakinti mokytojas.</p>';
   if(status.results_released){
-   const teacherGrade=status.teacher_grade!=null?`<div class="metric"><strong>${Number(status.teacher_grade)}/10</strong><span>mokytojo pažymys</span></div>`:'';
+   const teacherGrade=status.teacher_grade!=null?`<div class="metric assessmentStudentGrade"><strong>${Number(status.teacher_grade)}</strong><span>Mokytojo pažymys</span></div>`:'';
    const practical=status.practical_required?`<div class="metric"><strong>${Number(status.practical_score||0).toFixed(Number(status.practical_score)%1?1:0)}/${Number(status.practical_max_points||10).toFixed(0)}</strong><span>logotipas</span></div>`:'';
    const overall=status.practical_required?`<div class="metric"><strong>${status.overall_percent??0}%</strong><span>bendras rezultatas</span></div>`:`<div class="metric"><strong>${status.score_percent??0}%</strong><span>rezultatas</span></div>`;
    return `<span class="badge ok">${attemptNo} bandymas atliktas · rezultatai paskelbti</span>
@@ -2472,8 +2509,11 @@ function renderStudentAssessmentCard(c,a,assessmentSetting,status){
    ${status.practical_comment?`<div class="notice"><b>Mokytojo komentaras apie logotipą:</b><br>${esc(status.practical_comment)}</div>`:''}
    <div class="actions"><button class="ghost" id="studentAssessmentReview">Peržiūrėti teorijos atsakymus</button>${retryButton}</div>${retryNotice}`;
   }
-  return `<span class="badge ok">${attemptNo} bandymas pateiktas</span><p class="muted"><b>Atsiskaitymas pateiktas.</b> Rezultatas bus paskelbtas vėliau.</p>
-  <div class="detailMetrics"><div class="metric"><strong>${fmtDurationDetailed(status.duration_seconds)}</strong><span>bendra trukmė</span></div><div class="metric"><strong>${status.focus_events||0}</strong><span>išėjimų teorijos metu</span></div></div>${retryNotice}${retryButton}`;
+  const visibleGrade=status.teacher_grade!=null?`<div class="metric assessmentStudentGrade"><strong>${Number(status.teacher_grade)}</strong><span>Mokytojo pažymys</span></div>`:'';
+  const comment=status.teacher_grade!=null&&status.teacher_comment?`<div class="notice"><b>Mokytojo komentaras:</b><br>${esc(status.teacher_comment)}</div>`:'';
+  const gradeMessage=status.teacher_grade!=null?'<b>Mokytojo pažymys jau paskelbtas.</b> Teisingi testo atsakymai ir išsamūs rezultatai bus rodomi, kai visi klasės mokiniai baigs atsiskaitymą.':'<b>Atsiskaitymas pateiktas.</b> Mokytojo pažymio dar nėra. Teisingi atsakymai bus paskelbti, kai visi klasės mokiniai baigs.';
+  return `<span class="badge ok">${attemptNo} bandymas pateiktas</span><p class="muted">${gradeMessage}</p>
+  <div class="detailMetrics">${visibleGrade}<div class="metric"><strong>${fmtDurationDetailed(status.duration_seconds)}</strong><span>bendra trukmė</span></div><div class="metric"><strong>${status.focus_events||0}</strong><span>išėjimų teorijos metu</span></div></div>${comment}${retryNotice}${retryButton}`;
  }
  if(status?.practical_required&&status?.theory_submitted_at&&!status?.practical_submitted_at){
   return `<span class="badge ok">I dalis baigta</span><div class="assessmentStepsMini"><span class="done">1 · Teorija ✓</span><span class="active">2 · Logotipas</span></div><p class="muted">Teorinė dalis pateikta ir jos atsakymų keisti nebegalima. Dabar atlik II dalį: sukurk logotipą ir įkelk SVG bei PNG failus.</p><button class="primary" id="continueAssessmentPractical">Tęsti II dalį – logotipas →</button>`;
@@ -2508,8 +2548,8 @@ async function openStudentTopic(topicId,c,access){
   c.grade_level==='11'?sb.rpc('get_my_assessment_status',{p_class_id:c.id,p_topic_id:topicId}):Promise.resolve({data:[]})
  ]);
  const assessmentStatus=assessmentStatusRow(assessmentStatusData);
- if(assessmentStatus?.results_released&&assessmentStatus.attempt_id){
-  // SQL pakartotinai tikrina, kad mokinio pažymys nebūtų nutekintas anksčiau laiko.
+ if(assessmentStatus?.completed_at&&assessmentStatus.attempt_id){
+  // RPC leidžia mokiniui matyti tik jo pateikto darbo mokytojo pažymį. Teisingi atsakymai lieka užrakinti.
   const {data:gradeRows}=await sb.rpc('get_my_assessment_teacher_grade',{p_attempt_id:assessmentStatus.attempt_id});
   const gradeRow=Array.isArray(gradeRows)?gradeRows[0]:gradeRows;
   if(gradeRow){assessmentStatus.teacher_grade=gradeRow.grade;assessmentStatus.teacher_comment=gradeRow.teacher_comment;}
