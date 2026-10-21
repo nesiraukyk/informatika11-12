@@ -1,0 +1,41 @@
+INFORMATIKA 11–12 / slaptažodžio atkūrimo pataisa v5.19.1
+===========================================================
+ŠI ARCHYVO VERSIJA: GITHUB_PAGES
+VIEŠAS ADRESAS: https://nesiraukyk.github.io/informatika11-12/
+
+SVARBU. Tai VISAS svetainės archyvas iš tavo pateikto ZIP. Visos
+ankstesnės funkcijos paliktos. SQL NEREIKIA.
+
+1. GitHub: išarchyvuok ZIP ir į repository "nesiraukyk/informatika11-12"
+   pagrindinį aplanką įkelk VISĄ 'informatika11-12-main' aplanko TURINĮ
+   (ne patį papildomą katalogą): index.html, app.js, config.js,
+   supabase-config.js, style.css, resources, kiti failai.
+   Jei turi senus to paties pavadinimo failus, pakeisk juos.
+   PASTABA: GitHub svetainės CNAME nustatymą reikia derinti su šiuo ZIP.
+
+2. Supabase: https://supabase.com/dashboard/project/gmqnaupstlwvckttjpfe/auth/url-configuration
+   Authentication -> URL Configuration:
+   Site URL: https://nesiraukyk.github.io/informatika11-12/
+   Redirect URLs -> Add URL: https://nesiraukyk.github.io/informatika11-12/
+   Išsaugok.
+
+3. Supabase -> Authentication -> Email Templates -> Reset Password:
+   Nuorodoje turi būti {{ .ConfirmationURL }} be išorinių
+   localhost įrašų (jei šablonas standartinis, keisti nereikia).
+
+4. Atidaryk https://nesiraukyk.github.io/informatika11-12/
+   Pasirink "Pamiršau slaptažodį", įrašyk savo TESTINĮ el. paštą,
+   atsidaryk NAUJĄ gautą laišką. Ankstesnės nuorodos gali vesti
+   senuoju adresu. Paspaudus nuorodą turi atsirasti "Naujas slaptažodis".
+   Įrašyk naują slaptažodį (2 kartus) ir prisijunk.
+
+Jei nuoroda vis dar veda į localhost: patikrink Site URL ir Redirect
+URLs. Atkūrimo nuorodos gali grįžti prie Site URL, jei puslapio
+redirectTo nėra įtrauktas į leistinų URL sąrašą.
+
+PASTABA APIE DOMENĄ
+Šiame ZIP pašalintas senas CNAME, pagal v5.19 README.
+PRIVALOMA: iš jau esančio GitHub repository ištrink failą CNAME,
+   nes naujo ZIP įkėlimas pats seno CNAME neištrina.
+   GitHub Settings -> Pages -> Custom domain turi būti tuščias.
+Rinkis šį ZIP jei svetainę atidarai per nesiraukyk.github.io.

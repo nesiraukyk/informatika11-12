@@ -394,3 +394,11 @@ Tai pašalina `new row violates row-level security policy for table "classes"` k
 - SQL pakeitimų nereikia.
 - Kadangi custom domenas buvo nuimtas, v5.19 ZIP sąmoningai NEĮTRAUKIA `CNAME`; pagrindinis adresas lieka `https://nesiraukyk.github.io/informatika11-12/`.
 - Slaptažodžio atkūrimo el. laiško nuoroda dinamiškai grįžta į tą adresą, iš kurio buvo paprašyta atkurti slaptažodį.
+
+
+## v5.19.1 – slaptažodžio atkūrimo nukreipimo taisymas (2026-10-21)
+- Vietinėje aplinkoje (localhost) atkūrimo nuoroda nukreipiama į `publicSiteUrl` iš `supabase-config.js`.
+- Viešame HTTPS adrese atkūrimo nuoroda grįžta į svetainės katalogą, nes naujo slaptažodžio forma jau įdėta į `index.html`.
+- Nepavykus patvirtinti nuorodos rodomas aiškus pranešimas.
+- Pakeista JS failų versija į v5.19.1, kad nesikrautų senasis naršyklės podėlis.
+- Supabase SQL pakeitimų nereikia. BŪTINA sutvarkyti Auth URL Configuration (žr. `SLAPTAZODZIO_ATKURIMAS_INSTRUKCIJA.txt`).

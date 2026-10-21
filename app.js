@@ -266,13 +266,32 @@ function setAuthMode(mode='login'){
  if($('authMessage'))$('authMessage').classList.add('hidden');
 }
 function passwordRecoveryRedirect(){
- // Veikia tiek github.io projekto kelyje, tiek jei ateityje vėl būtų prijungtas domenas.
- return `${location.origin}${location.pathname}`;
+ // Atkūrimo nuorodos negalima nukreipti į localhost: ten mokinio įrenginyje
+ // serveris neveikia. Viešoje svetainėje paliekame realų jos HTTPS adresą,
+ // o vietiniame kūrimo serveryje grįžtame į viešą adresą iš konfigūracijos.
+ const host=location.hostname.toLowerCase();
+ const isLocal=host==='localhost'||host==='127.0.0.1'||host==='[::1]'||host.endsWith('.localhost');
+ if(location.protocol==='https:'&&!isLocal){
+  return new URL('./',location.href).href;
+ }
+ const publicUrl=String(SETTINGS.publicSiteUrl||'').trim();
+ try{
+  const target=new URL(publicUrl);
+  if(target.protocol==='https:'&&target.hostname&&!['localhost','127.0.0.1'].includes(target.hostname)){
+   return target.href;
+  }
+ }catch(_error){}
+ throw new Error('Nenustatytas viešas HTTPS svetainės adresas. Patikrink supabase-config.js.');
 }
 function isPasswordRecoveryUrl(){
  const hash=new URLSearchParams(String(location.hash||'').replace(/^#/,''));
  const query=new URLSearchParams(location.search);
  return hash.get('type')==='recovery'||query.get('type')==='recovery';
+}
+function recoveryUrlError(){
+ const hash=new URLSearchParams(String(location.hash||'').replace(/^#/,''));
+ const query=new URLSearchParams(location.search);
+ return hash.get('error_code')||query.get('error_code')||hash.get('error')||query.get('error')||'';
 }
 function showPasswordRecovery(){
  passwordRecoveryMode=true;
@@ -356,7 +375,10 @@ $('forgotPasswordForm').onsubmit=async e=>{
  const email=$('forgotPasswordEmail').value.trim();
  if(!email)return authMsg('Įrašyk el. paštą.',true);
  authMsg('Siunčiama slaptažodžio atkūrimo nuoroda...');
- const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:passwordRecoveryRedirect()});
+ let redirectTo;
+ try{redirectTo=passwordRecoveryRedirect()}
+ catch(error){return authMsg(error.message,true)}
+ const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo});
  if(error)return authMsg(error.message,true);
  authMsg('Atkūrimo nuoroda išsiųsta. Patikrink el. paštą (taip pat Spam / Šlamštas aplanką).');
 };
@@ -364,6 +386,8 @@ $('forgotPasswordForm').onsubmit=async e=>{
 $('newPasswordForm').onsubmit=async e=>{
  e.preventDefault();
  const a=$('newPassword').value,b=$('newPasswordRepeat').value;
+ const {data:{session:recoverySession}}=await sb.auth.getSession();
+ if(!recoverySession?.user)return authMsg('Atkūrimo nuoroda nebegalioja. Grįžk ir paprašyk naujos nuorodos.',true);
  if(a.length<8)return authMsg('Slaptažodis turi būti bent 8 simbolių.',true);
  if(a!==b)return authMsg('Slaptažodžiai nesutampa.',true);
  authMsg('Išsaugomas naujas slaptažodis...');
@@ -2841,7 +2865,8 @@ async function boot(){
 
  // Supabase recovery nuoroda gali grąžinti laikiną sesiją. Tokiu atveju
  // pirmiausia rodome naujo slaptažodžio formą, o ne mokinio skydelį.
- passwordRecoveryMode=isPasswordRecoveryUrl();
+ const initialRecoveryError=recoveryUrlError();
+ passwordRecoveryMode=!initialRecoveryError&&isPasswordRecoveryUrl();
 
  sb.auth.onAuthStateChange(async(event,session)=>{
   if(event==='PASSWORD_RECOVERY'){
@@ -2849,7 +2874,12 @@ async function boot(){
    me=session?.user||null;
    profile=null;
    setHeader();
-   showPasswordRecovery();
+   if(session?.user)showPasswordRecovery();
+   else{
+    passwordRecoveryMode=false;
+    setAuthMode('forgotPasswordForm');show('auth');
+    authMsg('Atkūrimo nuoroda nebegalioja. Paprašyk naujos nuorodos.',true);
+   }
    return;
   }
 
@@ -2884,7 +2914,21 @@ async function boot(){
   me=session?.user||null;
   profile=null;
   setHeader();
-  showPasswordRecovery();
+  if(session?.user)showPasswordRecovery();
+  else{
+   passwordRecoveryMode=false;
+   setAuthMode('forgotPasswordForm');show('auth');
+   authMsg('Atkūrimo nuoroda nebegalioja. Paprašyk naujos nuorodos.',true);
+  }
+  return;
+ }
+ if(initialRecoveryError){
+  history.replaceState(null,'',location.pathname);
+  if(session)await sb.auth.signOut();
+  passwordRecoveryMode=false;
+  me=null;profile=null;
+  setHeader();setAuthMode('forgotPasswordForm');show('auth');
+  authMsg('Slaptažodžio atkūrimo nuoroda pasibaigė arba yra neteisinga. Paprašyk naujos nuorodos.',true);
   return;
  }
 
