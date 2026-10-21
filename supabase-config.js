@@ -4,6 +4,6 @@
 */
 window.SUPABASE_SETTINGS = {
   url: "https://gmqnaupstlwvckttjpfe.supabase.co",
-  publicSiteUrl: "https://nesiraukyk.github.io/informatika11-12/", // Slaptažodžio atkūrimas iš localhost
+  publicSiteUrl: "https://ngg-informatika.lt/", // Slaptažodžio atkūrimas iš localhost
   publishableKey: "sb_publishable_-mCxy96zo1khgteGDnL3tg_aSWmy3Oh"
 };

@@ -1,7 +1,7 @@
 INFORMATIKA 11–12 / slaptažodžio atkūrimo pataisa v5.19.1
 ===========================================================
-ŠI ARCHYVO VERSIJA: GITHUB_PAGES
-VIEŠAS ADRESAS: https://nesiraukyk.github.io/informatika11-12/
+ŠI ARCHYVO VERSIJA: DOMENAS
+VIEŠAS ADRESAS: https://ngg-informatika.lt/
 
 SVARBU. Tai VISAS svetainės archyvas iš tavo pateikto ZIP. Visos
 ankstesnės funkcijos paliktos. SQL NEREIKIA.
@@ -15,15 +15,15 @@ ankstesnės funkcijos paliktos. SQL NEREIKIA.
 
 2. Supabase: https://supabase.com/dashboard/project/gmqnaupstlwvckttjpfe/auth/url-configuration
    Authentication -> URL Configuration:
-   Site URL: https://nesiraukyk.github.io/informatika11-12/
-   Redirect URLs -> Add URL: https://nesiraukyk.github.io/informatika11-12/
+   Site URL: https://ngg-informatika.lt/
+   Redirect URLs -> Add URL: https://ngg-informatika.lt/
    Išsaugok.
 
 3. Supabase -> Authentication -> Email Templates -> Reset Password:
    Nuorodoje turi būti {{ .ConfirmationURL }} be išorinių
    localhost įrašų (jei šablonas standartinis, keisti nereikia).
 
-4. Atidaryk https://nesiraukyk.github.io/informatika11-12/
+4. Atidaryk https://ngg-informatika.lt/
    Pasirink "Pamiršau slaptažodį", įrašyk savo TESTINĮ el. paštą,
    atsidaryk NAUJĄ gautą laišką. Ankstesnės nuorodos gali vesti
    senuoju adresu. Paspaudus nuorodą turi atsirasti "Naujas slaptažodis".
@@ -34,8 +34,7 @@ URLs. Atkūrimo nuorodos gali grįžti prie Site URL, jei puslapio
 redirectTo nėra įtrauktas į leistinų URL sąrašą.
 
 PASTABA APIE DOMENĄ
-Šiame ZIP pašalintas senas CNAME, pagal v5.19 README.
-PRIVALOMA: iš jau esančio GitHub repository ištrink failą CNAME,
-   nes naujo ZIP įkėlimas pats seno CNAME neištrina.
-   GitHub Settings -> Pages -> Custom domain turi būti tuščias.
-Rinkis šį ZIP jei svetainę atidarai per nesiraukyk.github.io.
+Šiame ZIP paliktas esamas CNAME: ngg-informatika.lt.
+Rinkis šį ZIP TIK jei tai tavo veikiančios svetainės adresas.
+Jei svetainė veikia GitHub Pages adresu, rinkis kitą ZIP be CNAME.
+   Kad domenas veiktų, jis turi būti sukonfigūruotas ir GitHub Pages.
