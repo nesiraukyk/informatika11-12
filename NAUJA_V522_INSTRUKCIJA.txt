@@ -1,0 +1,28 @@
+NGG INFORMATIKA 10–12 | v5.22.0 | 2026-10-22
+
+NAUJOVĖS
+1) Mokinio temų kortelėse ikonėlė, pavadinimas ir „Atidaryti“ yra vienoje eilutėje.
+   Pašalintos perteklinės temų valandų ir kodo eilutės (kortelėse).
+2) Mokytojo „Mokymosi failai“ pateikti kaip kompaktiškos temų kortelės.
+   Išskleidus temą galima pridėti ir atsisiųsti failus bei pridėti tos temos užduotis.
+3) „Užduotys ir darbai“ pervadinta į „Darbų pateikimas“ – išskleidžiamos tokio pat dizaino temų kortelės.
+4) Naujas „Pateiktų darbų archyvas“ su mokytojo kuriamais, pervadinamais ir šalinamais aplankais.
+   Galima įkelti į aplanką ir atskirus mokinio savarankiškus darbus, ir atsakymus į mokytojo užduotis.
+   Tai virtualus grupavimas: pats mokinio pateiktas failas, jo Storage kelias ir mokinio paskyra NEKEIČIAMI.
+5) Failų atsisiuntimas išsaugo originalų pavadinimą, pvz. „Kriptografijos praktika.docx“.
+
+DIEGIMO TVARKA
+1. Supabase > SQL Editor: paleiskite v522_SUPABASE_APLANKAI.sql visą vieną kartą.
+2. GitHub: įkelkite visą informatika11-12-main aplanko TURINĮ į nesiraukyk/informatika11-12,
+   pakeiskite esamus failus, tačiau neištrinkite CNAME (ngg-informatika.lt).
+3. Palaukite, kol GitHub Pages atnaujins svetainę, tada Ctrl+F5.
+4. Prisijunkite mokytojo paskyra > Klasė > Darbų pateikimas > Pateiktų darbų archyvas.
+   Spauskite „+ Naujas aplankas“ ir per „Aplankas“ parinkiklį perkelkite darbus.
+5. Mokiniai > Mokymosi turinys: naujos glaustos kortelės.
+
+PASTABOS
+- Naujos SQL lentelės skirtos tik aplankų priskyrimui; mokinių įkelti darbai neliečiami.
+- Trinant aplanką failai lieka „Nesurūšiuoti“.
+- Jei aplankų SQL dar nepaleistas, esamų temų ir darbų sąrašai vis tiek matomi.
+- Visi ankstesni prisijungimo, atsiskaitymo, vertinimo ir navigacijos pataisymai išlaikyti.
+- SQL nekeičia duomenų apie pažymius ir nepaleidžia ankstesnių migracijų iš naujo.

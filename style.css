@@ -725,3 +725,48 @@ html[data-student-skin="legend"]{--p:#b56b00;--p2:#744b9e}
 .assessmentStudentGrade{border-color:color-mix(in srgb,var(--ok) 40%,var(--line));background:color-mix(in srgb,var(--ok) 7%,var(--surface))}
 .assessmentStudentGrade strong{color:var(--ink);font-size:40px}
 @media(max-width:640px){.assessmentSummaryToolbar select{flex:1;min-width:0}.assessmentQuickActions{white-space:normal}.assessmentQuickActions button{margin:2px}.assessmentSummaryTable td{padding:9px 7px}.assessmentGradeBig{font-size:21px;min-width:38px;min-height:36px}}
+
+
+/* ===== v5.22 | vieningos, kompaktiškos temų kortelės ===== */
+.studentTopics.topicDeck{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.modernTopicCard{padding:15px 16px;border-radius:16px;min-width:0;box-shadow:0 5px 18px rgba(25,45,75,.045)}
+.modernTopicCard.locked{opacity:.7}
+.topicCardTop{display:flex;align-items:center;gap:13px;min-width:0}
+.topicCardIcon{width:46px;height:46px;min-width:46px;display:inline-flex;align-items:center;justify-content:center;border-radius:14px;background:var(--surface2);font-size:24px;line-height:1}
+.topicCardTitle{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.topicCardTitle h3,.topicCardTitle b{font-size:15px;line-height:1.35;overflow-wrap:anywhere;margin:0;color:var(--ink);font-weight:750}
+.topicCardState{font-size:11px;color:var(--muted)}
+.topicCardState.isOpen{color:#178567}
+.topicCardAction{flex:none;align-self:center;white-space:nowrap;cursor:pointer;border-radius:11px;border:1px solid rgba(22,119,107,.2);color:#087c68;background:rgba(22,170,140,.07);font-weight:750;padding:10px 13px;font-size:12px;transition:background .18s,transform .18s}
+.topicCardAction:hover:not(:disabled){background:rgba(22,170,140,.15);transform:translateY(-1px)}
+.topicCardAction.isDisabled{color:var(--muted);border-color:var(--line);background:var(--surface2);cursor:not-allowed}
+.teacherThemeHead{align-items:flex-start;flex-wrap:wrap;gap:14px;margin-bottom:18px}
+.teacherThemeHead h2{margin:3px 0 5px}
+.teacherThemeHead p{margin:0}
+.teacherTopicDeck{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:start}
+.teacherTopicCard{background:var(--surface);border-radius:16px;margin-top:0;overflow:hidden;box-shadow:0 5px 18px rgba(25,45,75,.045);min-width:0}
+.teacherTopicCard>summary{display:flex;gap:12px;align-items:center;padding:14px 15px;min-height:78px}
+.teacherTopicCard>summary::after{margin-left:0}
+.teacherTopicCard[open]{grid-column:span 2;border-color:rgba(31,120,112,.3)}
+.teacherTopicCard>summary .topicCardIcon{width:44px;height:44px;min-width:44px;font-size:23px}
+.topicCardCount{margin-left:auto;white-space:nowrap;color:var(--muted);font-size:12px}
+.teacherTopicCard .topicContentBody{padding:14px 16px}
+.workArchivePanel{margin-top:18px}
+.folderChips{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:14px 0}
+.folderChip{display:inline-flex;gap:7px;align-items:center;background:var(--surface2);border:1px solid var(--line);border-radius:100px;padding:10px 13px;color:var(--ink);cursor:pointer;font-size:12px;font-weight:650}
+.folderChip.active{background:rgba(18,141,119,.1);border-color:rgba(18,141,119,.4);color:var(--ink)}
+.folderChip span{font-size:11px;color:var(--muted)}
+.folderArchiveToolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);color:var(--muted);font-size:12px}
+#folderEditControls{display:flex;gap:8px;flex-wrap:wrap}
+.workArchiveItem{display:flex;align-items:center;gap:11px;padding:13px 0;border-bottom:1px solid var(--line)}
+.workArchiveItem:last-child{border-bottom:0}
+.workArchiveFileIcon{display:grid;place-items:center;background:var(--surface2);border-radius:11px;width:39px;height:39px;flex:none;font-size:19px}
+.workArchiveFileInfo{min-width:0;display:flex;flex-direction:column;gap:3px;font-size:13px}
+.workArchiveFileInfo b{font-size:13px}
+.workArchiveFileInfo span{font-size:12px;color:var(--muted)}
+.workArchiveFileInfo small{font-size:11px;color:var(--muted);overflow-wrap:anywhere}
+.workArchiveActions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.folderMoveLabel{display:flex;flex-direction:column;gap:3px;color:var(--muted);font-size:10px;font-weight:600}
+.folderMoveLabel select{min-width:140px;max-width:200px;min-height:35px;padding:7px;font-size:12px}
+@media(max-width:780px){.teacherTopicDeck,.studentTopics.topicDeck{grid-template-columns:1fr}.teacherTopicCard[open]{grid-column:span 1}.workArchiveItem{align-items:flex-start;flex-wrap:wrap}.workArchiveActions{width:100%;padding-left:50px}.topicCardAction{padding:9px 11px}}
+@media(max-width:410px){.topicCardTop{gap:9px}.topicCardIcon{width:40px;height:40px;min-width:40px}.modernTopicCard{padding:12px}.topicCardTitle h3{font-size:13px}}
