@@ -402,3 +402,11 @@ Tai pašalina `new row violates row-level security policy for table "classes"` k
 - Nepavykus patvirtinti nuorodos rodomas aiškus pranešimas.
 - Pakeista JS failų versija į v5.19.1, kad nesikrautų senasis naršyklės podėlis.
 - Supabase SQL pakeitimų nereikia. BŪTINA sutvarkyti Auth URL Configuration (žr. `SLAPTAZODZIO_ATKURIMAS_INSTRUKCIJA.txt`).
+
+### 2026-10-21 · v5.20.0
+
+- URL ir `history.state` pagrįsta puslapių navigacija: F5 išsaugo klasę, skirtuką, temą, mokinio peržiūrą; `Atgal` grąžina į ankstesnį puslapį.
+- Atliekami 11 kl. saugūs atsiskaitymai atstatomi iš Supabase; klausimo numeris atkuriamas iš sesijos. Praktikos eiga išsaugoma naršyklės skirtuko sesijoje.
+- Mokytojas gali vertinti kiekvieno mokinio baigtą atsiskaitymą individualiai, pasirenkant pažymį 1–10 ir komentarą, nelaukdamas visos klasės.
+- Mokiniai mato mokytojo įvertinimą tik po visos klasės baigimo, kaip ir teisingus atsakymus; serverio RPC užtikrina prieigos kontrolę.
+- **Prieš naujos versijos naudojimą Supabase SQL Editor paleiskite `supabase/20261021_individual_assessment_grades.sql`.**

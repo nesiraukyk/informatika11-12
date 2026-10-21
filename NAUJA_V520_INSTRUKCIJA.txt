@@ -1,0 +1,47 @@
+INFORMATIKA 10–12 · v5.20.0
+ATNAUJINIMAS: PUSLAPIO IŠSAUGOJIMAS IR INDIVIDUALUS VERTINIMAS
+Svetainė: https://ngg-informatika.lt/
+
+DIEGIMO TVARKA
+================
+
+1) PIRMIAUSIA SUPABASE:
+   Atidarykite https://supabase.com/dashboard/project/gmqnaupstlwvckttjpfe/sql/new
+   Supabase → SQL Editor → New query.
+   Iš šio ZIP atidarykite supabase/20261021_individual_assessment_grades.sql
+   Nukopijuokite VISĄ SQL kodą į redaktorių ir paleiskite RUN.
+   Tai sukuria papildomą lentelę ir tris teisėmis apsaugotas RPC funkcijas.
+   Nei senų rezultatų, nei paskyrų, nei klausimų netrina.
+
+2) TADA GITHUB:
+   Išarchyvuokite ZIP.
+   Į https://github.com/nesiraukyk/informatika11-12 įkelkite
+   VISUS aplanko informatika11-12-main failus į pagrindinę repozitorijos dalį.
+   Pakeiskite ankstesnes app.js, index.html ir kt. versijas.
+   Neįkelkite paties ZIP. Išsaugokite CNAME su ngg-informatika.lt.
+   GitHub Pages paskelbus pakeitimus paspauskite Ctrl+F5.
+
+3) PATIKRINIMAS:
+   A. Mokytojas → klasė → Atsiskaitymų rezultatai → F5.
+      Turi likti tas pats klasės skirtukas.
+   B. Eikite į kitą skirtuką ir paspauskite naršyklės „Atgal“.
+      Turi grąžinti į prieš tai buvusį skirtuką.
+   C. Pateikus VIENO mokinio atsiskaitymą paspauskite „Įvertinti“.
+      Galima pasirinkti pažymį 1–10 ir komentarą, nelaukiant kitų.
+   D. Mokiniai iki visos klasės atsiskaitymo pabaigos nemato
+      teisingų atsakymų, mokytojo pažymio ar komentaro.
+   E. Kai visi klasės mokiniai baigė šios temos atsiskaitymą,
+      studentas atidaręs temą matys rezultatus bei mokytojo pažymį
+      (jeigu mokytojas pažymį įrašė).
+
+SVARBU
+======
+- Pažymys (1–10) – atskiras MOKYTOJO vertinimas.
+- Testo teorijos procentai ir logotipo rubrikos taškai skaičiuojami kaip anksčiau.
+- Mokytojas jau galėjo įvertinti praktinę dalį pateikusiam mokiniui atskirai;
+  nauja versija papildomai leidžia įrašyti galutinį individualų pažymį.
+- Naršyklės istorija išlieka tik tame pačiame skirtuke. Atsijungus tyčia
+  nepaliekamas privatus mokinio ar mokytojo puslapis.
+- Puslapio F5 atkuria aktyvų saugų atsiskaitymą naudojant duomenų bazėje
+  išsaugotus atsakymus, tačiau vis dar fiksuojamas išėjimas / perkrovimas.
+- Vykdyti SQL reikia vieną kartą. Atkūrimo laiškų ir URL nustatymų keisti nereikia.
