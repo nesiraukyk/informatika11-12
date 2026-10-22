@@ -1,0 +1,47 @@
+NGG INFORMATIKA v5.24 – INTERAKTYVI KRIPTOGRAFIJA IR MOKINIŲ DARBŲ APLANKAI
+Svetainė: https://ngg-informatika.lt/
+
+I. SUPABASE (VIENĄ KARTĄ)
+Atverkite https://supabase.com/dashboard/project/gmqnaupstlwvckttjpfe/sql/new
+Paleiskite:
+supabase/20261022_v524_crypto_mission.sql
+Jis sukuria dvi lenteles: mokinių interaktyviems atsakymams ir mokytojo pažymiams.
+Jokie ankstesni darbai / pažymiai / failai / klausimai nešalinami.
+
+PASTABA: aplankams reikalinga v5.22 SQL migracija jau yra tavo projekte
+(supabase/20261022_v522_teacher_work_folders.sql). Dabartinėje duomenų bazėje
+aplankų lentelės egzistuoja; papildomai jos vykdyti nereikia.
+
+II. GITHUB
+Atidaryk ZIP aplanką informatika11-12-main ir jo TURINĮ įkelk į
+https://github.com/nesiraukyk/informatika11-12 (pagrindinę saugyklos šaknį).
+Pridėti nauji failai crypto-mission.js ir naujasis SQL.
+Atnaujinti app.js, index.html, style.css.
+Netrink CNAME – jis reikalingas domenui ngg-informatika.lt.
+Po publikavimo naršyklėje Ctrl+F5.
+
+III. MOKINYS – 11 KLASĖ
+Mano klasė -> tema "Kriptografinės sistemos, viešasis ir privatusis raktas".
+Kai tema atidaryta, rodoma kortelė "Operacija Perimta žinutė".
+Nereikia Word failo: atlieka 7 užduočių etapus interneto svetainėje (90 min.).
+Praktiniai AES-GCM, RSA-OAEP, SHA-256 ir RSA-PSS bandymai veikia per
+HTTPS ir Web Crypto API. Atsakymai saugomi ir išlieka perkrovus puslapį.
+Paspaudus "Pateikti visą darbą", atsakymai užrakinami. Mokinys po vertinimo mato pažymį.
+
+IV. MOKYTOJAS – 11 KLASĖ
+Klasė -> Mokymosi failai arba Darbų pateikimas -> Kriptografijos tema.
+Spausti "Peržiūrėti mokinių darbus".
+Mokinys parodomas kaip nebaigęs arba pateikęs. Atlikus – peržiūra,
+rankinis vertinimas ir komentaras. Galima atnaujinti pažymį.
+
+V. MOKINIŲ FAILŲ PERKĖLIMAS Į APLANKUS
+Klasė -> Darbų pateikimas.
+"Pateiktų darbų archyvas" dabar perkeltas į VIRŠŲ.
+Prie kiekvieno failo – aiškus mygtukas "📁 Perkelti"; paspaudus galima
+pasirinkti esamą aplanką arba viename lange sukurti naują.
+Tas pats mygtukas yra temos pateiktuose darbuose bei užduočių peržiūroje.
+Perkeliama tik mokytojo archyvo priskyrimo informacija – originalių
+mokinio failų vietos saugykloje ir mokinio paskyros nekinta.
+
+Pastaba: darbų aktyvavimo / failų priskyrimo operacijos patikrintos
+statine kodo patikra. Reikia išbandyti produkcinėje svetainėje.

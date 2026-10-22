@@ -784,3 +784,37 @@ html[data-student-skin="legend"]{--p:#b56b00;--p2:#744b9e}
 .resourceFileGlyph{flex:0 0 42px;width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:var(--surface2);font-size:21px}
 .resourceDownloadCard .resourceDownloadAction{display:grid;place-items:center;flex:0 0 38px;width:38px;height:38px;font-size:22px;padding:0;line-height:1;border-radius:11px}
 @media(max-width:480px){.resourceDownloadCard{padding:11px;gap:9px}.resourceFileGlyph{width:36px;height:36px;flex-basis:36px}.resourceDownloadCard .grow b{font-size:13px}}
+
+/* v5.24 – interaktyvus kriptografijos tyrimas ir failų perkėlimo veiksmai */
+.cryptoHero{padding:28px 30px;margin:0 0 22px;border-radius:22px;background:linear-gradient(125deg,#102b37,#124f60);color:#fff;box-shadow:0 16px 36px rgba(15,45,56,.12)}
+.cryptoHero .back{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.2);margin-bottom:16px}
+.cryptoHero .kicker{color:#79f0cb;letter-spacing:.1em}
+.cryptoHero h1{color:#fff;line-height:1.15;font-size:clamp(26px,3vw,36px);margin:8px 0}
+.cryptoHero p{color:#d5e9ed;line-height:1.6;max-width:800px}
+.cryptoStatusLine{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.cryptoStatusLine>span{padding:6px 11px;border:1px solid rgba(255,255,255,.23);background:rgba(255,255,255,.1);border-radius:12px;font-size:12px}
+.cryptoLayout{display:grid;grid-template-columns:minmax(220px,280px) minmax(0,1fr);gap:18px;align-items:start}
+.cryptoSteps{display:grid;gap:7px;border:1px solid var(--line,#e3e9ee);background:var(--card,#fff);border-radius:20px;padding:10px}
+.cryptoStep{display:flex;align-items:center;gap:12px;text-align:left;width:100%;padding:12px;border:1px solid transparent;border-radius:13px;background:transparent;color:inherit;cursor:pointer}
+.cryptoStep:hover{background:var(--soft,#f1f6f8)}
+.cryptoStep.active{background:rgba(25,139,125,.1);border-color:rgba(25,139,125,.25)}
+.cryptoStep>span{display:grid;place-items:center;flex:none;width:34px;height:34px;border-radius:11px;font-weight:800;background:#edf4f5;color:#0c5e5a}
+.cryptoStep.active>span{background:#087a6a;color:white}
+.cryptoStep div{display:grid;gap:3px}.cryptoStep b{font-size:13px;line-height:1.35}.cryptoStep small{color:var(--muted,#687985);font-size:11px}
+.cryptoWork{border:1px solid var(--line,#e3e9ee);background:var(--card,#fff);border-radius:20px;padding:24px;min-width:0}
+.cryptoStageHead{border-bottom:1px solid var(--line,#e3e9ee);padding-bottom:17px;margin-bottom:20px}
+.cryptoStageHead>span{font-size:11px;letter-spacing:.1em;font-weight:800;color:#0b8f80}.cryptoStageHead h2{margin:8px 0;font-size:25px}.cryptoStageHead p{color:var(--muted,#687985);line-height:1.65}
+.cryptoQuestions{display:grid;gap:20px}.cryptoField{display:grid;gap:9px;font-size:14px;font-weight:700}
+.cryptoField small{font-size:12px;color:var(--muted,#687985);font-weight:400}.cryptoField textarea,.cryptoField input{width:100%;box-sizing:border-box;min-width:0;padding:12px;border:1px solid var(--line,#dce5e9);border-radius:12px;background:var(--card,#fff);color:inherit;font:inherit;font-weight:400}
+.cryptoChoice{border:1px solid var(--line,#dce5e9);border-radius:14px;padding:14px 16px;display:grid;gap:8px;min-width:0}.cryptoChoice legend{font-weight:750;padding:0 6px}.cryptoChoice label{display:flex;align-items:flex-start;gap:9px;font-size:14px;padding:5px;border-radius:9px;cursor:pointer}.cryptoChoice input{margin-top:4px}
+.cryptoLabNote,.cryptoScenario{background:rgba(42,140,136,.08);border:1px solid rgba(42,140,136,.2);padding:14px 16px;border-radius:14px;line-height:1.6}.cryptoScenario p{margin:9px 0}.cryptoScenario code{overflow-wrap:anywhere}
+.cryptoProof{display:grid;gap:5px;border:1px solid rgba(27,145,98,.3);background:rgba(27,145,98,.08);padding:14px;border-radius:13px}.cryptoProof b{color:#147356}.cryptoProof span{font-size:13px;line-height:1.55}
+.cryptoFooter{display:flex;gap:10px;justify-content:space-between;margin-top:24px;padding-top:18px;border-top:1px solid var(--line,#dce5e9)}
+.cryptoResult{border:1px solid rgba(30,154,107,.25);background:rgba(30,154,107,.07);border-radius:17px;margin:0 0 18px;padding:15px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}.cryptoResult strong{font-size:32px;color:#0b8062}.cryptoResult p{width:100%;margin:2px 0}
+.cryptoTeacherList{display:grid;gap:5px}.cryptoTeacherItem{display:grid;grid-template-columns:minmax(180px,1fr) 50px auto;align-items:center;gap:16px;padding:14px;border-bottom:1px solid var(--line,#e4e9ef)}.cryptoTeacherItem>div{display:grid;gap:5px}.cryptoTeacherItem small{color:var(--muted,#677984)}.cryptoTeacherItem>strong{font-size:24px;text-align:center}
+.cryptoTeacherAnswers{display:grid;gap:8px;max-height:42vh;overflow-y:auto;margin:15px 0}.cryptoTeacherAnswers>div{background:var(--soft,#f5f7f9);border-radius:11px;padding:12px}.cryptoTeacherAnswers p{font-size:13px;white-space:pre-wrap;line-height:1.6;margin:6px 0 0}
+.cryptoTeacherLaunch{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px;margin-bottom:12px;border:1px solid rgba(23,141,122,.25);background:rgba(23,141,122,.06);border-radius:14px}.cryptoTeacherLaunch p{margin:6px 0 0;font-size:12px;line-height:1.5;color:var(--muted,#677984)}
+.cryptoLaunchCard{border-color:rgba(14,146,128,.25)}.cryptoLaunchCard p{line-height:1.65;color:var(--muted,#667984)}
+.workArchivePanel{scroll-margin-top:90px}.workArchiveActions .moveFileButton{white-space:nowrap}
+@media(max-width:850px){.cryptoLayout{grid-template-columns:1fr}.cryptoSteps{display:flex;overflow-x:auto}.cryptoStep{min-width:172px}.cryptoHero{padding:20px}.cryptoWork{padding:18px}.cryptoTeacherLaunch{flex-wrap:wrap}.cryptoTeacherItem{grid-template-columns:minmax(120px,1fr) 28px auto;gap:6px;padding:10px}.cryptoTeacherItem .smallBtn{font-size:11px}}
+@media(max-width:560px){.cryptoTeacherItem{grid-template-columns:1fr auto}.cryptoTeacherItem .smallBtn{grid-column:1/-1}.cryptoFooter button{font-size:12px}.cryptoHero h1{font-size:25px}}
