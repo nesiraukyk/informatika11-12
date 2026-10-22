@@ -288,8 +288,8 @@ async function restoreNavigation(view){
  if(view.kind==='achievements')return profile.role==='student'?renderAchievements():renderTeacher();
  if(view.kind==='classmates')return profile.role==='student'?renderClassmates():renderTeacher();
  if(view.kind==='profile')return renderProfile();
- if(view.kind==='crypto-teacher'&&isTeacher){const c=await getTeacherClass();return c?openCryptoMissionTeacher(c):renderTeacher();}
- if(view.kind==='crypto-mission'&&profile.role==='student'){const c=await getStudentClass();if(!c)return renderStudent();await loadClassTopics(c.id);const {data:access}=await sb.from('topic_access').select('*').eq('class_id',c.id).eq('topic_id','kriptografija').maybeSingle();return access?.is_open?openCryptoMissionStudent(c,'kriptografija'):renderStudent();}
+ if(view.kind==='crypto-teacher'&&isTeacher){const c=await getTeacherClass();return c?openTeacherClass(c.id,'assignments'):renderTeacher();}
+ if(view.kind==='crypto-mission'&&profile.role==='student'){const c=await getStudentClass();if(!c)return renderStudent();await loadClassTopics(c.id);const {data:access}=await sb.from('topic_access').select('*').eq('class_id',c.id);return (access||[]).some(a=>a.topic_id==='kriptografija'&&a.is_open)?openStudentTopic('kriptografija',c,access||[]):renderStudent();}
  if(view.kind==='results'&&profile.role==='student')return restoreResultsPage(view);
  if(view.kind==='practice-quiz'&&profile.role==='student')return restorePracticeQuiz(view);
  if(['student-topic','assessment-quiz','assessment-practical'].includes(view.kind)&&profile.role==='student'){
@@ -1946,7 +1946,6 @@ async function renderTeacherResources(c){
   <div class="teacherTopicDeck">${groups.length?groups.map(g=>`<details class="topicContentGroup teacherTopicCard" data-tgroup="${esc(g.topic.id)}" ${teacherExpandedTopics.resources.has(g.topic.id)?'open':''}>
     <summary>${teacherTopicHeader(g.topic,`${g.items.length} fail. · ${g.tasks.length} užd.`)}</summary>
     <div class="topicContentBody">
-      ${g.topic.id==='kriptografija'&&c.grade_level==='11'?`<div class="cryptoTeacherLaunch"><div><b>🔐 Interaktyvus savarankiškas (90 min.)</b><p>Mokiniai atlieka užduotis svetainėje. Peržiūrėk pateiktus darbus ir įrašyk pažymius.</p></div><button class="smallBtn" data-crypto-class="${c.id}">Peržiūrėti mokinių darbus →</button></div>`:''}
       <div class="topicGroupToolbar"><button class="primary smallPrimary" data-resource-topic="${esc(g.topic.id)}" ${activeClassTopics.some(t=>t.id===g.topic.id)?'':'disabled'}>+ Pridėti failą</button></div>
       ${g.items.length?g.items.map(r=>`<div class="resourceRow"><div class="grow"><b>${esc(r.title)}</b><div class="subtle">${esc(r.original_name)} · ${fmtDate(r.created_at)}</div></div><button class="smallBtn" data-download-resource="${r.id}">Atsisiųsti</button><button class="smallBtn dangerMini" data-delete-resource="${r.id}">Ištrinti</button></div>`).join(''):'<div class="topicEmptyLine">Šioje temoje failų dar nėra.</div>'}
       <div class="topicSubsection"><div class="topicGroupToolbar"><h3 class="grow">Užduotys mokiniams</h3><button class="smallBtn" data-resource-new-assignment="${esc(g.topic.id)}" ${activeClassTopics.some(t=>t.id===g.topic.id)?'':'disabled'}>+ Nauja užduotis</button></div>
@@ -1957,7 +1956,6 @@ async function renderTeacherResources(c){
  $('uploadResourceBtn').onclick=()=>resourceUploadModal(c);
  document.querySelectorAll('[data-resource-topic]').forEach(b=>b.onclick=()=>resourceUploadModal(c,b.dataset.resourceTopic));
  document.querySelectorAll('[data-resource-new-assignment]').forEach(b=>b.onclick=()=>newAssignmentModal(c,b.dataset.resourceNewAssignment,true));
- document.querySelectorAll('[data-crypto-class]').forEach(b=>b.onclick=()=>navigateTo(()=>openCryptoMissionTeacher(c)));
  document.querySelectorAll('[data-download-resource]').forEach(b=>b.onclick=()=>downloadResource(b.dataset.downloadResource));
  document.querySelectorAll('[data-delete-resource]').forEach(b=>b.onclick=()=>deleteResource(b.dataset.deleteResource,c));
  rememberTeacherTopicExpansion('resources');
@@ -2045,7 +2043,6 @@ async function renderTeacherAssignments(c){
     return `<details class="topicContentGroup teacherTopicCard assignmentTopicGroup" data-tgroup="${esc(t.id)}" ${teacherExpandedTopics.assignments.has(t.id)?'open':''}>
     <summary>${teacherTopicHeader(t,`${ta.length} užd. · ${subCount} darb.`)}</summary>
     <div class="topicContentBody">
-     ${t.id==='kriptografija'&&c.grade_level==='11'?`<div class="cryptoTeacherLaunch"><div><b>🔐 Interaktyvus kriptografijos savarankiškas darbas</b><p>Stebėk pateikimus, peržiūrėk atliktus šifravimo bandymus, įvertink mokinius.</p></div><button class="smallBtn" data-crypto-class="${c.id}">Atidaryti įvertinimus →</button></div>`:''}
      <div class="topicGroupToolbar"><button class="smallBtn" data-assignment-topic-posts="${t.id}">Pranešimai ${postCount?`(${postCount})`:''}</button><button class="primary smallPrimary" data-new-topic-assignment="${t.id}" ${activeClassTopics.some(v=>v.id===t.id)?'':'disabled'}>+ Nauja užduotis</button></div>
      <div class="topicSubsection"><h3>Mokytojo paskirtos užduotys</h3>
       ${ta.length?ta.map(a=>`<div class="assignmentRow"><div class="grow"><b>${esc(a.title)}</b><div class="subtle">${a.is_open?'Atidaryta':'Uždaryta'} · terminas ${a.due_at?fmtDate(a.due_at):'nenustatytas'}</div></div><span class="badge ${countFor(a.id)?'ok':''}">${countFor(a.id)} fail.</span><div class="assignmentActions"><button class="smallBtn" data-edit-assignment="${a.id}">Redaguoti</button><button class="smallBtn" data-assignment="${a.id}">Pateikti darbai</button><button class="smallBtn dangerMini" data-delete-assignment="${a.id}" data-file-count="${countFor(a.id)}">Ištrinti</button></div></div>`).join(''):'<div class="topicEmptyLine">Užduočių dar nėra.</div>'}</div>
@@ -2061,7 +2058,6 @@ async function renderTeacherAssignments(c){
  $('newAssignmentBtn').onclick=()=>newAssignmentModal(c);
  document.querySelectorAll('[data-new-topic-assignment]').forEach(b=>b.onclick=()=>newAssignmentModal(c,b.dataset.newTopicAssignment));
  document.querySelectorAll('[data-assignment-topic-posts]').forEach(b=>b.onclick=()=>navigateTo(()=>renderTeacherTopicPosts(c,b.dataset.assignmentTopicPosts)));
- document.querySelectorAll('[data-crypto-class]').forEach(b=>b.onclick=()=>navigateTo(()=>openCryptoMissionTeacher(c)));
  document.querySelectorAll('[data-edit-assignment]').forEach(b=>b.onclick=()=>editAssignmentModal(b.dataset.editAssignment,c));
  document.querySelectorAll('[data-delete-assignment]').forEach(b=>b.onclick=()=>deleteAssignment(b.dataset.deleteAssignment,c,Number(b.dataset.fileCount||0)));
  document.querySelectorAll('[data-assignment]').forEach(b=>b.onclick=()=>showSubmissions(b.dataset.assignment,c));
@@ -2637,7 +2633,6 @@ async function openStudentTopic(topicId,c,access){
    ${motivation?.enabled?(topicMastery?`<div class="topicMasteryBox"><div class="masteryHead"><span>Temos įvaldymas</span><strong>${Number(topicMastery.mastery_percent)||0}%</strong></div><div class="masteryTrack"><span style="width:${Math.max(0,Math.min(100,Number(topicMastery.mastery_percent)||0))}%"></span></div><div class="subtle">Skaičiuojama pagal paskutines iki 5 treniruočių · geriausias rezultatas ${Number(topicMastery.best_score)||0}%</div></div>`:'<div class="topicMasteryBox empty"><b>Temos įvaldymas</b><span>Atlik pirmą treniruotę – čia atsiras tavo progresas.</span></div>'):''}
    ${c.grade_level==='10'?renderGrade10StudentPracticePicker(practiceBlocks||[],a.practice_open):`<p class="muted"><b>Praktikuotis gali tiek kartų, kiek nori.</b> Kiekvieną kartą sistema iš didesnio klausimų banko atsitiktinai parenka 10 klausimų ir sumaišo atsakymų variantus, todėl bandymai nėra vienodi. Po kiekvieno atsakymo gausi paaiškinimą, o rezultatas ir atlikimo laikas bus išsaugoti tavo paskyroje.</p><button class="primary" id="startPracticeTopic" ${a.practice_open?'':'disabled'}>Pradėti 10 klausimų praktiką</button>`}
   </div>
-  ${topicId==='kriptografija'&&c.grade_level==='11'?`<div class="panel cryptoLaunchCard"><div class="sectionTitle"><div class="grow"><span class="kicker">INTERAKTYVUS SAVARANKIŠKAS</span><h2>🔐 Operacija „Perimta žinutė“</h2></div><span class="badge ok">90 min.</span></div><p>7 interaktyvūs tyrimo etapai: AES, viešasis ir privatusis raktas, RSA, SHA-256, parašo tikrinimas ir saugumo tyrimas. Darbas atliekamas čia, svetainėje, be Word failų.</p><button class="primary" id="openCryptoStudent">Pradėti arba tęsti darbą →</button></div>`:''}
   <div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">MOKYMOSI FAILAI</span><h2>Failai atsisiuntimui</h2></div></div>
    ${(resources||[]).length?(resources||[]).map(r=>`<div class="resourceRow resourceDownloadCard"><span class="resourceFileGlyph" aria-hidden="true">📄</span><div class="grow"><b>${esc(r.title)}</b><div class="subtle" title="${esc(r.original_name)}">${esc(r.original_name)}</div></div><button class="smallBtn resourceDownloadAction" data-sresource="${r.id}" aria-label="Atsisiųsti: ${esc(r.title)}" title="Atsisiųsti">↓</button></div>`).join(''):'<div class="emptyState">Mokytojas šiai temai failų dar neįkėlė.</div>'}
   </div>
@@ -2663,7 +2658,6 @@ async function openStudentTopic(topicId,c,access){
  if(a.assessment_open&&$('startAssessmentTopic'))$('startAssessmentTopic').onclick=()=>navigateTo(()=>c.grade_level==='11'?startSecureAssessment(topicId,c.id,assessmentStatus):startQuiz(topicId,c.id,'assessment',CFG.assessmentQuestionCount));
  if($('continueAssessmentPractical'))$('continueAssessmentPractical').onclick=()=>navigateTo(()=>openAssessmentPractical(assessmentStatus.attempt_id,topicId,c.id));
  if($('studentAssessmentReview'))$('studentAssessmentReview').onclick=()=>showMyAssessmentReview(assessmentStatus.attempt_id);
- if($('openCryptoStudent'))$('openCryptoStudent').onclick=()=>navigateTo(()=>openCryptoMissionStudent(c,topicId));
  document.querySelectorAll('[data-sresource]').forEach(b=>b.onclick=()=>downloadResource(b.dataset.sresource));
  document.querySelectorAll('[data-submit]').forEach(b=>b.onclick=()=>submissionModal(b.dataset.submit,c,topicId,access));
  document.querySelectorAll('[data-own-assignment-download]').forEach(b=>b.onclick=()=>downloadSubmission(b.dataset.ownAssignmentDownload));

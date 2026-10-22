@@ -1,0 +1,15 @@
+NGG INFORMATIKA v5.25.0 – PASLĖPTAS INTERAKTYVUS KRIPTOGRAFIJOS DARBAS
+
+PAKEISTA:
+1. Mokinio 11 kl. kriptografijos temoje neberodoma „Operacija Perimta žinutė“ (90 min).
+2. Mokytojo aplinkos „Mokymosi failai“ ir „Darbų pateikimas“ neberodo šio darbo paleidimo ar vertinimo.
+3. Anksčiau išsaugotose naršyklės nuorodose į šį darbą nukreipiama į klasės temą, o ne į seną užduotį.
+4. Mokinių pateikti failai, temos, klausimų bankas, testai ir pažymiai neliečiami.
+5. Supabase crypto_mission_submissions / crypto_mission_grades ir visi kiti duomenys paliekami ateičiai.
+
+ĮDIEGIMAS:
+- Išarchyvuok ZIP ir įkelk `informatika11-12-main` aplanko TURINĮ į GitHub saugyklos šaknį.
+- Pakeisk esamus index.html, app.js, crypto-mission.js ir kitus atitinkamus failus.
+- Netrink CNAME (domenas ngg-informatika.lt).
+- Po GitHub Pages publikavimo atidaryk svetainę su Ctrl+F5.
+- SQL vykdyti nereikia, duomenų bazėje nieko netriname.
