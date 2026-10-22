@@ -1,0 +1,17 @@
+NGG INFORMATIKA v5.27 — spartesnis duomenų užkrovimas
+
+1. Į GitHub informatika11-12 įkelkite išarchyvuoto informatika11-12-main aplanko TURINĮ, palikite CNAME.
+2. Atnaujinkite https://ngg-informatika.lt/ (Ctrl+F5).
+3. Patikrinkite mokytojo prisijungimą ir klasių skirtukus bei mokinio prisijungimą, temų atidarymą, pateiktų failų sąrašą ir pažymius.
+
+Naujienos:
+- Mokytojo klasės duomenys užkraunami lygiagrečiai (nuo 4 kelių laukimų prie 2).
+- Mokinio klasės temas krauname kartu su mokymosi suvestinėmis.
+- Mokytojo pradžios suvestinė siunčia tik rodomus stulpelius.
+- Mokinių profiliai ir pateikti darbai užkraunami tuo pačiu metu.
+- Aktyvumo žyma neblokuoja klasės atidarymo.
+- Mokytojo aktyvių mokinių apklausa kas 30 s (vietoj 15 s), pristabdoma nematomame naršyklės skirtuke.
+- Pridėti preconnect optimizavimai ir atnaujinti JS/CSS versijų parametrai.
+
+SQL nereikia. Esamų mokinių duomenų, failų, darbų, pažymių ir teisių nekeičia.
+Pilnas veikimas gyvoje svetainėje turi būti patikrintas po įkėlimo.

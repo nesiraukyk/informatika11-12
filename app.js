@@ -537,7 +537,13 @@ $('signupForm').onsubmit=async e=>{
 
 async function loadProfile(){
  const {data,error}=await sb.from('profiles').select('*').eq('id',me.id).single();
- if(error)throw error;profile=data;await sb.rpc('mark_login');setHeader();ensureAppHistoryGuard();startIdleLogout();
+ if(error)throw error;
+ profile=data;
+ setHeader();ensureAppHistoryGuard();startIdleLogout();
+ // Prisijungimo statistika neturi blokuoti mokytojo ar mokinio puslapio.
+ sb.rpc('mark_login').then(({error:markError})=>{
+  if(markError)console.warn('Prisijungimo žyma:',markError.message);
+ }).catch(err=>console.warn('Prisijungimo žyma:',err));
 }
 async function pushPresence(){
  if(!me||!activitySessionId||document.visibilityState!=='visible')return;
@@ -600,13 +606,13 @@ async function refreshTeacherOnlinePanel(classIds,classes,students){
  const rows=Object.values(latest).filter(p=>presenceIsOnline(p));
  rows.sort((a,b)=>new Date(b.last_seen_at)-new Date(a.last_seen_at));
  host.innerHTML=`<div class="sectionTitle"><div class="grow"><span class="kicker">PRISIJUNGĘ DABAR</span><h3>Aktyvūs mokiniai</h3></div><span class="badge ${rows.length?'ok':''}">${rows.length}</span></div>
- <p class="muted">Būsena atnaujinama kas 15 s.</p>
+ <p class="muted">Būsena atnaujinama kas 30 s.</p>
  ${rows.length?rows.map(p=>{const st=students.find(s=>s.id===p.user_id),c=classes.find(x=>x.id===p.class_id);return `<div class="studentRow"><div class="grow"><b>${esc(st?.full_name||'Mokinys')}</b><div class="subtle">${esc(c?.name||'Klasė')}</div></div><span class="badge ok">● Prisijungęs</span></div>`}).join(''):'<div class="emptyState">Šiuo metu aktyvių mokinių nėra.</div>'}`;
 }
 function startTeacherDashboardPresence(classIds,classes,students){
  stopTeacherPresenceRefresh();
  refreshTeacherOnlinePanel(classIds,classes,students);
- teacherPresenceTimer=setInterval(()=>refreshTeacherOnlinePanel(classIds,classes,students),15000);
+ teacherPresenceTimer=setInterval(()=>{if(document.visibilityState==='visible')refreshTeacherOnlinePanel(classIds,classes,students)},30000);
 }
 async function refreshClassPresence(classId){
  const cutoff=new Date(Date.now()-90000).toISOString();
@@ -624,7 +630,7 @@ async function refreshClassPresence(classId){
 function startClassPresenceRefresh(classId){
  stopTeacherPresenceRefresh();
  refreshClassPresence(classId);
- teacherPresenceTimer=setInterval(()=>refreshClassPresence(classId),15000);
+ teacherPresenceTimer=setInterval(()=>{if(document.visibilityState==='visible')refreshClassPresence(classId)},30000);
 }
 
 async function renderDashboard(){
@@ -645,19 +651,30 @@ async function renderTeacher(){
  const classIds=(classes||[]).map(c=>c.id);
  let members=[],attempts=[],sessions=[],directSubs=[],assignments=[],assignmentSubs=[];
  if(classIds.length){
-  ({data:members}=await sb.from('class_members').select('class_id,student_id,joined_at').in('class_id',classIds));
-  ({data:attempts}=await sb.from('practice_attempts').select('*').in('class_id',classIds));
-  ({data:sessions}=await sb.from('activity_sessions').select('*').in('class_id',classIds));
-  ({data:directSubs}=await sb.from('direct_submissions').select('*').in('class_id',classIds).order('submitted_at',{ascending:false}));
-  ({data:assignments}=await sb.from('assignments').select('id,class_id,title').in('class_id',classIds));
-  const assignmentIds=(assignments||[]).map(a=>a.id);
-  if(assignmentIds.length)({data:assignmentSubs}=await sb.from('submissions').select('*').in('assignment_id',assignmentIds).order('submitted_at',{ascending:false}));
+  const [membersRes,attemptsRes,sessionsRes,directRes,assignmentsRes]=await Promise.all([
+   sb.from('class_members').select('class_id,student_id,joined_at').in('class_id',classIds),
+   // Pradžios suvestinei pakanka kelių stulpelių – nesiunčiame visos istorijos objektų.
+   sb.from('practice_attempts').select('id').in('class_id',classIds),
+   sb.from('activity_sessions').select('user_id,duration_seconds').in('class_id',classIds),
+   sb.from('direct_submissions').select('id,class_id,student_id,original_name,title,submitted_at').in('class_id',classIds).order('submitted_at',{ascending:false}),
+   sb.from('assignments').select('id,class_id,title').in('class_id',classIds)
+  ]);
+  members=membersRes.data||[];
+  attempts=attemptsRes.data||[];
+  sessions=sessionsRes.data||[];
+  directSubs=directRes.data||[];
+  assignments=assignmentsRes.data||[];
  }
- members=members||[];attempts=attempts||[];sessions=sessions||[];directSubs=directSubs||[];assignments=assignments||[];assignmentSubs=assignmentSubs||[];
+ members=members||[];attempts=attempts||[];sessions=sessions||[];directSubs=directSubs||[];assignments=assignments||[];
  const studentIds=[...new Set(members.map(m=>m.student_id))];
- let students=[];
- if(studentIds.length)({data:students}=await sb.from('profiles').select('id,full_name,last_login_at,last_seen_at,created_at').in('id',studentIds));
- students=students||[];
+ const assignmentIds=assignments.map(a=>a.id);
+ // Mokinių profilius ir pateiktus darbus krauname vienu metu.
+ const [profilesResult,submissionsResult]=await Promise.all([
+  studentIds.length?sb.from('profiles').select('id,full_name,last_login_at,last_seen_at,created_at').in('id',studentIds):Promise.resolve({data:[]}),
+  assignmentIds.length?sb.from('submissions').select('id,assignment_id,student_id,original_name,submitted_at').in('assignment_id',assignmentIds).order('submitted_at',{ascending:false}):Promise.resolve({data:[]})
+ ]);
+ const students=profilesResult.data||[];
+ assignmentSubs=submissionsResult.data||[];
  const totalStudents=studentIds.length,totalAttempts=attempts.length,totalSeconds=sessions.filter(s=>studentIds.includes(s.user_id)).reduce((n,s)=>n+(s.duration_seconds||0),0);
  const totalSubmissions=directSubs.length+assignmentSubs.length;
 
@@ -895,11 +912,10 @@ function openNewClassModal(){
 }
 async function openTeacherClass(classId,initialPanel='students'){
  stopTeacherPresenceRefresh();
- const {data:c,error}=await sb.from('classes').select('*').eq('id',classId).single();if(error)return toast(error.message);
- currentClass=c;
- await loadClassTopics(c.id);
- await startHeartbeat(null);
+ // Visi nepriklausomi užklausų etapai pradedami vienu metu.
  const [
+  {data:c,error},
+  ,
   {data:members},
   {data:attempts},
   {data:sessions},
@@ -908,14 +924,20 @@ async function openTeacherClass(classId,initialPanel='students'){
   {data:classAssignments},
   {data:assessmentSettings}
  ]=await Promise.all([
-  sb.from('class_members').select('student_id,joined_at').eq('class_id',c.id),
-  sb.from('practice_attempts').select('*').eq('class_id',c.id),
-  sb.from('activity_sessions').select('*').eq('class_id',c.id),
-  sb.from('topic_access').select('*').eq('class_id',c.id),
-  sb.from('direct_submissions').select('id').eq('class_id',c.id),
-  sb.from('assignments').select('id').eq('class_id',c.id),
-  sb.from('assessment_settings').select('*').eq('class_id',c.id)
+  sb.from('classes').select('*').eq('id',classId).single(),
+  loadClassTopics(classId),
+  sb.from('class_members').select('student_id,joined_at').eq('class_id',classId),
+  sb.from('practice_attempts').select('*').eq('class_id',classId),
+  sb.from('activity_sessions').select('*').eq('class_id',classId),
+  sb.from('topic_access').select('*').eq('class_id',classId),
+  sb.from('direct_submissions').select('id').eq('class_id',classId),
+  sb.from('assignments').select('id').eq('class_id',classId),
+  sb.from('assessment_settings').select('*').eq('class_id',classId)
  ]);
+ if(error||!c)return toast(error?.message||'Klasė nerasta.');
+ currentClass=c;
+ // Lankomumo žyma negali stabdyti klasės atidarymo.
+ startHeartbeat(null).catch(err=>console.warn('Aktyvumo žyma:',err));
  const ids=(members||[]).map(x=>x.student_id);
  let students=[];if(ids.length)({data:students}=await sb.from('profiles').select('id,full_name,last_login_at,last_seen_at,created_at').in('id',ids));students=students||[];
  let assignmentSubs=[];
@@ -2461,7 +2483,7 @@ async function renderClassmates(){
 
 /* ================= STUDENT ================= */
 async function getStudentClass(){
- const {data:mem}=await sb.from('class_members').select('class_id,joined_at').eq('student_id',me.id).order('joined_at',{ascending:true});
+ const {data:mem}=await sb.from('class_members').select('class_id,joined_at').eq('student_id',me.id).order('joined_at',{ascending:true}).limit(1);
  if(!mem?.length)return null;
  const {data:c}=await sb.from('classes').select('*').eq('id',mem[0].class_id).single();return c||null;
 }
@@ -2473,14 +2495,16 @@ async function renderStudent(){
  if(!c){stopHeartbeat();$('studentContent').innerHTML=`<div class="authShell"><div class="authCard"><span class="kicker">PRISIJUNGTI PRIE KLASĖS</span><h1>Sveiki, ${esc(profile.full_name||'mokiny')}!</h1><p>Įveskite mokytojo pateiktą klasės kodą.</p><form id="joinForm"><label>Klasės kodas<input id="joinCode" required placeholder="Pvz., A7K2QX"></label><button class="primary wide" type="submit">Prisijungti prie klasės</button></form></div></div>`;
   $('joinForm').onsubmit=async e=>{e.preventDefault();const {error}=await sb.rpc('join_class_by_code',{p_code:$('joinCode').value.trim()});if(error)return toast(error.message);toast('Prisijungta prie klasės.');renderStudent()};return;
  }
- await loadClassTopics(c.id);
- await startHeartbeat(c.id);
+ // Temas ir klasės informaciją užkrauname tuo pačiu metu, o ne vieną po kitos.
+ // Buvimo klasėje žyma siunčiama atskirai.
+ startHeartbeat(c.id).catch(err=>console.warn('Mokinio aktyvumo žyma:',err));
  setPresenceContext('Klasės pradžia',null);
- const [{data:access},{data:attempts},{data:sessions},{data:direct,error:directErr},motivation]=await Promise.all([
+ const [,{data:access},{data:attempts},{data:sessions},{data:direct,error:directErr},motivation]=await Promise.all([
+  loadClassTopics(c.id),
   sb.from('topic_access').select('*').eq('class_id',c.id),
-  sb.from('practice_attempts').select('*').eq('student_id',me.id).eq('class_id',c.id).eq('mode','practice'),
-  sb.from('activity_sessions').select('*').eq('user_id',me.id).eq('class_id',c.id),
-  sb.from('direct_submissions').select('*').eq('student_id',me.id).eq('class_id',c.id).order('submitted_at',{ascending:false}),
+  sb.from('practice_attempts').select('id,score_percent').eq('student_id',me.id).eq('class_id',c.id).eq('mode','practice'),
+  sb.from('activity_sessions').select('duration_seconds').eq('user_id',me.id).eq('class_id',c.id),
+  sb.from('direct_submissions').select('id,topic_id,original_name,title,submitted_at,storage_path').eq('student_id',me.id).eq('class_id',c.id).order('submitted_at',{ascending:false}),
   getMotivationSummary(c.id)
  ]);
  applyMotivationSkin(motivation);
@@ -3131,7 +3155,13 @@ async function boot(){
  const initialRecoveryError=recoveryUrlError();
  passwordRecoveryMode=!initialRecoveryError&&isPasswordRecoveryUrl();
 
- sb.auth.onAuthStateChange(async(event,session)=>{
+ // Supabase autentifikavimo įvykyje nereikia vykdyti asinchroninių DB užklausų:
+ // tai gali užblokuoti auth kliento užklausas (deadlock).
+ // Pradinę sesiją jau atkuria žemiau esantis getSession() kelias.
+ sb.auth.onAuthStateChange((event,session)=>{
+  if(event==='INITIAL_SESSION')return;
+  setTimeout(async()=>{
+   try{
   if(event==='PASSWORD_RECOVERY'){
    passwordRecoveryMode=true;
    me=session?.user||null;
@@ -3169,6 +3199,14 @@ async function boot(){
    restoreRememberedLogin();
    show('auth');
   }
+   }catch(err){
+    console.error('Prisijungimo būsenos apdorojimas:',err);
+    if(!profile){
+     setAuthMode('loginForm');show('auth');
+     authMsg('Nepavyko įkelti paskyros. Pabandyk perkrauti puslapį.',true);
+    }
+   }
+  },0);
  });
 
  const {data:{session}}=await sb.auth.getSession();

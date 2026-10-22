@@ -1,0 +1,15 @@
+NGG INFORMATIKA v5.26 — greitesnis prisijungimas
+
+1. Išarchyvuokite ZIP ir į GitHub informatika11-12 įkelkite informatika11-12-main aplanko TURINĮ.
+2. Palikite CNAME su ngg-informatika.lt.
+3. Atidarykite https://ngg-informatika.lt/ ir paspauskite Ctrl + F5.
+4. Patikrinkite prisijungimą mokytojo ir mokinio paskyromis bei grįžimą į anksčiau atidarytą temą.
+
+Pataisyta:
+- onAuthStateChange nebevykdo Supabase duomenų bazės užklausų tiesiog auth įvykio apdorojime;
+- prisijungimų žymėjimas nebestabdo paskyros atidarymo;
+- mokytojo pradžios duomenys kraunami lygiagrečiai;
+- mokinio aktyvumo žymėjimas nebestabdo mokymosi turinio.
+
+Naujo SQL nereikia. Nei mokinių darbų, nei pažymių, nei Supabase duomenų nekeista.
+Savarankiškas kriptografijos darbas tebėra paslėptas, kaip ir v5.25.
