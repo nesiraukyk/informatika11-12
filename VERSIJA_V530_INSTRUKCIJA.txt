@@ -1,0 +1,6 @@
+NGG Informatika v5.30
+
+Pakeitimai:
+- Padidintas ir pagrazintas uzrasas Mokytojo aplinka.
+- Rodykles mygtukas centre ir ryskesnis.
+- Kaires klases ikoneles pakeistos i svarias, paprastesnes korteles su SVG simboliu.

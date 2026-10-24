@@ -698,7 +698,7 @@ async function renderTeacher(){
  })).filter(g=>g.items.length);
 
  $('teacherContent').innerHTML=`
- <div class="pageHero compactTeacherHero"><span class="kicker bigKicker">${isAdmin?'ADMINISTRATORIAUS SKYDELIS':'MOKYTOJO APLINKA'}</span></div>
+ <div class="pageHero compactTeacherHero"><div class="teacherPageTitle">${isAdmin?'Administratoriaus skydelis':'Mokytojo aplinka'}</div></div>
  <div class="dashboardGrid teacherDashboardMetrics">
   <div class="metric"><strong>${totalStudents}</strong><span>mokinių</span></div>
   <div class="metric"><strong>${totalAttempts}</strong><span>žinių treniruočių / atsiskaitymų bandymų</span></div>
@@ -709,7 +709,7 @@ async function renderTeacher(){
   <div id="classList">${classes?.length?classes.map(c=>{
     const cnt=new Set(members.filter(m=>m.class_id===c.id).map(m=>m.student_id)).size;
     const teacher=teachers.find(t=>t.id===c.teacher_id);
-    return `<article class="classCard modernTopicCard modernClassCard"><div class="topicCardTop classCardTop"><span class="topicCardIcon classCardIcon" aria-hidden="true">🏫</span><div class="grow"><div class="classNameLine"><h3>${esc(c.name)}</h3><button class="classEditIcon" data-edit-class-name="${c.id}" title="Keisti grupės pavadinimą" aria-label="Keisti grupės pavadinimą">✎</button></div><span class="subtle">${c.grade_level?`${esc(gradeLabel(c.grade_level)||c.grade_level)} · `:''}${cnt} mok. · kodas <b>${esc(c.join_code)}</b>${isAdmin?` · mokytojas <b>${esc(teacher?.full_name||'–')}</b>`:''}</span></div><div class="classCardActions iconClassActions"><button class="iconActionBtn" data-preview-class="${c.id}" aria-label="Mokinio vaizdas: ${esc(c.name)}" title="Mokinio vaizdas">👁</button><button class="topicCardAction" data-class="${c.id}" aria-label="Atidaryti klasę: ${esc(c.name)}" title="Atidaryti klasę">→</button></div></div></article>`
+    return `<article class="classCard modernTopicCard modernClassCard"><div class="topicCardTop classCardTop"><span class="classCardIcon classCardGlyph" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="5" width="16" height="14" rx="3" stroke="currentColor" stroke-width="1.8"/><path d="M8 9h8M8 12h8M8 15h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span><div class="grow"><div class="classNameLine"><h3>${esc(c.name)}</h3><button class="classEditIcon" data-edit-class-name="${c.id}" title="Keisti grupės pavadinimą" aria-label="Keisti grupės pavadinimą">✎</button></div><span class="subtle">${c.grade_level?`${esc(gradeLabel(c.grade_level)||c.grade_level)} · `:''}${cnt} mok. · kodas <b>${esc(c.join_code)}</b>${isAdmin?` · mokytojas <b>${esc(teacher?.full_name||'–')}</b>`:''}</span></div><div class="classCardActions iconClassActions"><button class="iconActionBtn" data-preview-class="${c.id}" aria-label="Mokinio vaizdas: ${esc(c.name)}" title="Mokinio vaizdas">👁</button><button class="topicCardAction" data-class="${c.id}" aria-label="Atidaryti klasę: ${esc(c.name)}" title="Atidaryti klasę">→</button></div></div></article>`
   }).join(''):'<div class="emptyState"><b>Klasių dar nėra.</b></div>'}</div>
  </div>
  <div class="stack">
