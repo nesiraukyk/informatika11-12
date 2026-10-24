@@ -1,0 +1,21 @@
+NGG Informatika v5.29 – mokytojo aplinkos dizaino ir talpyklos pataisa
+
+Kodėl v5.28 rodė seną dizainą:
+index.html v5.28 failas kvietė app.js?v=5.27.0. Jei naršyklė turėjo užsaugojusi 5.27.0 atsaką, ji toliau vykdė seną JavaScript ir rodė seną mokytojo aplinką, nors CSS buvo atnaujintas.
+
+PATAISA:
+- Visi vietiniai JS ir CSS failai index.html susieti su nauja v5.29.0 užklausos versija.
+- Mokytojo puslapyje didelė antraštė MOKYTOJO APLINKA be sveikinimo teksto.
+- Tik trys skaičių rodikliai: mokinių, bandymų, pateiktų failų.
+- Mano klasės antraštė be pasikartojančio Klasės.
+- Klasės kortelės su akies piktograma (mokinio vaizdas) ir rodykle (atidaryti).
+- Viršuje šalia Informatika nerodomas mažas vaidmens užrašas.
+
+DIEGIMAS:
+1. Išarchyvuokite ZIP.
+2. Į GitHub repo šaknį įkelkite VISĄ aplanko informatika11-12-main TURINĮ, ypač index.html, app.js, style.css.
+3. Sulaukite, kol GitHub Pages baigs publikavimą.
+4. Atidarykite https://ngg-informatika.lt/?v=5.29.0 (jei reikia, Ctrl+Shift+R).
+5. Jei vis dar senas vaizdas, patikrinkite šaltinį: View page source -> app.js?v=5.29.0.
+
+Šis leidimas nekeičia duomenų bazės. SQL nereikia.

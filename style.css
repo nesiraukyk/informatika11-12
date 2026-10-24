@@ -822,11 +822,11 @@ html[data-student-skin="legend"]{--p:#b56b00;--p2:#744b9e}
 /* v5.28 teacher dashboard design refresh */
 .brand small{display:none}
 #teacherNav{font-size:16px;padding:11px 16px}
-.compactTeacherHero{padding:34px 0 10px}
-.compactTeacherHero .bigKicker{display:inline-block;font-size:18px;letter-spacing:.11em}
+.compactTeacherHero{padding:26px 0 12px}
+.compactTeacherHero .bigKicker{display:inline-block;font-size:23px;letter-spacing:.07em}
 .teacherDashboardMetrics{grid-template-columns:repeat(3,minmax(0,1fr))}
 .dashboardSectionTitle{margin-bottom:16px;align-items:center}
-.biggerSectionKicker{display:inline-block;font-size:20px;letter-spacing:.08em}
+.biggerSectionKicker{display:inline-block;font-size:22px;letter-spacing:.07em}
 .modernClassCard{padding:15px 16px;border-radius:18px;box-shadow:0 5px 18px rgba(25,45,75,.045);margin-top:12px;background:var(--surface2)}
 .modernClassCard .classCardTop{display:flex;align-items:center;gap:12px;min-height:54px}
 .classCardIcon{width:46px;height:46px;min-width:46px;border-radius:15px;display:grid;place-items:center;background:color-mix(in srgb,var(--p) 10%,var(--surface));font-size:21px}
