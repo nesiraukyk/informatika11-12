@@ -1,0 +1,12 @@
+NGG Informatika v5.31 – klasių antraštės ir paskyros vardas
+
+1. Mokytojo klasėje pašalintas mygtukas „← Mano klasės“ (grįžti galima per
+   viršutinį meniu „Mokytojo aplinka“ arba naršyklės atgal mygtuką).
+2. Pašalintas dubliuotas „KLASĖ · 11 klasė“ užrašas.
+3. Mokinio pradžios puslapyje vietoje sveikinimo dabar tik grupės pavadinimas.
+4. Viršuje šalia „Pradžia“ – prisijungusio mokinio vardas ir pavardė.
+   Mažuose ekranuose rodomas vardas, kad viskas tilptų.
+
+Diegimas: įkelkite visą informatika11-12-main turinį į esamą GitHub saugyklą.
+SQL keisti nereikia. Stiliai ir skriptai turi ?v=5.31.0, kad būtų
+priverstinai atnaujinta naršyklės talpykla.

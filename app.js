@@ -444,6 +444,15 @@ function setHeader(){
  if(!profile)return;
  const isTeacher=['teacher','admin'].includes(profile.role);
  if($('headerRole'))$('headerRole').textContent=profile.role==='teacher'?'Mokytojas':profile.role==='admin'?'Administratorius':'Mokinys';
+ const accountName=$('navAccountName');
+ if(accountName){
+  const fullName=String(profile.full_name||'').trim();
+  const firstName=fullName.split(/\s+/)[0]||'Mokinys';
+  accountName.classList.toggle('hidden',isTeacher);
+  accountName.setAttribute('title',fullName||'Mokinio paskyra');
+  $('navAccountFull').textContent=fullName||'Mokinys';
+  $('navAccountShort').textContent=firstName;
+ }
 
  // Mokinys turi vieną aiškią pradžios nuorodą, kuri visada atidaro jo klasę.
  $('homeNav').classList.toggle('hidden',isTeacher);
@@ -954,7 +963,7 @@ async function openTeacherClass(classId,initialPanel='students'){
  const submissionCount=(direct||[]).length+(assignmentSubs||[]).length;
 
  $('teacherContent').innerHTML=`
- <div class="pageHero"><button class="back" id="backTeacher">← ${profile.role==='admin'?'Visos klasės':'Mano klasės'}</button><div class="classHeader"><div class="grow"><span class="kicker">KLASĖ${c.grade_level?` · ${esc(gradeLabel(c.grade_level)||c.grade_level)}`:''}</span><h1>${esc(c.name)}</h1></div><div class="classHeaderActions"><div>Prisijungimo kodas <span class="joinCode">${esc(c.join_code)}</span></div><button class="ghost" id="studentPreviewBtn">👁 Mokinio vaizdas</button></div></div></div>
+ <div class="pageHero classTitleHero"><div class="classHeader"><div class="grow"><h1>${esc(c.name)}</h1></div><div class="classHeaderActions"><div>Prisijungimo kodas <span class="joinCode">${esc(c.join_code)}</span></div><button class="ghost" id="studentPreviewBtn">👁 Mokinio vaizdas</button></div></div></div>
  <div class="tabsRow actions" style="margin-bottom:14px">
   <button class="smallBtn primaryLike" data-tpanel="students">Mokiniai</button>
   <button class="smallBtn" data-tpanel="motivation">🎯 Motyvacija</button>
@@ -972,7 +981,6 @@ async function openTeacherClass(classId,initialPanel='students'){
   setCurrentRestore(()=>showClassPanel(panel),{kind:'teacher-class',classId:c.id,panel});
  };
 
- $('backTeacher').onclick=()=>appBack(()=>renderTeacher());
  $('studentPreviewBtn').onclick=()=>navigateTo(()=>renderTeacherStudentPreview(c,()=>openTeacherClass(c.id,activePanel)));
  document.querySelectorAll('[data-tpanel]').forEach(b=>b.onclick=()=>{
   const next=b.dataset.tpanel;
@@ -2514,7 +2522,7 @@ async function renderStudent(){
  const secs=(sessions||[]).reduce((n,x)=>n+(x.duration_seconds||0),0),best=(attempts||[]).length?Math.max(...attempts.map(x=>x.score_percent||0)):0;
  const openTopics=activeClassTopics.filter(t=>(access||[]).find(a=>a.topic_id===t.id)?.is_open);
 
- $('studentContent').innerHTML=`<div class="pageHero"><span class="kicker">PRADŽIA · ${esc(c.name)}</span><h1>Sveiki, ${esc(profile.full_name||'mokiny')}.</h1><p>Čia yra tavo klasė: atidarytos temos, žinių treniruotės, mokymosi failai ir darbų pateikimas.</p></div>
+ $('studentContent').innerHTML=`<div class="pageHero studentClassHero"><h1>${esc(c.name)}</h1></div>
  ${renderMotivationCard(motivation)}
  <div class="dashboardGrid"><div class="metric"><strong>${(attempts||[]).length}</strong><span>bandymų</span></div><div class="metric"><strong>${(attempts||[]).length?best+'%':'–'}</strong><span>geriausias rezultatas</span></div><div class="metric"><strong>${fmtSec(secs)}</strong><span>aktyvus laikas</span></div><div class="metric"><strong>${fmtDate(profile.last_seen_at||profile.last_login_at)}</strong><span>paskutinis aktyvumas</span></div></div>
 
@@ -3138,6 +3146,7 @@ function renderProfile(){
   const {data,error}=await sb.rpc('update_my_name',{p_full_name:name});
   if(error)return toast(error.message);
   profile.full_name=(data||name);
+  setHeader();
   if(isStudent)profile.name_change_used=true;
   toast('Išsaugota.');
   renderProfile();

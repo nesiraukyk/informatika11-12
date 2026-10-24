@@ -852,3 +852,43 @@ html[data-student-skin="legend"]{--p:#b56b00;--p2:#744b9e}
 .iconActionBtn{font-size:17px;font-weight:900}
 @media(max-width:700px){.teacherPageTitle{font-size:28px}}
 @media(max-width:520px){.teacherPageTitle{font-size:24px}.classCardGlyph{width:44px;height:44px;min-width:44px}}
+
+
+/* v5.31 – tvarkingesnės klasės antraštės ir aiškiai matomas mokinio vardas */
+.classTitleHero{padding-top:30px;padding-bottom:12px}
+.classTitleHero .classHeader h1{margin:0;line-height:1.12}
+.studentClassHero{padding-top:36px;padding-bottom:14px}
+.studentClassHero h1{margin:0;line-height:1.13;font-size:clamp(30px,3.8vw,46px)}
+.navAccountName{
+  display:inline-flex;align-items:center;gap:8px;align-self:center;
+  min-width:0;max-width:230px;padding:9px 12px;
+  border:1px solid var(--line);border-radius:12px;
+  background:color-mix(in srgb,var(--p) 5%,var(--surface));
+  color:var(--ink);font-size:13px;font-weight:750;
+  line-height:20px;white-space:nowrap;
+}
+.navAccountName.hidden{display:none!important}
+.navAccountName svg{width:17px;height:17px;flex:0 0 17px;color:var(--p)}
+#navAccountFull{overflow:hidden;text-overflow:ellipsis}
+#navAccountShort{display:none}
+@media(max-width:760px){
+ .navAccountName{max-width:130px;padding:8px 10px;font-size:12px}
+ #navAccountFull{display:none}
+ #navAccountShort{display:block;overflow:hidden;text-overflow:ellipsis}
+}
+@media(max-width:520px){
+ .nav{gap:5px}
+ .brand{gap:7px;min-width:0}
+ .brandMark{width:34px;height:34px;border-radius:10px;flex:0 0 34px}
+ .brand b{font-size:13px}
+ .navRight{gap:5px}
+ .navRight .navAccountName{max-width:105px;padding:7px 8px}
+ .navRight .navAccountName svg{width:14px;height:14px;flex-basis:14px}
+ .navRight .navBtn,.navRight .danger{padding:8px;border-radius:9px;font-size:12px}
+ .navRight .iconBtn{width:32px;padding:7px}
+}
+@media(max-width:400px){
+ .brand b{font-size:12px}
+ .navRight .navAccountName{max-width:84px;gap:5px}
+ .navRight .danger{padding:7px 5px}
+}
