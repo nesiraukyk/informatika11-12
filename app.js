@@ -443,7 +443,7 @@ function setHeader(){
  $('appHeader').classList.toggle('hidden',!me);
  if(!profile)return;
  const isTeacher=['teacher','admin'].includes(profile.role);
- $('headerRole').textContent=profile.role==='teacher'?'Mokytojas':profile.role==='admin'?'Administratorius':'Mokinys';
+ if($('headerRole'))$('headerRole').textContent=profile.role==='teacher'?'Mokytojas':profile.role==='admin'?'Administratorius':'Mokinys';
 
  // Mokinys turi vieną aiškią pradžios nuorodą, kuri visada atidaro jo klasę.
  $('homeNav').classList.toggle('hidden',isTeacher);
@@ -698,19 +698,18 @@ async function renderTeacher(){
  })).filter(g=>g.items.length);
 
  $('teacherContent').innerHTML=`
- <div class="pageHero"><span class="kicker">${isAdmin?'ADMINISTRATORIAUS SKYDELIS':'MOKYTOJO APLINKA'}</span><h1>${isAdmin?'Sveiki, Administratoriau.':'Sveiki, Mokytojau.'}</h1><p>${isAdmin?'Matote visas platformos klases ir jų mokymosi statistiką.':'Čia matote tik savo klases, savo mokinius, jų rezultatus ir pateiktus darbus.'}</p></div>
- <div class="dashboardGrid">
+ <div class="pageHero compactTeacherHero"><span class="kicker bigKicker">${isAdmin?'ADMINISTRATORIAUS SKYDELIS':'MOKYTOJO APLINKA'}</span></div>
+ <div class="dashboardGrid teacherDashboardMetrics">
   <div class="metric"><strong>${totalStudents}</strong><span>mokinių</span></div>
   <div class="metric"><strong>${totalAttempts}</strong><span>žinių treniruočių / atsiskaitymų bandymų</span></div>
   <div class="metric"><strong>${totalSubmissions}</strong><span>pateiktų failų</span></div>
-  <div class="metric"><strong>${fmtSec(totalSeconds)}</strong><span>bendras aktyvus laikas</span></div>
  </div>
  <div class="contentGrid"><div class="panel">
-  <div class="sectionTitle"><div class="grow"><span class="kicker">${isAdmin?'VISOS KLASĖS':'MANO KLASĖS'}</span><h2>Klasės</h2></div>${isAdmin?'':'<button class="primary" id="newClassBtn">+ Nauja klasė</button>'}</div>
+  <div class="sectionTitle dashboardSectionTitle"><div class="grow"><span class="kicker biggerSectionKicker">${isAdmin?'VISOS KLASĖS':'MANO KLASĖS'}</span></div>${isAdmin?'':'<button class="primary" id="newClassBtn">+ Nauja klasė</button>'}</div>
   <div id="classList">${classes?.length?classes.map(c=>{
     const cnt=new Set(members.filter(m=>m.class_id===c.id).map(m=>m.student_id)).size;
     const teacher=teachers.find(t=>t.id===c.teacher_id);
-    return `<div class="classCard"><div class="grow"><div class="classNameLine"><h3>${esc(c.name)}</h3><button class="classEditIcon" data-edit-class-name="${c.id}" title="Keisti grupės pavadinimą" aria-label="Keisti grupės pavadinimą">✎</button></div><span class="subtle">${c.grade_level?`${esc(gradeLabel(c.grade_level)||c.grade_level)} · `:''}${cnt} mok. · kodas <b>${esc(c.join_code)}</b>${isAdmin?` · mokytojas <b>${esc(teacher?.full_name||'–')}</b>`:''}</span></div><div class="classCardActions"><button class="smallBtn" data-preview-class="${c.id}">👁 Mokinio vaizdas</button><button class="primary" data-class="${c.id}">Atidaryti</button></div></div>`
+    return `<article class="classCard modernTopicCard modernClassCard"><div class="topicCardTop classCardTop"><span class="topicCardIcon classCardIcon" aria-hidden="true">🏫</span><div class="grow"><div class="classNameLine"><h3>${esc(c.name)}</h3><button class="classEditIcon" data-edit-class-name="${c.id}" title="Keisti grupės pavadinimą" aria-label="Keisti grupės pavadinimą">✎</button></div><span class="subtle">${c.grade_level?`${esc(gradeLabel(c.grade_level)||c.grade_level)} · `:''}${cnt} mok. · kodas <b>${esc(c.join_code)}</b>${isAdmin?` · mokytojas <b>${esc(teacher?.full_name||'–')}</b>`:''}</span></div><div class="classCardActions iconClassActions"><button class="iconActionBtn" data-preview-class="${c.id}" aria-label="Mokinio vaizdas: ${esc(c.name)}" title="Mokinio vaizdas">👁</button><button class="topicCardAction" data-class="${c.id}" aria-label="Atidaryti klasę: ${esc(c.name)}" title="Atidaryti klasę">→</button></div></div></article>`
   }).join(''):'<div class="emptyState"><b>Klasių dar nėra.</b></div>'}</div>
  </div>
  <div class="stack">

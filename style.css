@@ -818,3 +818,25 @@ html[data-student-skin="legend"]{--p:#b56b00;--p2:#744b9e}
 .workArchivePanel{scroll-margin-top:90px}.workArchiveActions .moveFileButton{white-space:nowrap}
 @media(max-width:850px){.cryptoLayout{grid-template-columns:1fr}.cryptoSteps{display:flex;overflow-x:auto}.cryptoStep{min-width:172px}.cryptoHero{padding:20px}.cryptoWork{padding:18px}.cryptoTeacherLaunch{flex-wrap:wrap}.cryptoTeacherItem{grid-template-columns:minmax(120px,1fr) 28px auto;gap:6px;padding:10px}.cryptoTeacherItem .smallBtn{font-size:11px}}
 @media(max-width:560px){.cryptoTeacherItem{grid-template-columns:1fr auto}.cryptoTeacherItem .smallBtn{grid-column:1/-1}.cryptoFooter button{font-size:12px}.cryptoHero h1{font-size:25px}}
+
+/* v5.28 teacher dashboard design refresh */
+.brand small{display:none}
+#teacherNav{font-size:16px;padding:11px 16px}
+.compactTeacherHero{padding:34px 0 10px}
+.compactTeacherHero .bigKicker{display:inline-block;font-size:18px;letter-spacing:.11em}
+.teacherDashboardMetrics{grid-template-columns:repeat(3,minmax(0,1fr))}
+.dashboardSectionTitle{margin-bottom:16px;align-items:center}
+.biggerSectionKicker{display:inline-block;font-size:20px;letter-spacing:.08em}
+.modernClassCard{padding:15px 16px;border-radius:18px;box-shadow:0 5px 18px rgba(25,45,75,.045);margin-top:12px;background:var(--surface2)}
+.modernClassCard .classCardTop{display:flex;align-items:center;gap:12px;min-height:54px}
+.classCardIcon{width:46px;height:46px;min-width:46px;border-radius:15px;display:grid;place-items:center;background:color-mix(in srgb,var(--p) 10%,var(--surface));font-size:21px}
+.modernClassCard .grow{min-width:0}
+.modernClassCard h3{margin:0;font-size:20px}
+.modernClassCard .subtle{display:block;margin-top:4px;font-size:13px}
+.iconClassActions{display:flex;align-items:center;gap:10px;margin-left:auto}
+.iconActionBtn{width:40px;height:40px;border-radius:13px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:18px;display:grid;place-items:center;font-weight:800;cursor:pointer;transition:transform .18s,box-shadow .18s,border-color .18s,background .18s}
+.iconActionBtn:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(20,30,60,.08);border-color:color-mix(in srgb,var(--p) 18%,var(--line));background:color-mix(in srgb,var(--p) 4%,var(--surface))}
+.modernClassCard .topicCardAction{margin-left:0}
+@media(max-width:980px){.teacherDashboardMetrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){.teacherDashboardMetrics{grid-template-columns:1fr}.compactTeacherHero .bigKicker,.biggerSectionKicker{font-size:16px}.modernClassCard .classCardTop{align-items:flex-start}.iconClassActions{align-self:center}}
+@media(max-width:520px){.modernClassCard .classCardTop{flex-wrap:wrap}.classCardIcon{width:42px;height:42px;min-width:42px}.iconClassActions{width:100%;justify-content:flex-end;padding-left:54px}}

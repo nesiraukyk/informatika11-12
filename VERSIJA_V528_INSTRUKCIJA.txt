@@ -1,0 +1,8 @@
+NGG Informatika v5.28
+
+Pakeitimai:
+- Mokytojo aplinkos viršuje paliktas tik uzrasas MOKYTOJO APLINKA be sveikinimo teksto.
+- Pasalintas rodiklis bendras aktyvus laikas.
+- Mano klases uzrasas padidintas, pasikartojantis Klases uzrasas pasalintas.
+- Klasiu korteles atnaujintos: akies ikona ir rodykle vietoje tekstiniu mygtuku.
+- Virsuje prie Informatika neberodomas vaidmens uzrasas.
