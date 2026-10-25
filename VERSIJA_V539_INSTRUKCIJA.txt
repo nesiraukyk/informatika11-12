@@ -1,0 +1,18 @@
+NGG Informatika v5.39 – asmeniniai failai ir kompaktiška pažanga
+
+1. Pirmiausia Supabase SQL Editor paleisti failą:
+   supabase/20261025_student_personal_files_v539.sql
+2. Tada GitHub atnaujinti visą informatika11-12-main aplanką.
+3. Naršyklėje Ctrl+F5, mokinio paskyra patikrinti Mano failai.
+
+PRIVATUMAS:
+Nauji 'Mano failai' saugomi atskirame privačiame bucket ir naujoje
+student_personal_files lentelėje. Juos mato tik pats mokinys.
+Temos skiltyje 'Paskirtų užduočių įkėlimas' failai pateikiami mokytojui
+per seną submissions lentelę, mokytojas juos gali vertinti.
+Anksčiau per pradžios skiltį pateikti direct_submissions lieka mokytojo
+archyve; jie neperkelti į privačią saugyklą ir nėra pašalinti.
+
+Taškų skaičiavimo taisyklės nekeičiamos. Tikslų/progreso juostos
+neberodomos – tik faktiškai apskaičiuotas taškų skaičius.
+SQL senų darbų, paskyrų, pažymių ir duomenų nešalina.

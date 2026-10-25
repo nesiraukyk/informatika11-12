@@ -1043,3 +1043,27 @@ main.wrap.authWide{max-width:none;width:100%;padding-inline:0}
 .studentTopicHero h1{margin:0 0 8px}
 @media(max-width:900px){.studentProgressStrip{grid-template-columns:repeat(2,minmax(0,1fr))}.studentPointsTile{grid-column:1/-1}}
 @media(max-width:560px){.studentProgressStrip{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.studentProgressTile{min-height:140px;padding:14px;border-radius:17px}.studentProgressValue{font-size:23px}.studentPointsTile{grid-column:1/-1}.studentUploadButton{width:100%;margin-top:4px}.studentUploadIntro h2{font-size:19px}.studentWorkItem{flex-wrap:wrap}.studentWorkActions{margin-left:auto}}
+
+
+/* v5.39 – kompaktiška pažanga ir asmeninė mokinio failų saugykla */
+.studentProgressStrip.compactProgressStrip{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:14px 0 18px}
+.compactProgressStrip .compactProgressTile{min-height:96px;padding:14px 16px;border-radius:17px;display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:14px;box-shadow:0 6px 22px rgba(28,44,85,.04)}
+.compactProgressTile .studentProgressIcon{display:grid;place-items:center;flex:none;width:44px;height:44px;margin:0;border-radius:13px;font-size:23px}
+.compactProgressTile .progressTileText{min-width:0;display:flex;flex-direction:column;gap:4px}
+.compactProgressTile .studentProgressValue{font-size:clamp(22px,2.35vw,29px);line-height:1.13;font-weight:900;letter-spacing:-.035em;white-space:normal}
+.compactProgressTile .studentProgressLabel{font-size:12px;font-weight:650;line-height:1.35;margin:0;letter-spacing:0}
+.compactProgressTile.studentPointsTile{background:linear-gradient(108deg,color-mix(in srgb,var(--p) 8%,var(--surface)),var(--surface));gap:14px}
+.compactProgressTile .studentPointsSpark{color:var(--p);background:color-mix(in srgb,var(--p) 11%,var(--surface));border:1px solid color-mix(in srgb,var(--p) 15%,var(--line))}
+.studentPointsUnit{font-size:13px;font-weight:700;letter-spacing:0;color:var(--muted)}
+.privateVaultPanel{padding:18px 20px;border-radius:18px;margin:5px 0 24px;box-shadow:0 6px 22px rgba(28,44,85,.045)}
+.privateVaultPanel .studentUploadIntro h2{font-size:20px}
+.privateVaultPanel .studentUploadGlyph{width:42px;height:42px;min-width:42px;border-radius:12px;font-size:23px}
+.privateVaultPanel .studentUploadButton{padding:10px 15px;box-shadow:none}
+.privateVaultPanel .studentWorkList{margin-top:13px;padding-top:12px}
+.privateVaultPanel .vaultError{margin:14px 0 0}
+.topicAssignmentUploadPanel .sectionTitle{margin-bottom:14px}
+.topicAssignmentUploadPanel .sectionTitle h2{margin:0;font-size:21px;letter-spacing:-.02em}
+.topicAssignmentUploadPanel .assignmentBlock{margin-top:10px}
+@media(max-width:880px){.studentProgressStrip.compactProgressStrip{grid-template-columns:repeat(3,minmax(0,1fr))}.compactProgressStrip .compactProgressTile{padding:12px 10px;gap:9px}.compactProgressTile .studentProgressIcon{width:35px;height:35px;font-size:19px}.compactProgressTile .studentProgressValue{font-size:20px}.compactProgressTile .studentProgressLabel{font-size:11px}.compactProgressTile.studentPointsTile{grid-column:auto}}
+@media(max-width:620px){.studentProgressStrip.compactProgressStrip{grid-template-columns:repeat(2,minmax(0,1fr))}.compactProgressTile.studentPointsTile{grid-column:1/-1}.compactProgressStrip .compactProgressTile{min-height:77px;padding:12px}.privateVaultPanel .studentUploadButton{width:auto;margin-top:0}}
+@media(max-width:390px){.compactProgressStrip .compactProgressTile{padding:10px;gap:7px}.compactProgressTile .studentProgressValue{font-size:18px}.compactProgressTile .studentProgressIcon{width:30px;height:30px}.privateVaultPanel .studentUploadTop{align-items:flex-start}.privateVaultPanel .studentUploadButton{width:100%}}

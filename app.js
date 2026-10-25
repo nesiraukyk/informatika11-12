@@ -2543,19 +2543,20 @@ async function renderStudentResults(){
 function renderStudentProgressTiles(practiceCount, seconds, points){
  const total=Number(points?.total_points);
  const ready=points && Number.isFinite(total) && total>=0;
- const thresholds=[100,250,500,1000,2000,3500,5000,10000];
- const next=ready?(thresholds.find(n=>n>total)||Math.ceil((total+1)/5000)*5000):0;
- const prev=ready?([0,...thresholds].filter(n=>n<=total).pop()||0):0;
- const pct=ready?Math.max(0,Math.min(100,Math.round((total-prev)*100/Math.max(1,next-prev)))):0;
- return `<div class="studentProgressStrip">
-   <article class="studentProgressTile"><div class="studentProgressIcon progressPractice" aria-hidden="true">✓</div><div class="studentProgressValue">${Number(practiceCount)||0}</div><div class="studentProgressLabel">Atliktos žinių treniruotės</div></article>
-   <article class="studentProgressTile"><div class="studentProgressIcon progressClock" aria-hidden="true">◷</div><div class="studentProgressValue">${esc(fmtSec(seconds))}</div><div class="studentProgressLabel">Mokymosi laikas</div></article>
-   <article class="studentProgressTile studentPointsTile"><div class="studentPointsTop"><div><span class="studentProgressLabel">SUKAUPTI MOKYMOSI TAŠKAI</span><div class="studentPointsValue">${ready?total.toLocaleString('lt-LT'):'—'}<span> taškų</span></div></div><div class="studentPointsSpark" aria-hidden="true">✦</div></div>
-    <div class="studentPointsTrack" aria-hidden="true"><span style="width:${pct}%"></span></div>
-    <div class="studentPointsGoal">${ready?`Iki kito tikslo liko <b>${(next-total).toLocaleString('lt-LT')}</b> taškų`:'Taškai atsiras įjungus suvestinę'}</div>
-    ${ready?`<details class="studentPointsDetails"><summary>Kaip renkami taškai?</summary><div>Treniruotės: ${Number(points.practice_points)||0} · Atsiskaitymai: ${Number(points.assessment_points)||0} · Įvertinti darbai: ${Number(points.assignment_points)||0}. Privilegijų atrakinimą prijungsime vėliau.</div></details>`:''}
-   </article>
-  </div>`;
+ return `<div class="studentProgressStrip compactProgressStrip">
+  <article class="studentProgressTile compactProgressTile">
+   <span class="studentProgressIcon progressPractice" aria-hidden="true">✓</span>
+   <div class="progressTileText"><strong class="studentProgressValue">${Number(practiceCount)||0}</strong><span class="studentProgressLabel">Atliktos žinių treniruotės</span></div>
+  </article>
+  <article class="studentProgressTile compactProgressTile">
+   <span class="studentProgressIcon progressClock" aria-hidden="true">◷</span>
+   <div class="progressTileText"><strong class="studentProgressValue">${esc(fmtSec(seconds))}</strong><span class="studentProgressLabel">Mokymosi laikas</span></div>
+  </article>
+  <article class="studentProgressTile compactProgressTile studentPointsTile">
+   <span class="studentProgressIcon studentPointsSpark" aria-hidden="true">✦</span>
+   <div class="progressTileText"><strong class="studentProgressValue">${ready?total.toLocaleString('lt-LT'):'—'} <span class="studentPointsUnit">taškų</span></strong><span class="studentProgressLabel">Sukaupti mokymosi taškai</span></div>
+  </article>
+ </div>`;
 }
 
 /* ================= STUDENT ================= */
@@ -2576,19 +2577,19 @@ async function renderStudent(){
  // Buvimo klasėje žyma siunčiama atskirai.
  startHeartbeat(c.id).catch(err=>console.warn('Mokinio aktyvumo žyma:',err));
  setPresenceContext('Klasės pradžia',null);
- const [,{data:access},{data:attempts},{data:sessions},{data:direct,error:directErr},motivation,{data:learningPoints,error:learningPointsError}]=await Promise.all([
+ const [,{data:access},{data:attempts},{data:sessions},{data:personalFiles,error:personalErr},motivation,{data:learningPoints,error:learningPointsError}]=await Promise.all([
   loadClassTopics(c.id),
   sb.from('topic_access').select('*').eq('class_id',c.id),
   sb.from('practice_attempts').select('id').eq('student_id',me.id).eq('class_id',c.id).eq('mode','practice').not('completed_at','is',null),
   sb.from('activity_sessions').select('duration_seconds').eq('user_id',me.id).eq('class_id',c.id),
-  sb.from('direct_submissions').select('id,topic_id,original_name,title,submitted_at,storage_path').eq('student_id',me.id).eq('class_id',c.id).order('submitted_at',{ascending:false}),
+  sb.from('student_personal_files').select('id,title,original_name,created_at,storage_path,size_bytes').eq('student_id',me.id).order('created_at',{ascending:false}),
   getMotivationSummary(c.id),
   sb.rpc('get_my_learning_points',{p_class_id:c.id})
  ]);
  applyMotivationSkin(motivation);
  if($('achievementsNav'))$('achievementsNav').classList.toggle('hidden',!motivation?.enabled);
  if($('classmatesNav'))$('classmatesNav').classList.toggle('hidden',!(motivation?.enabled&&motivation?.classmates_visible));
- if(directErr)return toast(directErr.message);
+ if(personalErr)console.warn('Asmeninių failų suvestinė:',personalErr.message);
 
  if(learningPointsError)console.warn('Mokymosi taškų suvestinė:',learningPointsError.message);
  const secs=(sessions||[]).reduce((n,x)=>n+(x.duration_seconds||0),0);
@@ -2599,19 +2600,65 @@ async function renderStudent(){
  ${renderMotivationCard(motivation)}
 
 
- <div class="panel studentUploadPanel modernStudentUpload">
-  <div class="studentUploadTop"><div class="studentUploadIntro"><span class="studentUploadGlyph" aria-hidden="true">↥</span><div><h2>Atliktų užduočių įkėlimas</h2>${(direct||[]).length?`<span class="studentUploadCount">Įkelta failų: ${direct.length}</span>`:''}</div></div><button class="primary studentUploadButton" id="directSubmitBtn" ${openTopics.length?'':'disabled'}><span aria-hidden="true">+</span> Įkelti darbą</button></div>
-  ${(direct||[]).length?`<div class="studentWorkList">${(direct||[]).map(s=>`<div class="studentWorkItem"><span class="studentWorkFileIcon" aria-hidden="true">▤</span><div class="grow"><b>${esc(s.title||s.original_name)}</b><div class="subtle">${esc(topicById(s.topic_id)?.title||s.topic_id)} · ${esc(s.original_name)} · ${esc(fmtDateOnly(s.submitted_at))}</div></div><div class="studentWorkActions"><button class="smallBtn" data-my-direct="${s.id}" title="Atsisiųsti failą" aria-label="Atsisiųsti: ${esc(s.original_name)}">↓</button><button class="smallBtn dangerMini" data-my-del-direct="${s.id}" title="Ištrinti failą" aria-label="Ištrinti: ${esc(s.original_name)}">×</button></div></div>`).join('')}</div>`:''}
- </div>
+ <section class="panel studentUploadPanel modernStudentUpload privateVaultPanel">
+  <div class="studentUploadTop"><div class="studentUploadIntro"><span class="studentUploadGlyph" aria-hidden="true">▤</span><div><h2>Mano failai</h2>${(personalFiles||[]).length?`<span class="studentUploadCount">${personalFiles.length} ${personalFiles.length===1?'failas':'failai (-ų)'}</span>`:''}</div></div><button class="primary studentUploadButton" id="personalFileUploadBtn"><span aria-hidden="true">+</span> Įkelti failą</button></div>
+  ${personalErr?`<div class="notice vaultError">Asmeninių failų saugykla dar neparuošta. Mokytojas turi paleisti v5.39 SQL.</div>`:''}
+  ${(personalFiles||[]).length?`<div class="studentWorkList">${(personalFiles||[]).map(f=>`<div class="studentWorkItem"><span class="studentWorkFileIcon" aria-hidden="true">▤</span><div class="grow"><b>${esc(f.title||f.original_name)}</b><div class="subtle">${esc(f.original_name)} · ${esc(fmtDateOnly(f.created_at))}</div></div><div class="studentWorkActions"><button class="smallBtn" data-my-personal="${f.id}" title="Atsisiųsti failą" aria-label="Atsisiųsti: ${esc(f.original_name)}">↓</button><button class="smallBtn dangerMini" data-my-del-personal="${f.id}" title="Ištrinti failą" aria-label="Ištrinti: ${esc(f.original_name)}">×</button></div></div>`).join('')}</div>`:''}
+ </section>
 
  <div class="sectionHead"><span class="kicker">TEMOS</span><h2>Mokymosi turinys</h2></div>
  <div class="studentTopics topicDeck">${activeClassTopics.length?activeClassTopics.map(t=>{const a=(access||[]).find(x=>x.topic_id===t.id)||{};return `<article class="topicStudentCard modernTopicCard ${a.is_open?'':'locked'}"><div class="topicCardTop"><span class="topicCardIcon" aria-hidden="true">${esc(t.icon||'💻')}</span><div class="topicCardTitle"><h3>${esc(t.title)}</h3></div><button class="topicCardAction ${a.is_open?'':'isDisabled'}" data-stopic="${t.id}" ${a.is_open?'':'disabled'} aria-label="${a.is_open?'Atidaryti temą':'Tema užrakinta'}: ${esc(t.title)}">${a.is_open?'→':'🔒'}</button></div></article>`}).join(''):'<div class="panel emptyState"><b>Mokytojas šiai klasei temų dar nesukūrė.</b></div>'}</div>`;
 
  if($('openAchievements'))$('openAchievements').onclick=()=>navigateTo(()=>renderAchievements());
- if($('directSubmitBtn'))$('directSubmitBtn').onclick=()=>openDirectSubmissionModal(c,openTopics);
- document.querySelectorAll('[data-my-direct]').forEach(b=>b.onclick=()=>downloadDirectSubmission(b.dataset.myDirect));
- document.querySelectorAll('[data-my-del-direct]').forEach(b=>b.onclick=()=>deleteDirectSubmission(b.dataset.myDelDirect,c,'student'));
+ if($('personalFileUploadBtn'))$('personalFileUploadBtn').onclick=openPersonalFileUploadModal;
+ document.querySelectorAll('[data-my-personal]').forEach(b=>b.onclick=()=>downloadPersonalFile(b.dataset.myPersonal));
+ document.querySelectorAll('[data-my-del-personal]').forEach(b=>b.onclick=()=>deletePersonalFile(b.dataset.myDelPersonal));
  document.querySelectorAll('[data-stopic]').forEach(b=>b.onclick=()=>navigateTo(()=>openStudentTopic(b.dataset.stopic,c,access||[])));
+}
+
+/* ================= PRIVATŪS MOKINIO FAILAI ================= */
+function openPersonalFileUploadModal(){
+ modal(`<span class="kicker">MANO FAILAI</span><h2>Įkelti savo failus</h2>
+ <form id="personalFileUploadForm" class="formGroup">
+  <label>Failai<input class="fileInput" type="file" id="personalFileInput" multiple required></label>
+  <p class="formHint">Failai saugomi tik tavo paskyroje. Mokytojui pateik darbus pasirinktos temos užduotyse. Iki 25 MB vienam failui.</p>
+  <button class="primary" type="submit" style="margin-top:14px">Išsaugoti mano failuose</button>
+ </form>`);
+ $('personalFileUploadForm').onsubmit=async e=>{
+  e.preventDefault();
+  const files=[...$('personalFileInput').files];if(!files.length)return;
+  if(files.some(f=>f.size>25*1024*1024))return toast('Vienas iš failų per didelis. Maksimalus dydis – 25 MB.');
+  const submit=$('personalFileUploadForm').querySelector('[type="submit"]');submit.disabled=true;
+  let uploaded=0;
+  for(const f of files){
+   const path=`${me.id}/${storageFileName(f.name)}`;
+   const {error:upErr}=await sb.storage.from('student-personal-files').upload(path,f,storageUploadOptions(f));
+   if(upErr){toast(`Nepavyko įkelti ${f.name}: ${upErr.message}`);continue;}
+   const {error:dbErr}=await sb.from('student_personal_files').insert({
+    student_id:me.id,title:f.name,storage_path:path,original_name:f.name,
+    mime_type:uploadContentType(f),size_bytes:f.size
+   });
+   if(dbErr){await sb.storage.from('student-personal-files').remove([path]);toast(`Nepavyko išsaugoti ${f.name}: ${dbErr.message}`);continue;}
+   uploaded++;
+  }
+  if(uploaded){closeModal();toast(`Išsaugota asmeninių failų: ${uploaded}.`);renderStudent();}
+  else submit.disabled=false;
+ };
+}
+async function downloadPersonalFile(id){
+ const {data,error}=await sb.from('student_personal_files').select('storage_path,original_name').eq('id',id).eq('student_id',me.id).single();
+ if(error)return toast(error.message);
+ await downloadOriginalFile('student-personal-files',data.storage_path,data.original_name);
+}
+async function deletePersonalFile(id){
+ const {data,error}=await sb.from('student_personal_files').select('storage_path,original_name').eq('id',id).eq('student_id',me.id).single();
+ if(error)return toast(error.message);
+ if(!confirm(`Ar tikrai ištrinti savo failą „${data.original_name}“?`))return;
+ const {error:storageErr}=await sb.storage.from('student-personal-files').remove([data.storage_path]);
+ if(storageErr)return toast(`Nepavyko ištrinti failo: ${storageErr.message}`);
+ const {error:dbErr}=await sb.from('student_personal_files').delete().eq('id',id).eq('student_id',me.id);
+ if(dbErr)return toast(`Failas ištrintas iš saugyklos, bet nepavyko ištrinti įrašo: ${dbErr.message}`);
+ toast('Failas ištrintas.');renderStudent();
 }
 
 function openDirectSubmissionModal(c,openTopics){
@@ -2738,7 +2785,7 @@ async function openStudentTopic(topicId,c,access){
   <div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">MOKYMOSI FAILAI</span><h2>Failai atsisiuntimui</h2></div></div>
    ${(resources||[]).length?(resources||[]).map(r=>`<div class="resourceRow resourceDownloadCard"><span class="resourceFileGlyph" aria-hidden="true">📄</span><div class="grow"><b>${esc(r.title)}</b><div class="subtle" title="${esc(r.original_name)}">${esc(r.original_name)}</div></div><button class="smallBtn resourceDownloadAction" data-sresource="${r.id}" aria-label="Atsisiųsti: ${esc(r.title)}" title="Atsisiųsti">↓</button></div>`).join(''):'<div class="emptyState">Mokytojas šiai temai failų dar neįkėlė.</div>'}
   </div>
-  <div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">UŽDUOTYS</span><h2>Atliktų užduočių įkėlimas</h2></div></div>
+  <div class="panel topicAssignmentUploadPanel"><div class="sectionTitle"><div class="grow"><h2>Paskirtų užduočių įkėlimas</h2></div></div>
    ${(assignments||[]).length?(assignments||[]).map(as=>{
      const subs=(existing||[]).filter(s=>s.assignment_id===as.id);
      return `<div class="assignmentBlock"><div class="assignmentRow"><div class="grow"><b>${esc(as.title)}</b><div class="subtle">${esc(as.instructions||'')} ${as.due_at?' · iki '+fmtDate(as.due_at):''}</div></div><button class="primary" data-submit="${as.id}">+ Pridėti failų</button></div>
@@ -2795,7 +2842,7 @@ async function renderTeacherStudentPreview(c,backFn=null){
  $('teacherContent').innerHTML=`<div class="previewBanner"><b>👁 Mokinio vaizdo peržiūra</b><span>Tai tik peržiūros režimas – mokinio rezultatai nebus keičiami.</span></div>
  <div class="pageHero"><button class="back" id="backFromPreview">← Grįžti į klasės valdymą</button><span class="kicker">PRADŽIA · ${esc(c.name)}</span><h1>Mokinio klasės vaizdas</h1><p>Taip mokinys mato tavo atidarytas temas ir pagrindines skiltis.</p></div>
 
- <div class="panel studentUploadPanel modernStudentUpload previewDisabled"><div class="studentUploadTop"><div class="studentUploadIntro"><span class="studentUploadGlyph" aria-hidden="true">↥</span><h2>Atliktų užduočių įkėlimas</h2></div><button class="primary studentUploadButton" disabled>+ Įkelti darbą</button></div></div>
+
  <div class="sectionHead"><span class="kicker">TEMOS</span><h2>Mokymosi turinys</h2></div>
  <div class="studentTopics topicDeck">${activeClassTopics.length?activeClassTopics.map(t=>{const a=(access||[]).find(x=>x.topic_id===t.id)||{};return `<article class="topicStudentCard modernTopicCard ${a.is_open?'':'locked'}"><div class="topicCardTop"><span class="topicCardIcon" aria-hidden="true">${esc(t.icon||'💻')}</span><div class="topicCardTitle"><h3>${esc(t.title)}</h3></div><button class="topicCardAction ${a.is_open?'':'isDisabled'}" data-preview-topic="${t.id}" ${a.is_open?'':'disabled'} aria-label="${a.is_open?'Atidaryti temą':'Tema užrakinta'}: ${esc(t.title)}">${a.is_open?'→':'🔒'}</button></div></article>`}).join(''):'<div class="panel emptyState"><b>Šiai klasei temų dar nėra.</b></div>'}</div>`;
  show('teacher');
