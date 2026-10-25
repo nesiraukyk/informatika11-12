@@ -992,3 +992,10 @@ main.wrap.authWide{max-width:none;width:100%;padding-inline:0}
 .authBrandLogo{display:block;width:112px;height:112px;object-fit:contain;filter:drop-shadow(0 10px 18px rgba(20,20,40,.08))}
 .authBrandMonogram{display:none}
 @media(max-width:900px){.authBrandLogoWrap{width:92px;height:92px;margin-bottom:20px}.authBrandLogo{width:92px;height:92px}}
+
+
+/* v5.37 transparent NGG logo */
+.authBrandSymbol,.authBrandLogoWrap{background:transparent!important;border:0!important;box-shadow:none!important}
+.authBrandLogoWrap{width:126px;height:126px;padding:0;margin-bottom:22px}
+.authBrandLogo{width:126px;height:126px;object-fit:contain;mix-blend-mode:multiply;filter:none}
+@media(max-width:900px){.authBrandLogoWrap{width:102px;height:102px}.authBrandLogo{width:102px;height:102px}}

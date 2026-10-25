@@ -1,0 +1,4 @@
+NGG Informatika v5.37
+- NGG logotipas pakeistas skaidriu PNG be balto fono.
+- Prisijungimo puslapyje logotipo konteineriui nuimtas fonas ir seselis.
+- Atnaujintas failu versijavimas i 5.37.0.
