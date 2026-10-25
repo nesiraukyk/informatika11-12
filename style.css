@@ -939,3 +939,36 @@ html[data-student-skin="legend"]{--p:#b56b00;--p2:#744b9e}
 .studentResultPanel .resultsScore{min-width:52px}
 .studentResultPanel .resultsEntryDetails .resultsMeta time{white-space:nowrap}
 @media(max-width:620px){.studentResultPanel .resultsEntryScore{min-width:64px}.studentResultPanel .resultsScore{min-width:46px}}
+
+
+/* ===== V5.34 – NGG Informatika prisijungimo puslapis ===== */
+#view-auth{position:relative;isolation:isolate}
+#view-auth::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse 48% 52% at 4% 24%,color-mix(in srgb,var(--p) 8%,transparent),transparent 80%),radial-gradient(ellipse 40% 50% at 88% 89%,rgba(93,109,236,.07),transparent 80%)}
+.authLanding{min-height:min(800px,calc(100svh - 10px));padding:50px 0 60px;grid-template-columns:minmax(0,1.1fr) minmax(370px,.9fr)!important;gap:clamp(38px,6vw,92px)!important;align-items:center!important}
+.authLanding .authIntro{position:relative;padding:42px 0 54px;min-width:0}
+.authBrandSymbol{width:65px;height:65px;display:grid;place-items:center;color:var(--p);margin-bottom:34px}
+.authBrandSymbol svg{height:65px;width:65px}
+.authLanding .authHeadline{font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:clamp(49px,5.15vw,77px);line-height:1.05;letter-spacing:-.067em;font-weight:850;margin:0;color:var(--ink);text-wrap:balance}
+.authHeadline span{display:block;color:var(--p);background:linear-gradient(104deg,var(--p),#7a68e8);background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;padding:3px 0 6px}
+.authLanding .authTagline{font-size:clamp(20px,2.12vw,29px);font-weight:450;line-height:1.36;color:var(--muted);letter-spacing:-.025em;margin:23px 0 26px;max-width:540px}
+.authAccentLine{height:8px;display:flex;gap:6px;align-items:center;margin-top:36px}
+.authAccentLine i{display:block;height:6px;width:32px;border-radius:99px;background:color-mix(in srgb,var(--p) 54%,var(--surface))}
+.authAccentLine i:first-child{width:54px;background:var(--p)}
+.authAccentLine i:last-child{width:17px;background:color-mix(in srgb,var(--p) 22%,var(--surface))}
+.authLanding .authLoginCard{width:100%;max-width:470px;justify-self:end;padding:clamp(23px,3vw,39px);border-radius:27px;box-shadow:0 24px 72px rgba(30,47,96,.11),0 4px 15px rgba(30,47,96,.035);background:var(--surface);border-color:color-mix(in srgb,var(--p) 10%,var(--line))}
+.authLoginCard .authTabs{background:var(--surface2);padding:5px;gap:4px;border:1px solid var(--line);border-radius:14px;margin-bottom:29px}
+.authLoginCard .authTabs .tab{border:0;border-radius:10px;padding:11px 10px;box-shadow:none;font-weight:750;font-size:13px;background:transparent;color:var(--muted)}
+.authLoginCard .authTabs .tab.active{background:var(--surface);color:var(--ink);box-shadow:0 2px 12px rgba(36,51,80,.1)}
+.authLoginCard form{gap:17px}
+.authLoginCard form label{font-size:13px;font-weight:730;color:var(--ink)}
+.authLoginCard input[type=email],.authLoginCard input[type=password],.authLoginCard input[type=text]{background:var(--surface2);padding:14px 15px;border-radius:12px;font-size:15px;border-color:var(--line);transition:border-color .18s,box-shadow .18s,background .18s}
+.authLoginCard input[type=email]:focus,.authLoginCard input[type=password]:focus,.authLoginCard input[type=text]:focus{outline:none;border-color:var(--p);box-shadow:0 0 0 3px color-mix(in srgb,var(--p) 12%,transparent);background:var(--surface)}
+.authLoginCard .primary.wide{padding:15px 20px;border-radius:12px;font-size:15px;font-weight:800;box-shadow:0 9px 20px color-mix(in srgb,var(--p) 19%,transparent);transition:transform .2s,box-shadow .2s}
+.authLoginCard .primary.wide:hover{transform:translateY(-1px);box-shadow:0 12px 22px color-mix(in srgb,var(--p) 24%,transparent)}
+.authLoginCard .authTextButton{justify-self:center}
+.authLoginCard .rememberLoginRow{color:var(--muted);font-size:12px}
+.authLoginCard .passwordField{margin-top:6px}
+.authLoginCard .passwordField input{margin-top:0}
+@media(max-width:900px){.authLanding{grid-template-columns:1fr!important;gap:16px!important;min-height:unset;padding:38px 0 50px}.authLanding .authIntro{text-align:center;padding:3px 12px 13px}.authLanding .authBrandSymbol{margin:0 auto 15px;width:48px;height:48px}.authBrandSymbol svg{width:48px;height:48px}.authLanding .authHeadline{font-size:clamp(38px,7vw,56px);letter-spacing:-.052em}.authHeadline span{display:inline}.authLanding .authTagline{margin:12px auto 10px;font-size:18px}.authAccentLine{justify-content:center;margin-top:16px}.authLanding .authLoginCard{justify-self:center;width:min(100%,500px)}}
+@media(max-width:520px){.authLanding{padding:24px 0 36px;gap:8px!important}.authLanding .authHeadline{font-size:clamp(32px,8.3vw,44px)}.authLanding .authTagline{font-size:16px;line-height:1.4;margin:7px auto 9px}.authDesktopBreak{display:none}.authAccentLine{margin-top:14px}.authLanding .authLoginCard{padding:21px 17px;border-radius:20px}.authLoginCard .authTabs{margin-bottom:21px}.authLoginCard .authTabs .tab{font-size:12px}}
+@media(prefers-reduced-motion:reduce){.authLoginCard .primary.wide,.authLoginCard input{transition:none!important}}

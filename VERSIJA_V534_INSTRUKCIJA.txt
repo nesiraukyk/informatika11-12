@@ -1,0 +1,17 @@
+NGG Informatika v5.34 – atnaujintas prisijungimo ekranas
+
+Kas pakeista:
+- Pagrindinis užrašas „NGG informatika“ ir „Platforma mokymuisi ir atsiskaitymams.“
+- Pašalinti „INFORMATIKA 10–12“, ankstesnis aprašymas ir funkcijų sąrašas.
+- Pašalintas tekstas apie slaptažodžio saugojimą naršyklėje.
+- Sutvarkytas prisijungimo kortelės dizainas, tarpai, kontrastas, išdėstymas telefone.
+- Išsaugoti registracijos, slaptažodžio atkūrimo ir prisijungimo laukai bei jų ID.
+
+Failai: index.html ir style.css. JavaScript logikos nekeista.
+
+Diegimas: išpakuokite ZIP ir įkelkite VISĄ informatika11-12-main aplanko turinį
+į esamą GitHub saugyklą. Būtinai atnaujinkite index.html ir style.css.
+Naršyklėje galima paspausti Ctrl+F5. Supabase SQL vykdyti NEREIKIA.
+
+Papildomai pateikiama atskira demonstracinė trijų dizaino variantų HTML peržiūra,
+kuri nesijungia prie svetainės ir nėra skirta naudoti mokiniams.

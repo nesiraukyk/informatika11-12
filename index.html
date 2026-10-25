@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Informatika 10–12</title>
-<meta name="app-version" content="5.32.0">
+<title>NGG Informatika – mokymosi ir atsiskaitymų platforma</title>
+<meta name="app-version" content="5.34.0">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preconnect" href="https://gmqnaupstlwvckttjpfe.supabase.co" crossorigin>
-<link rel="stylesheet" href="style.css?v=5.33.0">
+<link rel="stylesheet" href="style.css?v=5.34.0">
 </head>
 <body>
 <header class="topbar hidden" id="appHeader">
@@ -40,19 +40,19 @@
 </section>
 
 <section id="view-auth" class="view hidden">
-  <div class="authShell two">
+  <div class="authShell two authLanding">
     <div class="authIntro">
-      <span class="eyebrow">INFORMATIKA 10–12</span>
-      <h1>Viena platforma mokymuisi, praktikai ir darbams.</h1>
-      <p>Mokytojas mato tik savo klases. Mokinys mato tik savo mokytojo atidarytas temas, failus, užduotis ir savo rezultatus.</p>
-      <ul class="featureList">
-        <li>Praktikos bandymų istorija ir rezultatai</li>
-        <li>Paskutinis prisijungimas ir mokymosi laikas</li>
-        <li>Mokytojo įkeliami mokymosi failai</li>
-        <li>Mokinių darbų pateikimas ir atsisiuntimas</li>
-      </ul>
+      <div class="authBrandSymbol" aria-hidden="true">
+        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3.5" y="3.5" width="41" height="41" rx="12" fill="currentColor" fill-opacity=".08" stroke="currentColor" stroke-opacity=".18"/>
+          <path d="M19 15L11 24L19 33M29 15L37 24L29 33M26 12L21 36" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h1 class="authHeadline">NGG <span>informatika</span></h1>
+      <p class="authTagline">Platforma mokymuisi ir<br class="authDesktopBreak"> atsiskaitymams.</p>
+      <div class="authAccentLine" aria-hidden="true"><i></i><i></i><i></i></div>
     </div>
-    <div class="authCard">
+    <div class="authCard authLoginCard">
       <div class="authTabs" id="authTabs">
         <button class="tab active" id="tabLogin">Prisijungti</button>
         <button class="tab" id="tabSignup">Mokinio registracija</button>
@@ -68,7 +68,6 @@
         <label class="rememberLoginRow"><input type="checkbox" id="rememberLogin" checked> Prisiminti el. paštą šiame įrenginyje</label>
         <button class="primary wide" type="submit">Prisijungti</button>
         <button class="authTextButton" id="forgotPasswordBtn" type="button">Pamiršau slaptažodį</button>
-        <p class="formHint">Naršyklė gali pasiūlyti išsaugoti slaptažodį. Svetainė pati slaptažodžio nesaugo.</p>
       </form>
 
       <form id="forgotPasswordForm" class="hidden" autocomplete="on">
@@ -195,10 +194,10 @@
 <div id="toast" class="toast hidden"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase-config.js?v=5.33.0"></script>
-<script src="config.js?v=5.33.0"></script>
-<script src="questions.js?v=5.33.0"></script>
-<script src="assessment.js?v=5.33.0"></script>
-<script src="app.js?v=5.33.0"></script>
+<script src="supabase-config.js?v=5.34.0"></script>
+<script src="config.js?v=5.34.0"></script>
+<script src="questions.js?v=5.34.0"></script>
+<script src="assessment.js?v=5.34.0"></script>
+<script src="app.js?v=5.34.0"></script>
 </body>
 </html>
