@@ -229,7 +229,7 @@ function viewFromHash(){
  const p=new URLSearchParams(hash);
  const kind=p.get('view');
  if(!kind)return null;
- const allowed=['teacher','teacher-class','teacher-posts','teacher-question-bank','teacher-grade10-bank','teacher-preview','teacher-topic-preview','student','student-topic','achievements','classmates','profile','assessment-quiz','assessment-practical','practice-quiz','results','crypto-mission','crypto-teacher'];
+ const allowed=['teacher','teacher-class','teacher-posts','teacher-question-bank','teacher-grade10-bank','teacher-preview','teacher-topic-preview','student','student-topic','student-results','achievements','classmates','profile','assessment-quiz','assessment-practical','practice-quiz','results','crypto-mission','crypto-teacher'];
  if(!allowed.includes(kind))return null;
  return {kind,classId:p.get('class')||null,topicId:p.get('topic')||null,panel:p.get('panel')||null,attemptId:p.get('attempt')||null};
 }
@@ -287,6 +287,7 @@ async function restoreNavigation(view){
  if(view.kind==='student')return profile.role==='student'?renderStudent():renderTeacher();
  if(view.kind==='achievements')return profile.role==='student'?renderAchievements():renderTeacher();
  if(view.kind==='classmates')return profile.role==='student'?renderClassmates():renderTeacher();
+ if(view.kind==='student-results')return profile.role==='student'?renderStudentResults():renderTeacher();
  if(view.kind==='profile')return renderProfile();
  if(view.kind==='crypto-teacher'&&isTeacher){const c=await getTeacherClass();return c?openTeacherClass(c.id,'assignments'):renderTeacher();}
  if(view.kind==='crypto-mission'&&profile.role==='student'){const c=await getStudentClass();if(!c)return renderStudent();await loadClassTopics(c.id);const {data:access}=await sb.from('topic_access').select('*').eq('class_id',c.id);return (access||[]).some(a=>a.topic_id==='kriptografija'&&a.is_open)?openStudentTopic('kriptografija',c,access||[]):renderStudent();}
@@ -434,6 +435,7 @@ function route(name){
  if(name==='student')return renderStudent();
  if(name==='achievements')return profile?.role==='student'?renderAchievements():renderTeacher();
  if(name==='classmates')return profile?.role==='student'?renderClassmates():renderTeacher();
+ if(name==='student-results')return profile?.role==='student'?renderStudentResults():renderTeacher();
  if(name==='profile')return renderProfile();
  show(name);
 }
@@ -444,19 +446,11 @@ function setHeader(){
  if(!profile)return;
  const isTeacher=['teacher','admin'].includes(profile.role);
  if($('headerRole'))$('headerRole').textContent=profile.role==='teacher'?'Mokytojas':profile.role==='admin'?'Administratorius':'Mokinys';
- const accountName=$('navAccountName');
- if(accountName){
-  const fullName=String(profile.full_name||'').trim();
-  const firstName=fullName.split(/\s+/)[0]||'Mokinys';
-  accountName.classList.toggle('hidden',isTeacher);
-  accountName.setAttribute('title',fullName||'Mokinio paskyra');
-  $('navAccountFull').textContent=fullName||'Mokinys';
-  $('navAccountShort').textContent=firstName;
- }
 
  // Mokinys turi vieną aiškią pradžios nuorodą, kuri visada atidaro jo klasę.
  $('homeNav').classList.toggle('hidden',isTeacher);
  $('homeNav').dataset.route='student';
+ if($('studentResultsNav'))$('studentResultsNav').classList.toggle('hidden',isTeacher);
  if($('achievementsNav'))$('achievementsNav').classList.add('hidden');
  if($('classmatesNav'))$('classmatesNav').classList.add('hidden');
  if(isTeacher)delete document.documentElement.dataset.studentSkin;
@@ -2488,6 +2482,66 @@ async function renderClassmates(){
  $('backClassmates').onclick=()=>appBack(()=>renderStudent());
 }
 
+/* ================= MOKINIO ATSISKAITYMŲ SUVESTINĖ ================= */
+function renderMyResultValue(row){
+ if(row.teacher_grade!==null && row.teacher_grade!==undefined){
+  const grade=Number(row.teacher_grade);
+  return Number.isFinite(grade)?`<span class="resultsScore isGrade" aria-label="Mokytojo pažymys ${grade}">${grade}</span>`:'<span class="resultsPending">Laukiama pažymio</span>';
+ }
+ if(row.results_released && row.score_percent!==null && row.score_percent!==undefined){
+  return `<span class="resultsScore isPercent" aria-label="Automatinis rezultatas ${Number(row.score_percent)} procentų">${Number(row.score_percent)}%</span>`;
+ }
+ return '<span class="resultsPending">Laukiama įvertinimo</span>';
+}
+function studentResultGradeLabel(row){
+ return row.teacher_grade!=null?'Mokytojo pažymys':row.results_released&&row.score_percent!=null?'Automatinis rezultatas':'Dar nepaskelbta';
+}
+function normalizeWorkGrade(value){
+ const raw=String(value??'').trim();
+ const grade=raw.match(/^([1-9]|10)\s*\/\s*10$/);
+ return grade?grade[1]:raw;
+}
+async function renderStudentResults(){
+ setCurrentRestore(()=>renderStudentResults(),{kind:'student-results'});
+ show('student-results');
+ $('studentResultsContent').innerHTML='<div class="pageHero studentResultHero"><h1>Rezultatai</h1></div><div class="panel"><p class="muted">Kraunami tavo atsiskaitymai...</p></div>';
+ const c=await getStudentClass();
+ if(!c){$('studentResultsContent').innerHTML='<div class="pageHero studentResultHero"><h1>Rezultatai</h1></div><div class="panel emptyState">Pirmiausia prisijunk prie klasės.</div>';return}
+ const [{data:results,error:resultError},{data:workSubmissions,error:submissionsError},{data:classAssignments,error:assignmentsError}]=await Promise.all([
+  sb.rpc('list_my_assessment_results',{p_class_id:c.id}),
+  sb.from('submissions').select('assignment_id,grade,teacher_note,submitted_at').eq('student_id',me.id).not('grade','is',null).order('submitted_at',{ascending:false}),
+  sb.from('assignments').select('id,title,class_id,topic_id').eq('class_id',c.id)
+ ]);
+ await loadClassTopics(c.id);
+ const sortedResults=[...(results||[])].sort((a,b)=>new Date(b.completed_at||0)-new Date(a.completed_at||0));
+ const assignmentMap=new Map((classAssignments||[]).map(x=>[x.id,x]));
+ const gradedWork=(workSubmissions||[]).filter(x=>assignmentMap.has(x.assignment_id)&&String(x.grade??'').trim());
+ if(resultError)console.warn('Atsiskaitymų suvestinė:',resultError);
+ const resultErrorMessage=resultError?'<div class="notice resultsError">Šiuo metu atsiskaitymų suvestinė nepasiekiama. Pamėgink atnaujinti puslapį.</div>':'';
+ const taskErrorMessage=(submissionsError||assignmentsError)?'<div class="notice resultsError">Įvertintų įkeltų darbų dabar nepavyko įkelti.</div>':'';
+ $('studentResultsContent').innerHTML=`
+  <div class="pageHero studentResultHero"><h1>Rezultatai</h1><p>${esc(c.name)}</p></div>
+  <section class="panel studentResultPanel">
+   <div class="resultsSectionHead"><h2>Atsiskaitymai</h2><span class="resultsCount">${sortedResults.length}</span></div>
+   ${resultErrorMessage}
+   ${sortedResults.length?`<div class="resultsEntries">${sortedResults.map(row=>{
+    const topic=topicById(row.topic_id);
+    const topicName=row.topic_title||topic?.title||row.topic_id;
+    const details=row.teacher_comment&&row.teacher_grade!=null?`<p class="resultsNote">${esc(row.teacher_comment)}</p>`:'';
+    return `<div class="resultsEntry"><div class="resultsEntryDetails"><b>${esc(topicName)}</b><div class="resultsMeta">${row.attempt_number>1?`<span>${Number(row.attempt_number)} bandymas</span> · `:''}<span>${esc(fmtDate(row.completed_at))}</span></div>${details}</div><div class="resultsEntryScore">${renderMyResultValue(row)}<small>${studentResultGradeLabel(row)}</small></div></div>`;
+   }).join('')}</div>`:(!resultError?'<div class="emptyState">Dar nėra pateiktų atsiskaitymų.</div>':'')}
+   <p class="resultsFootnote">Mokytojo pažymys rodomas iškart po įvertinimo. Automatiniai rezultatai paskelbiami tik baigus atsiskaitymą visai klasei.</p>
+  </section>
+  <section class="panel studentResultPanel">
+   <div class="resultsSectionHead"><h2>Įvertinti darbai</h2><span class="resultsCount">${gradedWork.length}</span></div>
+   ${taskErrorMessage}
+   ${gradedWork.length?`<div class="resultsEntries">${gradedWork.map(work=>{
+    const task=assignmentMap.get(work.assignment_id);
+    return `<div class="resultsEntry"><div class="resultsEntryDetails"><b>${esc(task?.title||'Pateiktas darbas')}</b><div class="resultsMeta">${esc(topicById(task?.topic_id)?.title||'')}${task?.topic_id?' · ':''}${esc(fmtDate(work.submitted_at))}</div>${work.teacher_note?`<p class="resultsNote">${esc(work.teacher_note)}</p>`:''}</div><div class="resultsEntryScore"><span class="resultsScore isGrade">${esc(normalizeWorkGrade(work.grade))}</span><small>Mokytojo įvertinimas</small></div></div>`;
+   }).join('')}</div>`:(!submissionsError&&!assignmentsError?'<div class="emptyState">Dar nėra įvertintų pateiktų darbų.</div>':'')}
+  </section>`;
+}
+
 /* ================= STUDENT ================= */
 async function getStudentClass(){
  const {data:mem}=await sb.from('class_members').select('class_id,joined_at').eq('student_id',me.id).order('joined_at',{ascending:true}).limit(1);
@@ -2522,14 +2576,13 @@ async function renderStudent(){
  const secs=(sessions||[]).reduce((n,x)=>n+(x.duration_seconds||0),0),best=(attempts||[]).length?Math.max(...attempts.map(x=>x.score_percent||0)):0;
  const openTopics=activeClassTopics.filter(t=>(access||[]).find(a=>a.topic_id===t.id)?.is_open);
 
- $('studentContent').innerHTML=`<div class="pageHero studentClassHero"><h1>${esc(c.name)}</h1></div>
+ $('studentContent').innerHTML=`<div class="pageHero studentClassHero"><h1>${esc(c.name)}</h1><div class="studentIdentity" title="Prisijungusi paskyra"><span class="studentIdentityIcon" aria-hidden="true">${esc((profile.full_name||'M').trim().charAt(0).toUpperCase())}</span><span>${esc(profile.full_name||'Mokinys')}</span></div></div>
  ${renderMotivationCard(motivation)}
  <div class="dashboardGrid"><div class="metric"><strong>${(attempts||[]).length}</strong><span>bandymų</span></div><div class="metric"><strong>${(attempts||[]).length?best+'%':'–'}</strong><span>geriausias rezultatas</span></div><div class="metric"><strong>${fmtSec(secs)}</strong><span>aktyvus laikas</span></div><div class="metric"><strong>${fmtDate(profile.last_seen_at||profile.last_login_at)}</strong><span>paskutinis aktyvumas</span></div></div>
 
 
  <div class="panel studentUploadPanel">
-  <div class="sectionTitle"><div class="grow"><span class="kicker">MANO DARBAI</span><h2>Pateikti atliktą darbą</h2></div><button class="primary" id="directSubmitBtn" ${openTopics.length?'':'disabled'}>+ Įkelti failus</button></div>
-  <p class="muted">Gali pateikti vieną arba kelis failus vienu metu ir vėliau pridėti dar. Savo įkeltus failus gali atsisiųsti arba ištrinti. Mokytojas iškart matys juos savo klasės skiltyje „Darbų pateikimas“.</p>
+  <div class="sectionTitle"><div class="grow"><h2>Mano darbai</h2></div><button class="primary" id="directSubmitBtn" ${openTopics.length?'':'disabled'}>+ Įkelti failus</button></div>
   ${(direct||[]).length?`<div class="miniList"><b>Mano pateikti failai (${direct.length})</b>${(direct||[]).map(s=>`<div class="submissionRow"><div class="grow"><b>${esc(s.title||s.original_name)}</b><div class="subtle">${esc(topicById(s.topic_id)?.title||s.topic_id)} · ${esc(s.original_name)} · ${fmtDate(s.submitted_at)}</div></div><button class="smallBtn" data-my-direct="${s.id}">Atsisiųsti</button><button class="smallBtn dangerMini" data-my-del-direct="${s.id}">Ištrinti</button></div>`).join('')}</div>`:'<div class="emptyState">Dar nieko nepateikei. Gali pasirinkti kelis failus vienu metu.</div>'}
  </div>
 
@@ -2724,7 +2777,7 @@ async function renderTeacherStudentPreview(c,backFn=null){
  $('teacherContent').innerHTML=`<div class="previewBanner"><b>👁 Mokinio vaizdo peržiūra</b><span>Tai tik peržiūros režimas – mokinio rezultatai nebus keičiami.</span></div>
  <div class="pageHero"><button class="back" id="backFromPreview">← Grįžti į klasės valdymą</button><span class="kicker">PRADŽIA · ${esc(c.name)}</span><h1>Mokinio klasės vaizdas</h1><p>Taip mokinys mato tavo atidarytas temas ir pagrindines skiltis.</p></div>
 
- <div class="panel studentUploadPanel previewDisabled"><div class="sectionTitle"><div class="grow"><span class="kicker">MANO DARBAI</span><h2>Pateikti atliktą darbą</h2></div><button class="primary" disabled>+ Įkelti failus</button></div><p class="muted">Mokinys čia gali pateikti vieną ar kelis atliktos užduoties failus.</p></div>
+ <div class="panel studentUploadPanel previewDisabled"><div class="sectionTitle"><div class="grow"><h2>Mano darbai</h2></div><button class="primary" disabled>+ Įkelti failus</button></div></div>
  <div class="sectionHead"><span class="kicker">TEMOS</span><h2>Mokymosi turinys</h2></div>
  <div class="studentTopics topicDeck">${activeClassTopics.length?activeClassTopics.map(t=>{const a=(access||[]).find(x=>x.topic_id===t.id)||{};return `<article class="topicStudentCard modernTopicCard ${a.is_open?'':'locked'}"><div class="topicCardTop"><span class="topicCardIcon" aria-hidden="true">${esc(t.icon||'💻')}</span><div class="topicCardTitle"><h3>${esc(t.title)}</h3></div><button class="topicCardAction ${a.is_open?'':'isDisabled'}" data-preview-topic="${t.id}" ${a.is_open?'':'disabled'} aria-label="${a.is_open?'Atidaryti temą':'Tema užrakinta'}: ${esc(t.title)}">${a.is_open?'→':'🔒'}</button></div></article>`}).join(''):'<div class="panel emptyState"><b>Šiai klasei temų dar nėra.</b></div>'}</div>`;
  show('teacher');

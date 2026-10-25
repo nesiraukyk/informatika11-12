@@ -892,3 +892,44 @@ html[data-student-skin="legend"]{--p:#b56b00;--p2:#744b9e}
  .navRight .navAccountName{max-width:84px;gap:5px}
  .navRight .danger{padding:7px 5px}
 }
+
+
+/* v5.32 – mokinio suvestinė ir grupės kortelės antraštė */
+.studentClassHero{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.studentClassHero h1{flex:1;min-width:220px}
+.studentIdentity{display:inline-flex;align-items:center;gap:10px;max-width:100%;padding:10px 14px;border-radius:15px;border:1px solid var(--line);background:var(--surface);box-shadow:0 4px 15px rgba(18,40,80,.04);font-weight:750;font-size:14px;overflow-wrap:anywhere}
+.studentIdentityIcon{height:34px;min-width:34px;width:34px;display:grid;place-items:center;border-radius:11px;background:color-mix(in srgb,var(--p) 11%,var(--surface));color:var(--p);font-weight:950}
+.studentUploadPanel .sectionTitle{margin-bottom:4px}
+.studentUploadPanel .sectionTitle h2{font-size:23px}
+.studentResultHero{padding-top:32px;padding-bottom:18px}
+.studentResultHero h1{margin:0 0 4px;font-size:clamp(32px,4vw,44px)}
+.studentResultHero p{margin:2px 0 0}
+.studentResultPanel{margin-bottom:16px}
+.resultsSectionHead{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.resultsSectionHead h2{margin:0;font-size:23px}
+.resultsCount{font-size:12px;font-weight:800;padding:5px 9px;background:var(--surface2);border:1px solid var(--line);border-radius:999px;color:var(--muted)}
+.resultsEntries{display:grid;gap:10px}
+.resultsEntry{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 16px;border:1px solid var(--line);border-radius:15px;background:var(--surface2)}
+.resultsEntryDetails{flex:1;min-width:0}
+.resultsEntryDetails>b{display:block;font-size:15px;line-height:1.4}
+.resultsMeta{margin-top:4px;color:var(--muted);font-size:12px;line-height:1.5}
+.resultsNote{margin:9px 0 0;color:var(--muted);font-size:13px;line-height:1.45;overflow-wrap:anywhere}
+.resultsEntryScore{display:grid;justify-items:end;gap:4px;text-align:right;min-width:120px}
+.resultsScore{display:inline-flex;align-items:center;justify-content:center;padding:7px 12px;min-width:48px;border-radius:12px;font-size:23px;font-weight:900;line-height:1.15;white-space:nowrap}
+.resultsScore.isGrade{background:color-mix(in srgb,var(--p) 10%,var(--surface));color:var(--p);border:1px solid color-mix(in srgb,var(--p) 20%,var(--line))}
+.resultsScore.isPercent{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+.resultsPending{font-size:12px;color:var(--muted);font-weight:700}
+.resultsEntryScore small{font-size:11px;color:var(--muted)}
+.resultsFootnote{font-size:12px;color:var(--muted);margin:16px 0 0;line-height:1.5}
+.resultsError{margin-bottom:12px}
+@media(max-width:620px){
+ .navRight #studentResultsNav:not(.hidden){display:inline-flex;align-items:center;font-size:12px;padding:8px 10px;white-space:nowrap}
+ .studentClassHero{align-items:flex-start;flex-direction:column;gap:10px}
+ .studentClassHero h1{min-width:0}
+ .studentIdentity{padding:7px 10px;font-size:12px}
+ .resultsEntry{gap:8px;padding:12px}
+ .resultsEntryScore{min-width:80px}
+ .resultsEntryDetails>b{font-size:14px}
+ .resultsScore{font-size:20px;min-width:44px;padding:6px 9px}
+}
+@media(max-width:400px){.navRight #studentResultsNav:not(.hidden){font-size:11px;padding:7px 6px}}

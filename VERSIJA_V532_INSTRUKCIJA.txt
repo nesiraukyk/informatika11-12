@@ -1,0 +1,20 @@
+NGG INFORMATIKA – VERSIJA V5.32
+
+PAKEITIMAI
+1. Mokinio pagrindinėje skiltyje "Mano darbai" neberodomi papildomi antraštės ir aprašymo tekstai.
+2. Prisijungusio mokinio vardas ir pavardė rodomi šalia klasės / grupės pavadinimo, ne viršutiniame meniu.
+3. Mokinio viršutinėje navigacijoje atsirado "Rezultatai".
+4. Rezultatuose matomi VISI mokinio pateikti atsiskaitymo bandymai (su pažymiu, jei mokytojas jau įvertino) ir mokytojo įvertinti įkelti darbai.
+5. Pažymiai rodomi kaip 9, ne 9/10. Jei mokytojas dar neįvertino, bet automatiniai rezultatai jau paskelbti, matomas procentas su aiškia žyma.
+6. Teisingi atsakymai bei automatiniai rezultatai neatveriami, kol klasė neužbaigė atsiskaitymo; nauja suvestinė jų neatskleidžia.
+
+BŪTINI DIEGIMO VEIKSMAI
+1) Supabase SQL Editor atidarykite failą:
+   supabase/20261025_student_results_summary.sql
+   Įklijuokite turinį ir vykdykite Run. SQL sukuria saugų API metodą list_my_assessment_results, nieko netrina.
+2) Išarchyvuokite ZIP. Įkelkite katalogo informatika11-12-main TURINĮ į esamą GitHub saugyklą, atnaujindami index.html, app.js, style.css ir kitus ZIP failus. Neištrinkite CNAME.
+3) Svetainėje paspauskite Ctrl + F5. Tikrinkite mokinio paskyroje.
+
+SVARBU: "Mano darbai" pagal dabartinę platformos logiką yra mokytojui pateikti failai, o ne privatūs juodraščiai. Įkėlus failą mokytojas jį gali matyti. Jei reikės privačios juodraščių saugyklos, ją reikia projektuoti kaip atskirą funkciją.
+
+Vien naujo ZIP be SQL nepakanka atsiskaitymų suvestinei – ji tuomet bus laikinai nepasiekiama. Jau esamų pažymių, mokinių ir darbų ši versija nekeičia.

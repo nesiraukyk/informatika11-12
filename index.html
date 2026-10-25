@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Informatika 10–12</title>
-<meta name="app-version" content="5.29.0">
+<meta name="app-version" content="5.32.0">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preconnect" href="https://gmqnaupstlwvckttjpfe.supabase.co" crossorigin>
-<link rel="stylesheet" href="style.css?v=5.31.0">
+<link rel="stylesheet" href="style.css?v=5.32.0">
 </head>
 <body>
 <header class="topbar hidden" id="appHeader">
@@ -15,7 +15,7 @@
     <button class="brand" id="brandHome" data-route="dashboard"><span class="brandMark">IT</span><span><b>Informatika</b><small id="headerRole">Mokymosi platforma</small></span></button>
     <div class="navRight">
       <button class="navBtn" id="homeNav" data-route="student">Pradžia</button>
-      <span class="navAccountName hidden" id="navAccountName" aria-label="Prisijungusi paskyra"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.5"/><path d="M5.5 20c.3-3.4 2.8-5.5 6.5-5.5s6.2 2.1 6.5 5.5"/></svg><span id="navAccountFull"></span><span id="navAccountShort"></span></span>
+      <button class="navBtn" id="studentResultsNav" data-route="student-results">Rezultatai</button>
       <button class="navBtn" id="achievementsNav" data-route="achievements">🏆 Pasiekimai</button>
       <button class="navBtn" id="classmatesNav" data-route="classmates">👥 Klasė</button>
       <button class="navBtn" id="teacherNav" data-route="teacher">Mokytojo aplinka</button>
@@ -130,6 +130,10 @@
   <div id="studentContent"></div>
 </section>
 
+<section id="view-student-results" class="view hidden">
+  <div id="studentResultsContent"></div>
+</section>
+
 <section id="view-topic" class="view hidden">
   <div id="topicContent"></div>
 </section>
@@ -191,10 +195,10 @@
 <div id="toast" class="toast hidden"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase-config.js?v=5.31.0"></script>
-<script src="config.js?v=5.31.0"></script>
-<script src="questions.js?v=5.31.0"></script>
-<script src="assessment.js?v=5.31.0"></script>
-<script src="app.js?v=5.31.0"></script>
+<script src="supabase-config.js?v=5.32.0"></script>
+<script src="config.js?v=5.32.0"></script>
+<script src="questions.js?v=5.32.0"></script>
+<script src="assessment.js?v=5.32.0"></script>
+<script src="app.js?v=5.32.0"></script>
 </body>
 </html>
