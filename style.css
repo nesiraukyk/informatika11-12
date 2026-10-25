@@ -972,3 +972,16 @@ html[data-student-skin="legend"]{--p:#b56b00;--p2:#744b9e}
 @media(max-width:900px){.authLanding{grid-template-columns:1fr!important;gap:16px!important;min-height:unset;padding:38px 0 50px}.authLanding .authIntro{text-align:center;padding:3px 12px 13px}.authLanding .authBrandSymbol{margin:0 auto 15px;width:48px;height:48px}.authBrandSymbol svg{width:48px;height:48px}.authLanding .authHeadline{font-size:clamp(38px,7vw,56px);letter-spacing:-.052em}.authHeadline span{display:inline}.authLanding .authTagline{margin:12px auto 10px;font-size:18px}.authAccentLine{justify-content:center;margin-top:16px}.authLanding .authLoginCard{justify-self:center;width:min(100%,500px)}}
 @media(max-width:520px){.authLanding{padding:24px 0 36px;gap:8px!important}.authLanding .authHeadline{font-size:clamp(32px,8.3vw,44px)}.authLanding .authTagline{font-size:16px;line-height:1.4;margin:7px auto 9px}.authDesktopBreak{display:none}.authAccentLine{margin-top:14px}.authLanding .authLoginCard{padding:21px 17px;border-radius:20px}.authLoginCard .authTabs{margin-bottom:21px}.authLoginCard .authTabs .tab{font-size:12px}}
 @media(prefers-reduced-motion:reduce){.authLoginCard .primary.wide,.authLoginCard input{transition:none!important}}
+
+
+/* v5.35 auth landing full-screen background and NGG mark */
+main.wrap.authWide{max-width:none;width:100%;padding-inline:0}
+#view-auth{position:relative;left:50%;right:50%;margin-left:-50vw;margin-right:-50vw;width:100vw;min-height:100vh;overflow:hidden}
+#view-auth::before{position:absolute;inset:0;background:radial-gradient(ellipse 54% 60% at 8% 22%,color-mix(in srgb,var(--p) 9%,transparent),transparent 78%),radial-gradient(ellipse 46% 56% at 92% 88%,rgba(93,109,236,.08),transparent 80%),linear-gradient(180deg,color-mix(in srgb,var(--surface) 86%,#eef2ff),color-mix(in srgb,var(--bg) 92%,#f7f8fc));background-repeat:no-repeat;z-index:-2}
+.authLanding{width:min(1280px,calc(100vw - 72px));margin:0 auto;min-height:100vh;padding:56px 0 64px;box-sizing:border-box}
+.authLanding::after{content:"";position:absolute;right:max(16px,calc((100vw - min(1280px,calc(100vw - 72px)))/2));top:50%;transform:translateY(-50%);width:min(470px,38vw);height:min(640px,70vh);border-radius:32px;background:linear-gradient(180deg,rgba(255,255,255,.34),rgba(233,238,255,.18));box-shadow:inset 0 1px 0 rgba(255,255,255,.44);z-index:-1;pointer-events:none}
+.authBrandSymbol{width:76px;height:76px;margin-bottom:30px}
+.authBrandMonogram{width:76px;height:76px;border-radius:22px;display:grid;place-items:center;font-size:24px;font-weight:950;letter-spacing:-.06em;color:var(--p);background:linear-gradient(180deg,color-mix(in srgb,var(--p) 10%,#fff),color-mix(in srgb,var(--p) 4%,#fff));border:1px solid color-mix(in srgb,var(--p) 18%,var(--line));box-shadow:0 10px 28px rgba(78,94,219,.09),inset 0 1px 0 rgba(255,255,255,.75)}
+.authBrandSymbol svg{display:none}
+@media(max-width:1024px){.authLanding{width:min(100%,calc(100vw - 40px))}.authLanding::after{display:none}}
+@media(max-width:900px){#view-auth{margin-left:0;margin-right:0;left:auto;right:auto;width:100%}.authLanding{width:min(100%,calc(100vw - 32px));min-height:auto;padding:28px 0 34px}}

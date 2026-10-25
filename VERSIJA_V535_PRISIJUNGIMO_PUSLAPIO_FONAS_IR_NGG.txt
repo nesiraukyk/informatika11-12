@@ -1,0 +1,3 @@
+v5.35
+- Prisijungimo fonas per visa ekrana.
+- Vietoje </> zenklo idetas NGG monogramos simbolis.
