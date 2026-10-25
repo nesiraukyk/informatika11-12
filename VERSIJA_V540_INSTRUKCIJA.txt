@@ -1,0 +1,10 @@
+NGG Informatika v5.40 – modernus mokinio uzduociu failu pateikimo vaizdas
+
+Pakeitimai:
+- Paskirtu uzduociu ikelimas rodomas kompaktiskomis eilutemis.
+- Kiekvienoje eiluteje matomas uzduoties pavadinimas, aprasymas, failu kiekis ir ikelimo mygtukas.
+- Ikelti failai paslepti uz isskleidziamos rodykles; juos galima atsisiusti ar istrinti.
+- Po ikelimo failu sarasas atsiveria automatiskai.
+- Mokytojo vertinimas, kiti puslapiai ir Supabase nekeiciami.
+
+Ikelti visa informatika11-12-main turini i GitHub. SQL nereikia.

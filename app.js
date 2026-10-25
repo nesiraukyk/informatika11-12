@@ -2754,6 +2754,9 @@ async function showMyAssessmentReview(attemptId){
  ${rows.length?rows.map(q=>`<div class="assessmentQuestionDetail ${q.is_correct?'isCorrect':'isWrong'}"><div class="bankQuestionMeta"><span class="badge">${q.question_order}</span><span class="badge">${esc(qTypeLabel(q.question_type))}</span><span class="badge">${esc(q.category)}</span></div><b>${esc(q.question_text)}</b><p>Tavo atsakymas: <strong>${esc(formatStoredAnswer(q,q.student_answer))}</strong><br>Teisingas atsakymas: <strong>${esc(formatStoredAnswer(q,q.correct_answer))}</strong></p>${q.explanation?`<div class="subtle">${esc(q.explanation)}</div>`:''}</div>`).join(''):'<div class="emptyState">Klausimų nėra.</div>'}`);
 }
 
+// Išsaugome išskleistų mokinio užduočių būseną, kai grįžtama iš failo įkėlimo.
+const expandedStudentTasks=new Set();
+
 async function openStudentTopic(topicId,c,access){
  setCurrentRestore(()=>openStudentTopic(topicId,c,access),{kind:'student-topic',classId:c.id,topicId});
  const t=topicById(topicId),a=access.find(x=>x.topic_id===topicId);if(!a?.is_open)return toast('Tema užrakinta.');
@@ -2785,12 +2788,24 @@ async function openStudentTopic(topicId,c,access){
   <div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">MOKYMOSI FAILAI</span><h2>Failai atsisiuntimui</h2></div></div>
    ${(resources||[]).length?(resources||[]).map(r=>`<div class="resourceRow resourceDownloadCard"><span class="resourceFileGlyph" aria-hidden="true">📄</span><div class="grow"><b>${esc(r.title)}</b><div class="subtle" title="${esc(r.original_name)}">${esc(r.original_name)}</div></div><button class="smallBtn resourceDownloadAction" data-sresource="${r.id}" aria-label="Atsisiųsti: ${esc(r.title)}" title="Atsisiųsti">↓</button></div>`).join(''):'<div class="emptyState">Mokytojas šiai temai failų dar neįkėlė.</div>'}
   </div>
-  <div class="panel topicAssignmentUploadPanel"><div class="sectionTitle"><div class="grow"><h2>Paskirtų užduočių įkėlimas</h2></div></div>
+  <div class="panel topicAssignmentUploadPanel"><div class="sectionTitle compactTaskSectionHead"><div class="grow"><h2>Paskirtų užduočių įkėlimas</h2></div>${(assignments||[]).length?`<span class="compactTaskTotal">${assignments.length}</span>`:''}</div>
+   <div class="compactTaskList">
    ${(assignments||[]).length?(assignments||[]).map(as=>{
      const subs=(existing||[]).filter(s=>s.assignment_id===as.id);
-     return `<div class="assignmentBlock"><div class="assignmentRow"><div class="grow"><b>${esc(as.title)}</b><div class="subtle">${esc(as.instructions||'')} ${as.due_at?' · iki '+fmtDate(as.due_at):''}</div></div><button class="primary" data-submit="${as.id}">+ Pridėti failų</button></div>
-      ${subs.length?`<div class="submittedFiles">${subs.map(s=>`<div class="submissionRow"><div class="grow"><b>${esc(s.original_name)}</b><div class="subtle">Pateikta ${fmtDate(s.submitted_at)}</div></div><button class="smallBtn" data-own-assignment-download="${s.id}">Atsisiųsti</button><button class="smallBtn dangerMini" data-own-assignment-delete="${s.id}" data-assignment-id="${as.id}">Ištrinti</button></div>`).join('')}</div>`:''}</div>`
-   }).join(''):'<div class="emptyState">Atidarytų užduočių nėra.</div>'}
+     const isExpanded=expandedStudentTasks.has(as.id);
+     const fileCountText=subs.length?`${subs.length} ${subs.length===1?'failas':subs.length<10&&[2,3,4].includes(subs.length)?'failai':'failų'}`:'Neįkelta';
+     return `<section class="compactTask" data-task-card="${as.id}">
+       <div class="compactTaskHeader">
+         <div class="compactTaskGlyph" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3.5" width="14" height="17" rx="2.6"/><path d="M8.5 9h7M8.5 13h7M8.5 17h4.5"/></svg></div>
+         <div class="compactTaskInfo"><b>${esc(as.title)}</b><div class="compactTaskSecondary">${as.instructions?`<span class="compactTaskInstructions" title="${esc(as.instructions)}">${esc(as.instructions)}</span>`:''}${as.due_at?`<span class="compactTaskDeadline">Iki ${esc(fmtDate(as.due_at).split(' ')[0])}</span>`:''}<span class="compactTaskFileCount ${subs.length?'hasFiles':''}">${fileCountText}</span></div></div>
+         <div class="compactTaskActions"><button class="compactTaskUpload" type="button" data-submit="${as.id}" title="Įkelti atliktą užduotį" aria-label="Įkelti failą užduočiai ${esc(as.title)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 17V5m-4.5 4.5L12 5l4.5 4.5"/><path d="M4 17.5v2h16v-2"/></svg><span>Įkelti</span></button>
+         ${subs.length?`<button type="button" class="compactTaskExpand ${isExpanded?'isExpanded':''}" data-task-toggle="${as.id}" aria-expanded="${isExpanded}" aria-controls="task-files-${as.id}" aria-label="${isExpanded?'Suskleisti':'Rodyti'} pateiktus failus: ${esc(as.title)}" title="${isExpanded?'Suskleisti':'Rodyti'} pateiktus failus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6.5 9.5 5.5 5.5 5.5-5.5"/></svg></button>`:''}
+         </div>
+       </div>
+       ${subs.length?`<div id="task-files-${as.id}" class="compactTaskFiles" data-task-files="${as.id}" ${isExpanded?'':'hidden'}><div class="compactTaskFilesTitle">Pateikti failai</div>${subs.map(s=>`<div class="compactSubmittedFile"><div class="compactSubmittedIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 3.5H7a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-9L13.5 3.5Z"/><path d="M13 3.5v6h6"/></svg></div><div class="compactSubmittedName"><b title="${esc(s.original_name)}">${esc(s.original_name)}</b><small>Pateikta ${esc(fmtDate(s.submitted_at).split(' ')[0])}</small></div><div class="compactSubmittedActions"><button class="compactSubmittedDownload" data-own-assignment-download="${s.id}" aria-label="Atsisiųsti ${esc(s.original_name)}" title="Atsisiųsti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-4-4 4 4 4-4M4 19.5h16"/></svg></button><button class="compactSubmittedDelete" data-own-assignment-delete="${s.id}" data-assignment-id="${as.id}" aria-label="Ištrinti ${esc(s.original_name)}" title="Ištrinti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V5h6v2m-9 0 .7 12h10.6L18 7M10 10.5v5M14 10.5v5"/></svg></button></div></div>`).join('')}</div>`:''}
+     </section>`
+   }).join(''):'<div class="compactTaskEmpty">Šiai temai dar nėra paskirtų užduočių.</div>'}
+   </div>
   </div>
  </div><div class="stack">
   <div class="panel"><span class="kicker">ATSISKAITYMAS</span><h3>Temos testas</h3>${renderStudentAssessmentCard(c,a,assessmentSetting,assessmentStatus)}</div>
@@ -2809,6 +2824,18 @@ async function openStudentTopic(topicId,c,access){
  if($('studentAssessmentReview'))$('studentAssessmentReview').onclick=()=>showMyAssessmentReview(assessmentStatus.attempt_id);
  document.querySelectorAll('[data-sresource]').forEach(b=>b.onclick=()=>downloadResource(b.dataset.sresource));
  document.querySelectorAll('[data-submit]').forEach(b=>b.onclick=()=>submissionModal(b.dataset.submit,c,topicId,access));
+ document.querySelectorAll('[data-task-toggle]').forEach(b=>b.onclick=()=>{
+   const id=b.dataset.taskToggle;
+   const target=document.getElementById(`task-files-${id}`);
+   if(!target)return;
+   const wasExpanded=b.getAttribute('aria-expanded')==='true';
+   target.hidden=wasExpanded;
+   b.setAttribute('aria-expanded',String(!wasExpanded));
+   b.classList.toggle('isExpanded',!wasExpanded);
+   b.setAttribute('title',wasExpanded?'Rodyti pateiktus failus':'Suskleisti');
+   b.setAttribute('aria-label',wasExpanded?'Rodyti pateiktus failus':'Suskleisti pateiktus failus');
+   if(wasExpanded)expandedStudentTasks.delete(id);else expandedStudentTasks.add(id);
+ });
  document.querySelectorAll('[data-own-assignment-download]').forEach(b=>b.onclick=()=>downloadSubmission(b.dataset.ownAssignmentDownload));
  document.querySelectorAll('[data-own-assignment-delete]').forEach(b=>b.onclick=()=>deleteAssignmentSubmission(b.dataset.ownAssignmentDelete,c,b.dataset.assignmentId,'student',topicId,access));
 }
@@ -2825,7 +2852,7 @@ function submissionModal(assignmentId,c,topicId,access){
    if(error){await sb.storage.from('student-submissions').remove([path]);toast(`Nepavyko išsaugoti ${f.name}: ${error.message}`);continue}
    uploaded++;
   }
-  if(uploaded){closeModal();toast(`Pateikta failų: ${uploaded}.`);openStudentTopic(topicId,c,access)}
+  if(uploaded){expandedStudentTasks.add(assignmentId);closeModal();toast(`Pateikta failų: ${uploaded}.`);openStudentTopic(topicId,c,access)}
  };
 }
 

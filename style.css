@@ -1067,3 +1067,62 @@ main.wrap.authWide{max-width:none;width:100%;padding-inline:0}
 @media(max-width:880px){.studentProgressStrip.compactProgressStrip{grid-template-columns:repeat(3,minmax(0,1fr))}.compactProgressStrip .compactProgressTile{padding:12px 10px;gap:9px}.compactProgressTile .studentProgressIcon{width:35px;height:35px;font-size:19px}.compactProgressTile .studentProgressValue{font-size:20px}.compactProgressTile .studentProgressLabel{font-size:11px}.compactProgressTile.studentPointsTile{grid-column:auto}}
 @media(max-width:620px){.studentProgressStrip.compactProgressStrip{grid-template-columns:repeat(2,minmax(0,1fr))}.compactProgressTile.studentPointsTile{grid-column:1/-1}.compactProgressStrip .compactProgressTile{min-height:77px;padding:12px}.privateVaultPanel .studentUploadButton{width:auto;margin-top:0}}
 @media(max-width:390px){.compactProgressStrip .compactProgressTile{padding:10px;gap:7px}.compactProgressTile .studentProgressValue{font-size:18px}.compactProgressTile .studentProgressIcon{width:30px;height:30px}.privateVaultPanel .studentUploadTop{align-items:flex-start}.privateVaultPanel .studentUploadButton{width:100%}}
+
+
+/* 5.40: compact student topic assignment inbox */
+.topicAssignmentUploadPanel .compactTaskSectionHead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:15px}
+.topicAssignmentUploadPanel .compactTaskSectionHead h2{font-size:clamp(18px,2vw,21px);margin:0;letter-spacing:-.025em}
+.compactTaskTotal{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:30px;padding:0 8px;border-radius:10px;font-size:12px;font-weight:800;color:var(--muted);background:var(--surface2);border:1px solid var(--line)}
+.compactTaskList{display:grid;gap:9px}
+.compactTask{border:1px solid var(--line);background:var(--surface2);border-radius:15px;overflow:hidden;transition:border-color .18s ease, box-shadow .18s ease}
+.compactTask:has(.compactTaskExpand.isExpanded){border-color:color-mix(in srgb,var(--p) 22%,var(--line));box-shadow:0 4px 13px rgba(30,53,112,.04)}
+.compactTaskHeader{display:flex;align-items:center;gap:11px;padding:11px 12px;min-height:69px}
+.compactTaskGlyph{width:37px;height:37px;flex:0 0 37px;border-radius:11px;display:grid;place-items:center;color:var(--p);background:color-mix(in srgb,var(--p) 9%,var(--surface));border:1px solid color-mix(in srgb,var(--p) 12%,var(--line))}
+.compactTaskGlyph svg{display:block;width:19px;height:19px}
+.compactTaskInfo{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.compactTaskInfo>b{font-size:14px;line-height:1.25;font-weight:780;color:var(--ink);overflow-wrap:anywhere}
+.compactTaskSecondary{display:flex;flex-wrap:wrap;align-items:center;gap:6px 9px;min-width:0;font-size:11px;line-height:1.35;color:var(--muted)}
+.compactTaskInstructions{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:min(100%,275px)}
+.compactTaskDeadline{white-space:nowrap}
+.compactTaskFileCount{display:inline-flex;align-items:center;color:var(--muted);font-size:11px;white-space:nowrap}
+.compactTaskFileCount.hasFiles{color:var(--ok);font-weight:800}
+.compactTaskActions{display:flex;align-items:center;gap:6px;flex:none}
+.compactTaskUpload{border:1px solid color-mix(in srgb,var(--p) 22%,var(--line));background:color-mix(in srgb,var(--p) 8%,var(--surface));color:var(--p);border-radius:10px;font-size:12px;font-weight:850;min-height:36px;padding:0 11px;display:inline-flex;gap:6px;align-items:center;justify-content:center;cursor:pointer;white-space:nowrap;transition:background .15s ease,border-color .15s ease,transform .15s ease}
+.compactTaskUpload:hover{background:color-mix(in srgb,var(--p) 16%,var(--surface));border-color:color-mix(in srgb,var(--p) 38%,var(--line));transform:translateY(-1px)}
+.compactTaskUpload svg{width:16px;height:16px;display:block}
+.compactTaskExpand{display:grid;place-items:center;width:36px;height:36px;flex:0 0 36px;background:var(--surface);border:1px solid var(--line);border-radius:10px;color:var(--ink);cursor:pointer;transition:background .15s ease}
+.compactTaskExpand:hover{background:color-mix(in srgb,var(--p) 7%,var(--surface))}
+.compactTaskExpand svg{display:block;width:17px;height:17px;transition:transform .15s ease}
+.compactTaskExpand.isExpanded svg{transform:rotate(180deg)}
+.compactTaskFiles{padding:0 12px 10px 60px}
+.compactTaskFiles[hidden]{display:none!important}
+.compactTaskFilesTitle{font-size:10px;font-weight:900;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:1px 0 7px}
+.compactSubmittedFile{display:flex;align-items:center;gap:9px;min-width:0;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:9px 10px;margin-top:6px}
+.compactSubmittedIcon{width:25px;height:25px;color:var(--muted);flex:0 0 25px;display:grid;place-items:center}
+.compactSubmittedIcon svg{display:block;width:19px;height:19px}
+.compactSubmittedName{min-width:0;flex:1;display:grid;gap:2px}
+.compactSubmittedName b{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink)}
+.compactSubmittedName small{font-size:10px;color:var(--muted)}
+.compactSubmittedActions{display:flex;align-items:center;gap:5px;flex:none}
+.compactSubmittedDownload,.compactSubmittedDelete{display:grid;place-items:center;width:31px;height:31px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--ink);cursor:pointer;transition:background .15s}
+.compactSubmittedDownload:hover{background:color-mix(in srgb,var(--p) 8%,var(--surface))}
+.compactSubmittedDelete{color:var(--bad)}
+.compactSubmittedDelete:hover{background:color-mix(in srgb,var(--bad) 9%,var(--surface))}
+.compactSubmittedActions svg{width:16px;height:16px;display:block}
+.compactTaskEmpty{color:var(--muted);font-size:13px;padding:18px 6px}
+@media (max-width:650px){
+ .compactTaskHeader{padding:10px;gap:9px}
+ .compactTaskGlyph{width:33px;height:33px;flex-basis:33px}
+ .compactTaskUpload{padding:0 9px;min-height:34px}
+ .compactTaskExpand{width:34px;height:34px;flex-basis:34px}
+ .compactTaskInfo>b{font-size:13px}
+ .compactTaskFiles{padding-left:10px;padding-right:10px}
+ .compactTaskInstructions{max-width:170px}
+}
+@media (max-width:410px){
+ .compactTaskGlyph{display:none}
+ .compactTaskHeader{gap:7px}
+ .compactTaskUpload span{display:none}
+ .compactTaskUpload{width:34px;padding:0}
+ .compactTaskInstructions{max-width:120px}
+}
