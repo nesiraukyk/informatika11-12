@@ -1,0 +1,21 @@
+NGG informatika v5.38
+
+MOKINIO PUSLAPIS
+- Moderni trijų dalių pažangos juosta.
+- Treniruočių skaitiklis apima tik UŽBAIGTAS praktikas.
+- Pašalinti geriausias rezultatas ir paskutinis aktyvumas.
+- Nauja mokymosi taškų suvestinė: praktika + mokytojo įvertinti atsiskaitymai + įvertintos paskirtos užduotys.
+- Supaprastinta atliktų užduočių įkėlimo skiltis. Nebėra teksto "Failų dar nepateikei."
+- Temose pašalintas atgal mygtukas ir temos kodas prie antraštės; veikia naršyklės atgal funkcija.
+
+SVARBU
+PIRMIAUSIA paleiskite SQL failą informatika11-12_v5_38_MOKYMOSI_TASKAI.sql Supabase SQL Editor.
+Tada įkelkite šios svetainės turinį į GitHub.
+Be SQL taškų kortelėje bus rodomas brūkšnys, o likusios funkcijos veiks.
+
+TAŠKŲ TAISYKLĖS
+- Žinių treniruotės: 10 + rezultatas / 10 taškų už geriausią temos rezultatą tą pačią dieną (iki 20 taškų).
+- Įvertinti atsiskaitymai: mokytojo galutinis pažymys × 20.
+- Įvertinti paskirti darbai: vienos paskirtos užduoties aukščiausias pažymys × 8.
+- Tiesiog įkeltų failų be pažymio taškai neskiriami.
+- Esama XP motyvacinė sistema nekeičiama, būsimos privilegijos pagal naujus taškus dar nesuteikiamos.

@@ -999,3 +999,47 @@ main.wrap.authWide{max-width:none;width:100%;padding-inline:0}
 .authBrandLogoWrap{width:126px;height:126px;padding:0;margin-bottom:22px}
 .authBrandLogo{width:126px;height:126px;object-fit:contain;mix-blend-mode:multiply;filter:none}
 @media(max-width:900px){.authBrandLogoWrap{width:102px;height:102px}.authBrandLogo{width:102px;height:102px}}
+
+
+/* v5.38 – mokinio progreso juosta ir atliktų užduočių įkėlimas */
+.studentProgressStrip{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(290px,1.5fr);gap:13px;margin:16px 0 22px}
+.studentProgressTile{position:relative;min-height:157px;padding:19px 20px;border:1px solid var(--line);border-radius:23px;background:var(--surface);box-shadow:0 12px 34px rgba(28,44,85,.055);display:flex;flex-direction:column;justify-content:center;overflow:hidden}
+.studentProgressIcon{display:grid;place-items:center;width:36px;height:36px;border-radius:12px;margin-bottom:13px;font-weight:950;font-size:22px}
+.progressPractice{background:color-mix(in srgb,var(--ok) 11%,var(--surface));color:var(--ok)}
+.progressClock{background:color-mix(in srgb,var(--p) 8%,var(--surface));color:var(--p)}
+.studentProgressValue{font-size:clamp(25px,2.8vw,34px);font-weight:900;letter-spacing:-.04em;line-height:1.12;white-space:nowrap}
+.studentProgressLabel{font-size:12px;line-height:1.35;color:var(--muted);font-weight:720;margin-top:7px}
+.studentPointsTile{justify-content:space-between;gap:9px;background:linear-gradient(122deg,color-mix(in srgb,var(--p) 10%,var(--surface)) 0%,var(--surface) 95%);border-color:color-mix(in srgb,var(--p) 19%,var(--line))}
+.studentPointsTop{display:flex;justify-content:space-between;gap:10px;align-items:start}
+.studentPointsTop .studentProgressLabel{font-size:11px;letter-spacing:.09em;font-weight:850;margin:0;color:var(--p)}
+.studentPointsValue{margin-top:7px;font-size:clamp(31px,3.2vw,44px);font-weight:950;letter-spacing:-.04em;line-height:1}
+.studentPointsValue span{font-size:13px;font-weight:750;letter-spacing:0;color:var(--muted)}
+.studentPointsSpark{display:grid;place-items:center;flex:none;background:color-mix(in srgb,var(--p) 14%,var(--surface));border:1px solid color-mix(in srgb,var(--p) 20%,var(--line));width:42px;height:42px;border-radius:16px;color:var(--p);font-size:26px}
+.studentPointsTrack{background:color-mix(in srgb,var(--p) 9%,var(--line));height:8px;overflow:hidden;border-radius:20px;margin-top:5px}
+.studentPointsTrack>span{height:100%;display:block;border-radius:20px;background:linear-gradient(95deg,var(--p),#8b6cff);transition:width .4s ease}
+.studentPointsGoal{font-size:12px;color:var(--muted)}.studentPointsGoal b{color:var(--ink)}
+.studentPointsDetails{font-size:11px;color:var(--muted);line-height:1.6}
+.studentPointsDetails summary{cursor:pointer;list-style:none;width:max-content;font-weight:800;color:var(--p)}
+.studentPointsDetails summary::-webkit-details-marker{display:none}
+.studentPointsDetails summary:after{content:" ⓘ"}
+.studentPointsDetails[open] summary{margin-bottom:5px}
+.modernStudentUpload{padding:20px 21px;margin:4px 0 26px;border-radius:23px}
+.studentUploadTop{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.studentUploadIntro{display:flex;align-items:center;gap:12px;min-width:0}
+.studentUploadIntro h2{margin:0 0 2px;line-height:1.2;font-size:21px;letter-spacing:-.02em}
+.studentUploadGlyph{width:44px;height:44px;min-width:44px;border-radius:14px;display:grid;place-items:center;background:color-mix(in srgb,var(--p) 9%,var(--surface));color:var(--p);font-size:27px;font-weight:800}
+.studentUploadCount{display:block;margin-top:4px;color:var(--muted);font-size:12px}
+.studentUploadButton{border-radius:13px;padding:12px 17px;white-space:nowrap;box-shadow:0 5px 16px rgba(48,82,194,.12)}
+.studentUploadButton span{font-size:19px;margin-right:4px;line-height:0}
+.studentWorkList{margin-top:17px;padding-top:12px;border-top:1px solid var(--line);display:grid;gap:9px}
+.studentWorkItem{background:var(--surface2);border:1px solid var(--line);border-radius:15px;padding:11px;display:flex;align-items:center;gap:11px;min-width:0}
+.studentWorkItem .grow{min-width:0;flex:1}
+.studentWorkItem b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.studentWorkItem .subtle{margin-top:4px;overflow-wrap:anywhere}
+.studentWorkFileIcon{display:grid;place-items:center;flex:0 0 38px;width:38px;height:38px;border-radius:12px;background:var(--surface);color:var(--p);font-size:20px}
+.studentWorkActions{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.studentWorkActions .smallBtn{display:grid;place-items:center;width:36px;height:36px;padding:0;font-size:20px;border-radius:11px}
+.studentTopicHero{padding:33px 0 17px}
+.studentTopicHero h1{margin:0 0 8px}
+@media(max-width:900px){.studentProgressStrip{grid-template-columns:repeat(2,minmax(0,1fr))}.studentPointsTile{grid-column:1/-1}}
+@media(max-width:560px){.studentProgressStrip{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.studentProgressTile{min-height:140px;padding:14px;border-radius:17px}.studentProgressValue{font-size:23px}.studentPointsTile{grid-column:1/-1}.studentUploadButton{width:100%;margin-top:4px}.studentUploadIntro h2{font-size:19px}.studentWorkItem{flex-wrap:wrap}.studentWorkActions{margin-left:auto}}
