@@ -933,3 +933,9 @@ html[data-student-skin="legend"]{--p:#b56b00;--p2:#744b9e}
  .resultsScore{font-size:20px;min-width:44px;padding:6px 9px}
 }
 @media(max-width:400px){.navRight #studentResultsNav:not(.hidden){font-size:11px;padding:7px 6px}}
+
+/* v5.33 – aiškesnis įvertinimas dešinėje, tik atsiskaitymo data */
+.studentResultPanel .resultsEntryScore{display:flex;align-items:center;justify-content:flex-end;flex:0 0 auto;min-width:72px;text-align:right}
+.studentResultPanel .resultsScore{min-width:52px}
+.studentResultPanel .resultsEntryDetails .resultsMeta time{white-space:nowrap}
+@media(max-width:620px){.studentResultPanel .resultsEntryScore{min-width:64px}.studentResultPanel .resultsScore{min-width:46px}}

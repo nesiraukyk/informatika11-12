@@ -1,0 +1,9 @@
+NGG Informatika v5.33 – Rezultatų suvestinės dizainas
+
+1. Skiltyje Rezultatai pašalintas ilgasis paaiškinamasis tekstas.
+2. Atsiskaitymų sąraše pažymys rodomas dešinėje, be užrašo po juo.
+3. Data rodoma be valandos ir minučių. Atsiskaitymų data yra tikroji darbo pateikimo (completed_at) data.
+4. Įvertinti darbai taip pat rodo tik datą ir kompaktišką pažymį.
+5. SQL nereikia; v5.32 rezultato RPC sąsaja ir visi saugos apribojimai liko nepakeisti.
+
+Diegimas: Įkelkite visą informatika11-12-main aplanko turinį į tą patį GitHub projektą ir iš naujo atidarykite svetainę. CSS / JS versija v5.33.0.

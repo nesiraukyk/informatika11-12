@@ -71,6 +71,7 @@ function renderQuestionVisual(q){
  return '';
 }
 const fmtDate=d=>d?new Date(d).toLocaleString('lt-LT'):'–';
+const fmtDateOnly=d=>d?new Date(d).toLocaleDateString('lt-LT',{year:'numeric',month:'2-digit',day:'2-digit'}):'–';
 
 function renderStudentTeacherUpdates(posts=[]){
  if(!posts?.length)return '';
@@ -2493,9 +2494,6 @@ function renderMyResultValue(row){
  }
  return '<span class="resultsPending">Laukiama įvertinimo</span>';
 }
-function studentResultGradeLabel(row){
- return row.teacher_grade!=null?'Mokytojo pažymys':row.results_released&&row.score_percent!=null?'Automatinis rezultatas':'Dar nepaskelbta';
-}
 function normalizeWorkGrade(value){
  const raw=String(value??'').trim();
  const grade=raw.match(/^([1-9]|10)\s*\/\s*10$/);
@@ -2528,16 +2526,15 @@ async function renderStudentResults(){
     const topic=topicById(row.topic_id);
     const topicName=row.topic_title||topic?.title||row.topic_id;
     const details=row.teacher_comment&&row.teacher_grade!=null?`<p class="resultsNote">${esc(row.teacher_comment)}</p>`:'';
-    return `<div class="resultsEntry"><div class="resultsEntryDetails"><b>${esc(topicName)}</b><div class="resultsMeta">${row.attempt_number>1?`<span>${Number(row.attempt_number)} bandymas</span> · `:''}<span>${esc(fmtDate(row.completed_at))}</span></div>${details}</div><div class="resultsEntryScore">${renderMyResultValue(row)}<small>${studentResultGradeLabel(row)}</small></div></div>`;
+    return `<div class="resultsEntry"><div class="resultsEntryDetails"><b>${esc(topicName)}</b><div class="resultsMeta">${row.attempt_number>1?`<span>${Number(row.attempt_number)} bandymas</span> · `:''}<time datetime="${esc(String(row.completed_at||'').slice(0,10))}">${esc(fmtDateOnly(row.completed_at))}</time></div>${details}</div><div class="resultsEntryScore">${renderMyResultValue(row)}</div></div>`;
    }).join('')}</div>`:(!resultError?'<div class="emptyState">Dar nėra pateiktų atsiskaitymų.</div>':'')}
-   <p class="resultsFootnote">Mokytojo pažymys rodomas iškart po įvertinimo. Automatiniai rezultatai paskelbiami tik baigus atsiskaitymą visai klasei.</p>
   </section>
   <section class="panel studentResultPanel">
    <div class="resultsSectionHead"><h2>Įvertinti darbai</h2><span class="resultsCount">${gradedWork.length}</span></div>
    ${taskErrorMessage}
    ${gradedWork.length?`<div class="resultsEntries">${gradedWork.map(work=>{
     const task=assignmentMap.get(work.assignment_id);
-    return `<div class="resultsEntry"><div class="resultsEntryDetails"><b>${esc(task?.title||'Pateiktas darbas')}</b><div class="resultsMeta">${esc(topicById(task?.topic_id)?.title||'')}${task?.topic_id?' · ':''}${esc(fmtDate(work.submitted_at))}</div>${work.teacher_note?`<p class="resultsNote">${esc(work.teacher_note)}</p>`:''}</div><div class="resultsEntryScore"><span class="resultsScore isGrade">${esc(normalizeWorkGrade(work.grade))}</span><small>Mokytojo įvertinimas</small></div></div>`;
+    return `<div class="resultsEntry"><div class="resultsEntryDetails"><b>${esc(task?.title||'Pateiktas darbas')}</b><div class="resultsMeta">${esc(topicById(task?.topic_id)?.title||'')}${task?.topic_id?' · ':''}${esc(fmtDateOnly(work.submitted_at))}</div>${work.teacher_note?`<p class="resultsNote">${esc(work.teacher_note)}</p>`:''}</div><div class="resultsEntryScore"><span class="resultsScore isGrade">${esc(normalizeWorkGrade(work.grade))}</span></div></div>`;
    }).join('')}</div>`:(!submissionsError&&!assignmentsError?'<div class="emptyState">Dar nėra įvertintų pateiktų darbų.</div>':'')}
   </section>`;
 }
