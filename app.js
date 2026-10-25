@@ -749,8 +749,7 @@ async function renderTeacherLibrary(){
   return;
  }
  host.innerHTML=`<div class="sectionTitle"><div class="grow"><span class="kicker">MANO FAILAI</span><h3>Mokytojo biblioteka</h3></div><button class="primary" id="uploadTeacherFileBtn">+ Įkelti</button></div>
- <p class="muted">Privatūs tavo failai. Mokiniai jų nemato. Čia gali laikyti pamokų medžiagą, atsakymus, planus ar kitus mokytojo dokumentus.</p>
- ${(rows||[]).length?(rows||[]).map(r=>`<div class="resourceRow"><div class="grow"><b>${esc(r.title||r.original_name)}</b><div class="subtle">${esc(r.original_name)} · ${fmtDate(r.created_at)}</div></div><button class="smallBtn" data-teacher-download="${r.id}">Atsisiųsti</button><button class="smallBtn" data-teacher-delete="${r.id}">Ištrinti</button></div>`).join(''):'<div class="emptyState">Privačių failų dar nėra.</div>'}`;
+ <div class="learningFileList">${(rows||[]).length?(rows||[]).map(r=>`<div class="resourceRow resourceDownloadCard learningFileRow"><span class="resourceFileGlyph" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 3.5H7a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-9L13.5 3.5Z"/><path d="M13 3.5v6h6"/></svg></span><div class="grow"><b>${esc(r.title||r.original_name)}</b><div class="subtle">${esc(r.original_name)}</div></div><div class="learningFileActions"><button class="smallBtn resourceDownloadAction" data-teacher-download="${r.id}" title="Atsisiųsti" aria-label="Atsisiųsti ${esc(r.original_name)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-4-4 4 4 4-4M4 19.5h16"/></svg></button><button class="smallBtn learningFileDelete" data-teacher-delete="${r.id}" title="Ištrinti" aria-label="Ištrinti ${esc(r.original_name)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V5h6v2m-9 0 .7 12h10.6L18 7M10 10.5v5M14 10.5v5"/></svg></button></div></div>`).join(''):'<div class="compactTaskEmpty">Failų dar nėra.</div>'}</div>`;
  $('uploadTeacherFileBtn').onclick=openTeacherFileUploadModal;
  document.querySelectorAll('[data-teacher-download]').forEach(b=>b.onclick=()=>downloadTeacherFile(b.dataset.teacherDownload));
  document.querySelectorAll('[data-teacher-delete]').forEach(b=>b.onclick=()=>deleteTeacherFile(b.dataset.teacherDelete));
@@ -1952,6 +1951,29 @@ function teacherTopicHeader(t,countText){
  return `<span class="topicCardIcon" aria-hidden="true">${esc(t.icon||'💻')}</span><span class="topicCardTitle"><b>${esc(t.title)}</b></span><span class="topicCardCount">${esc(countText)}</span>`;
 }
 
+// Ta pati mokymosi failų eilutė visose aplinkose: mokinys, mokinio peržiūra ir mokytojas.
+function learningFileRow(r,mode='student'){
+ const id=esc(r.id),name=esc(r.title||r.original_name||'Failas'),original=esc(r.original_name||r.title||'');
+ const key=mode==='teacher'?'data-download-resource':mode==='preview'?'data-preview-resource':'data-sresource';
+ const downloadIcon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-4-4 4 4 4-4M4 19.5h16"/></svg>';
+ const removeIcon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V5h6v2m-9 0 .7 12h10.6L18 7M10 10.5v5M14 10.5v5"/></svg>';
+ return `<div class="resourceRow resourceDownloadCard learningFileRow">
+  <span class="resourceFileGlyph" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 3.5H7a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-9L13.5 3.5Z"/><path d="M13 3.5v6h6"/></svg></span>
+  <div class="grow"><b title="${name}">${name}</b><div class="subtle" title="${original}">${original}</div></div>
+  <div class="learningFileActions"><button type="button" class="smallBtn resourceDownloadAction" ${key}="${id}" aria-label="Atsisiųsti: ${name}" title="Atsisiųsti">${downloadIcon}</button>
+  ${mode==='teacher'?`<button type="button" class="smallBtn learningFileDelete" data-delete-resource="${id}" aria-label="Ištrinti failą: ${name}" title="Ištrinti">${removeIcon}</button>`:''}</div>
+ </div>`;
+}
+
+// Peržiūra nesimuliuoja konkretaus mokinio pateiktų darbų: įkėlimo veiksmai išjungti.
+function previewTaskRow(a){
+ const name=esc(a.title||'Užduotis');
+ return `<section class="compactTask previewCompactTask"><div class="compactTaskHeader">
+ <div class="compactTaskGlyph" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3.5" width="14" height="17" rx="2.6"/><path d="M8.5 9h7M8.5 13h7M8.5 17h4.5"/></svg></div>
+ <div class="compactTaskInfo"><b>${name}</b><div class="compactTaskSecondary">${a.instructions?`<span class="compactTaskInstructions" title="${esc(a.instructions)}">${esc(a.instructions)}</span>`:''}${a.due_at?`<span class="compactTaskDeadline">Iki ${esc(fmtDate(a.due_at).split(' ')[0])}</span>`:''}</div></div>
+ <div class="compactTaskActions"><button class="compactTaskUpload" type="button" disabled title="Peržiūros režimas: mokinys galėtų įkelti darbą" aria-label="Įkelti failą užduočiai ${name} (tik peržiūra)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 17V5m-4.5 4.5L12 5l4.5 4.5"/><path d="M4 17.5v2h16v-2"/></svg><span>Įkelti</span></button></div></div></section>`;
+}
+
 async function renderTeacherResources(c){
  const [resourcesResult,assignmentsResult]=await Promise.all([
   sb.from('learning_resources').select('*').eq('class_id',c.id).order('created_at',{ascending:false}),
@@ -1965,15 +1987,15 @@ async function renderTeacherResources(c){
  const groupTopics=[...activeClassTopics,...extraTopicIds.map(id=>topicById(id)||{id,title:id,icon:'📁'})];
  const groups=groupTopics.map(topic=>({topic,items:rows.filter(r=>r.topic_id===topic.id),tasks:tasks.filter(t=>t.topic_id===topic.id)}));
  $('teacherClassPanel').innerHTML=`<div class="panel teacherThemePanel">
-  <div class="sectionTitle teacherThemeHead"><div class="grow"><span class="kicker">MOKYMOSI MEDŽIAGA</span><h2>Mokymosi failai</h2><p class="muted">Pasirink temą ir pridėk mokiniams skirtus failus bei užduotis.</p></div>
-   <button class="primary" id="uploadResourceBtn" ${activeClassTopics.length?'':'disabled'}>+ Įkelti failą</button></div>
+  <div class="sectionTitle teacherThemeHead refreshedTeacherResourcesHead"><div class="grow"><h2>Mokymosi failai</h2></div>
+   <button class="primary refreshedUploadButton" id="uploadResourceBtn" ${activeClassTopics.length?'':'disabled'}>+ Įkelti failą</button></div>
   <div class="teacherTopicDeck">${groups.length?groups.map(g=>`<details class="topicContentGroup teacherTopicCard" data-tgroup="${esc(g.topic.id)}" ${teacherExpandedTopics.resources.has(g.topic.id)?'open':''}>
     <summary>${teacherTopicHeader(g.topic,`${g.items.length} fail. · ${g.tasks.length} užd.`)}</summary>
     <div class="topicContentBody">
-      <div class="topicGroupToolbar"><button class="primary smallPrimary" data-resource-topic="${esc(g.topic.id)}" ${activeClassTopics.some(t=>t.id===g.topic.id)?'':'disabled'}>+ Pridėti failą</button></div>
-      ${g.items.length?g.items.map(r=>`<div class="resourceRow"><div class="grow"><b>${esc(r.title)}</b><div class="subtle">${esc(r.original_name)} · ${fmtDate(r.created_at)}</div></div><button class="smallBtn" data-download-resource="${r.id}">Atsisiųsti</button><button class="smallBtn dangerMini" data-delete-resource="${r.id}">Ištrinti</button></div>`).join(''):'<div class="topicEmptyLine">Šioje temoje failų dar nėra.</div>'}
-      <div class="topicSubsection"><div class="topicGroupToolbar"><h3 class="grow">Užduotys mokiniams</h3><button class="smallBtn" data-resource-new-assignment="${esc(g.topic.id)}" ${activeClassTopics.some(t=>t.id===g.topic.id)?'':'disabled'}>+ Nauja užduotis</button></div>
-       ${g.tasks.length?g.tasks.map(a=>`<div class="resourceRow"><div class="grow"><b>${esc(a.title)}</b><div class="subtle">${a.is_open?'Atidaryta':'Uždaryta'} · ${a.due_at?`iki ${fmtDate(a.due_at)}`:'be termino'}</div></div><span class="badge ${a.is_open?'ok':''}">${a.is_open?'Paskirta':'Neaktyvi'}</span></div>`).join(''):'<div class="topicEmptyLine">Šioje temoje paskirtų užduočių dar nėra.</div>'}</div>
+      <div class="topicGroupToolbar compactResourceToolbar"><span class="topicSubsectionLabel">Failai atsisiuntimui</span><button class="compactTaskUpload compactResourceAdd" data-resource-topic="${esc(g.topic.id)}" ${activeClassTopics.some(t=>t.id===g.topic.id)?'':'disabled'}>+ Pridėti</button></div>
+      <div class="learningFileList">${g.items.length?g.items.map(r=>learningFileRow(r,'teacher')).join(''):'<div class="compactTaskEmpty">Failų nėra.</div>'}</div>
+      <div class="topicSubsection refreshedTasksSubsection"><div class="topicGroupToolbar compactResourceToolbar"><span class="topicSubsectionLabel">Užduotys mokiniams</span><button class="compactTaskUpload compactResourceAdd" data-resource-new-assignment="${esc(g.topic.id)}" ${activeClassTopics.some(t=>t.id===g.topic.id)?'':'disabled'}>+ Nauja</button></div>
+       <div class="compactTaskList">${g.tasks.length?g.tasks.map(a=>`<section class="compactTask teacherResourceTask"><div class="compactTaskHeader"><div class="compactTaskGlyph" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3.5" width="14" height="17" rx="2.6"/><path d="M8.5 9h7M8.5 13h7"/></svg></div><div class="compactTaskInfo"><b>${esc(a.title)}</b><div class="compactTaskSecondary">${a.due_at?`Iki ${esc(fmtDate(a.due_at).split(' ')[0])}`:'Be termino'}</div></div><span class="teacherTaskStatus ${a.is_open?'isOpen':''}">${a.is_open?'Atidaryta':'Uždaryta'}</span></div></section>`).join(''):'<div class="compactTaskEmpty">Užduočių nėra.</div>'}</div></div>
     </div>
    </details>`).join(''):'<div class="emptyState">Temų dar nėra. Pirmiausia sukurk temą.</div>'}</div>
  </div>`;
@@ -2786,7 +2808,7 @@ async function openStudentTopic(topicId,c,access){
    ${c.grade_level==='10'?renderGrade10StudentPracticePicker(practiceBlocks||[],a.practice_open):`<p class="muted"><b>Praktikuotis gali tiek kartų, kiek nori.</b> Kiekvieną kartą sistema iš didesnio klausimų banko atsitiktinai parenka 10 klausimų ir sumaišo atsakymų variantus, todėl bandymai nėra vienodi. Po kiekvieno atsakymo gausi paaiškinimą, o rezultatas ir atlikimo laikas bus išsaugoti tavo paskyroje.</p><button class="primary" id="startPracticeTopic" ${a.practice_open?'':'disabled'}>Pradėti 10 klausimų praktiką</button>`}
   </div>
   <div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">MOKYMOSI FAILAI</span><h2>Failai atsisiuntimui</h2></div></div>
-   ${(resources||[]).length?(resources||[]).map(r=>`<div class="resourceRow resourceDownloadCard"><span class="resourceFileGlyph" aria-hidden="true">📄</span><div class="grow"><b>${esc(r.title)}</b><div class="subtle" title="${esc(r.original_name)}">${esc(r.original_name)}</div></div><button class="smallBtn resourceDownloadAction" data-sresource="${r.id}" aria-label="Atsisiųsti: ${esc(r.title)}" title="Atsisiųsti">↓</button></div>`).join(''):'<div class="emptyState">Mokytojas šiai temai failų dar neįkėlė.</div>'}
+   <div class="learningFileList">${(resources||[]).length?(resources||[]).map(r=>learningFileRow(r,'student')).join(''):'<div class="compactTaskEmpty">Mokymosi failų dar nėra.</div>'}</div>
   </div>
   <div class="panel topicAssignmentUploadPanel"><div class="sectionTitle compactTaskSectionHead"><div class="grow"><h2>Paskirtų užduočių įkėlimas</h2></div>${(assignments||[]).length?`<span class="compactTaskTotal">${assignments.length}</span>`:''}</div>
    <div class="compactTaskList">
@@ -2867,7 +2889,7 @@ async function renderTeacherStudentPreview(c,backFn=null){
   sb.from('practice_attempts').select('id').eq('class_id',c.id)
  ]);
  $('teacherContent').innerHTML=`<div class="previewBanner"><b>👁 Mokinio vaizdo peržiūra</b><span>Tai tik peržiūros režimas – mokinio rezultatai nebus keičiami.</span></div>
- <div class="pageHero"><button class="back" id="backFromPreview">← Grįžti į klasės valdymą</button><span class="kicker">PRADŽIA · ${esc(c.name)}</span><h1>Mokinio klasės vaizdas</h1><p>Taip mokinys mato tavo atidarytas temas ir pagrindines skiltis.</p></div>
+ <div class="pageHero studentClassHero previewStudentClassHero"><button class="back previewReturn" id="backFromPreview">← Grįžti į klasės valdymą</button><h1>${esc(c.name)}</h1></div>
 
 
  <div class="sectionHead"><span class="kicker">TEMOS</span><h2>Mokymosi turinys</h2></div>
@@ -2885,17 +2907,17 @@ async function renderTeacherTopicPreview(topicId,c,access,backFn=null){
   sb.from('class_posts').select('*').eq('class_id',c.id).eq('topic_id',topicId).order('created_at',{ascending:false})
  ]);
  $('teacherContent').innerHTML=`<div class="previewBanner"><b>👁 Mokinio vaizdo peržiūra</b><span>Veiksmai, kurie kurtų mokinio rezultatą ar pateiktų darbą, yra išjungti.</span></div>
- <div class="pageHero"><button class="back" id="backPreviewTopic">← Mokinio klasės vaizdas</button><span class="kicker">${esc(t?.code||'TEMA')}</span><h1>${esc(t?.title||topicId)}</h1>${topicDescription(t)?`<p>${esc(topicDescription(t))}</p>`:''}</div>
+ <div class="pageHero studentTopicHero previewTopicHero"><button class="back previewReturn" id="backPreviewTopic">← Mokinio klasės vaizdas</button><h1>${esc(t?.title||topicId)}</h1>${topicDescription(t)?`<p>${esc(topicDescription(t))}</p>`:''}</div>
  <div class="contentGrid"><div class="stack">
   ${renderStudentTeacherUpdates(topicPosts||[])}
   <div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">PRAKTIKA</span><h2>Žinių treniruotė</h2></div><span class="badge ${a.practice_open?'ok':''}">${a.practice_open?'Atidaryta':'Užrakinta'}</span></div>
    <p class="muted"><b>Praktikuotis galima neribotai.</b> Kiekvieną kartą parenkami atsitiktiniai klausimai ir sumaišomi atsakymai.</p><button class="primary" disabled>${a.practice_open?'Pradėti 10 klausimų praktiką':'Praktika užrakinta'}</button>
   </div>
-  <div class="panel"><span class="kicker">MOKYMOSI FAILAI</span><h2>Failai atsisiuntimui</h2>
-   ${(resources||[]).length?(resources||[]).map(r=>`<div class="resourceRow"><div class="grow"><b>${esc(r.title)}</b><div class="subtle">${esc(r.original_name)}</div></div><button class="smallBtn" data-preview-resource="${r.id}">Atsisiųsti</button></div>`).join(''):'<div class="emptyState">Šiai temai failų dar nėra.</div>'}
+  <div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">MOKYMOSI FAILAI</span><h2>Failai atsisiuntimui</h2></div></div>
+   <div class="learningFileList">${(resources||[]).length?(resources||[]).map(r=>learningFileRow(r,'preview')).join(''):'<div class="compactTaskEmpty">Mokymosi failų dar nėra.</div>'}</div>
   </div>
-  <div class="panel"><span class="kicker">MANO DARBAI</span><h2>Užduočių pateikimas</h2>
-   ${(assignments||[]).length?(assignments||[]).map(as=>`<div class="assignmentRow"><div class="grow"><b>${esc(as.title)}</b><div class="subtle">${esc(as.instructions||'')} ${as.due_at?' · iki '+fmtDate(as.due_at):''}</div></div><button class="primary" disabled>+ Pridėti failų</button></div>`).join(''):'<div class="emptyState">Atidarytų užduočių nėra.</div>'}
+  <div class="panel topicAssignmentUploadPanel"><div class="sectionTitle compactTaskSectionHead"><div class="grow"><h2>Paskirtų užduočių įkėlimas</h2></div>${(assignments||[]).length?`<span class="compactTaskTotal">${assignments.length}</span>`:''}</div>
+   <div class="compactTaskList">${(assignments||[]).length?(assignments||[]).map(a=>previewTaskRow(a)).join(''):'<div class="compactTaskEmpty">Šiai temai dar nėra paskirtų užduočių.</div>'}</div>
   </div>
  </div><div class="stack"><div class="panel"><span class="kicker">ATSISKAITYMAS</span><h3>Temos testas</h3>${a.assessment_open?'<span class="badge ok">Atidaryta</span><p class="muted">Mokinys čia galėtų pradėti atsiskaitymą.</p><button class="primary" disabled>Pradėti atsiskaitymą</button>':'<div class="lockedBox">🔒 Mokytojas atsiskaitymo dar neatidarė.</div>'}</div></div></div>`;
  show('teacher');

@@ -1126,3 +1126,37 @@ main.wrap.authWide{max-width:none;width:100%;padding-inline:0}
  .compactTaskUpload{width:34px;padding:0}
  .compactTaskInstructions{max-width:120px}
 }
+
+
+/* v5.41 – vienodas mokinio, peržiūros ir mokytojo mokymosi failų / užduočių dizainas */
+.learningFileList{display:grid;gap:8px;min-width:0}
+.learningFileRow.resourceDownloadCard{margin-top:0;min-height:60px;padding:10px 12px;gap:11px;background:var(--surface2)}
+.learningFileRow .grow{min-width:0}
+.learningFileRow .grow b{font-size:13px;line-height:1.3}
+.learningFileRow .resourceFileGlyph{display:grid;place-items:center;flex:0 0 38px;width:38px;height:38px;border-radius:12px;border:1px solid color-mix(in srgb,var(--p) 13%,var(--line));background:color-mix(in srgb,var(--p) 8%,var(--surface));color:var(--p)}
+.learningFileRow .resourceFileGlyph svg{display:block;width:19px;height:19px}
+.learningFileActions{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.learningFileRow .resourceDownloadAction,.learningFileRow .learningFileDelete{display:grid;place-items:center;flex:0 0 35px;width:35px;height:35px;padding:0;border-radius:10px;line-height:1;font-size:19px;transition:background .15s,border-color .15s}
+.learningFileRow .resourceDownloadAction svg,.learningFileRow .learningFileDelete svg{display:block;width:17px;height:17px}
+.learningFileRow .resourceDownloadAction{color:var(--p);border-color:color-mix(in srgb,var(--p) 20%,var(--line));background:color-mix(in srgb,var(--p) 6%,var(--surface))}
+.learningFileRow .resourceDownloadAction:hover{background:color-mix(in srgb,var(--p) 13%,var(--surface))}
+.learningFileRow .learningFileDelete{color:var(--bad);background:var(--surface)}
+.learningFileRow .learningFileDelete:hover{border-color:color-mix(in srgb,var(--bad) 30%,var(--line));background:color-mix(in srgb,var(--bad) 7%,var(--surface))}
+.refreshedTeacherResourcesHead{align-items:center;justify-content:space-between;flex-wrap:wrap}
+.refreshedTeacherResourcesHead .grow h2{margin:0;font-size:clamp(19px,2vw,23px)}
+.refreshedUploadButton{white-space:nowrap}
+.compactResourceToolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 9px}
+.topicSubsectionLabel{font-size:12px;font-weight:800;color:var(--muted);letter-spacing:.015em}
+.compactResourceAdd{min-height:31px;font-size:11px;padding:0 9px}
+.refreshedTasksSubsection{margin-top:16px;padding-top:15px;border-top:1px solid var(--line)}
+.refreshedTasksSubsection .compactTaskList{gap:7px}
+.teacherResourceTask .compactTaskHeader{min-height:56px;padding:8px 10px}
+.teacherResourceTask .compactTaskGlyph{width:31px;height:31px;flex-basis:31px}
+.teacherResourceTask .compactTaskGlyph svg{width:16px;height:16px}
+.teacherTaskStatus{display:inline-flex;align-items:center;white-space:nowrap;font-size:11px;color:var(--muted);font-weight:700}
+.teacherTaskStatus.isOpen{color:var(--ok)}
+.previewCompactTask .compactTaskUpload:disabled{opacity:.62;cursor:not-allowed;transform:none}
+.previewCompactTask .compactTaskHeader{min-height:65px}
+.previewStudentClassHero,.previewTopicHero{padding-top:20px}
+.previewReturn{margin:0 0 16px}
+@media(max-width:520px){.learningFileRow.resourceDownloadCard{padding:9px 10px}.learningFileRow .resourceFileGlyph{width:33px;height:33px;flex-basis:33px}.learningFileRow .learningFileActions{gap:4px}.learningFileRow .resourceDownloadAction,.learningFileRow .learningFileDelete{width:32px;height:32px;flex-basis:32px}.teacherTaskStatus{font-size:10px}.refreshedTeacherResourcesHead{gap:10px}}

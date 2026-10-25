@@ -1,0 +1,13 @@
+NGG Informatika v5.41 – mokytojo peržiūra ir mokymosi failų sąrašas
+
+Pakeitimai:
+- Mokytojo „Mokinio vaizdas“ atnaujintas, kad temos viduje rodytų v5.40 kompaktiškas užduotis.
+- Mokymosi failų eilutės suvienodintos mokinio, mokytojo ir peržiūros aplinkose.
+- Mokytojo „Mokymosi failai“ temose pritaikytos kompaktiškos failų ir paskirtų užduočių eilutės.
+- Mokytojo asmeninėje failų bibliotekoje taip pat kompaktiškos failų eilutės.
+- Peržiūroje failus galima atsisiųsti, tačiau mokinio darbų pateikimas išjungtas, nes peržiūra nėra konkretaus mokinio paskyra.
+
+Diegimas:
+- Įkelkite visą informatika11-12-main turinį į esamą GitHub repo.
+- Būtinai pakeiskite index.html, app.js ir style.css.
+- SQL nereikia.
