@@ -1,0 +1,5 @@
+NGG Informatika v5.36
+
+- Prisijungimo puslapyje vietoje NGG monogramos panaudotas pateiktas NGG logotipas (ngg-logo.png).
+- Fonas paliktas per visa ekrana.
+- Atnaujintas failu versijavimas i 5.36.0.

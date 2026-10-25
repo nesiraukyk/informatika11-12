@@ -985,3 +985,10 @@ main.wrap.authWide{max-width:none;width:100%;padding-inline:0}
 .authBrandSymbol svg{display:none}
 @media(max-width:1024px){.authLanding{width:min(100%,calc(100vw - 40px))}.authLanding::after{display:none}}
 @media(max-width:900px){#view-auth{margin-left:0;margin-right:0;left:auto;right:auto;width:100%}.authLanding{width:min(100%,calc(100vw - 32px));min-height:auto;padding:28px 0 34px}}
+
+
+/* v5.36 NGG logo on auth page */
+.authBrandLogoWrap{width:112px;height:112px;display:grid;place-items:center;margin-bottom:26px}
+.authBrandLogo{display:block;width:112px;height:112px;object-fit:contain;filter:drop-shadow(0 10px 18px rgba(20,20,40,.08))}
+.authBrandMonogram{display:none}
+@media(max-width:900px){.authBrandLogoWrap{width:92px;height:92px;margin-bottom:20px}.authBrandLogo{width:92px;height:92px}}
