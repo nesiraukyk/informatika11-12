@@ -1,0 +1,13 @@
+NGG Informatika v5.46 — SECURE LINK 404 pataisa
+
+Priežastis: v5.45 laboratoriją atidarydavo per iframe iš "secure-link/index.html".
+Nors faile ZIP jis yra, įkeliant GitHub dažnai neįkeliamas vidinis aplankas;
+GitHub Pages tada iframe rodo 404, o mokytojas mato tuščią laboratoriją.
+
+Pataisa: laboratorijos HTML dabar supakuotas tiesiai į "secure-link.js" ir
+įkeliamas per iframe.srcdoc. Nebereikia skelbti "secure-link" aplanko.
+Tuo pačiu paliktas atskiras "secure-link.html" (nuoroda rankinei peržiūrai).
+
+Būtina perkelti bent index.html ir secure-link.js į GitHub šakninį katalogą.
+Pilną ZIP archyvą diegti kaip ir anksčiau. SQL naujai vykdyti nereikia.
+Perkrauti puslapį Ctrl+Shift+R ir patikrinti, kad index.html rodo ?v=5.46.0.
