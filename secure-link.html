@@ -103,6 +103,27 @@ body.in-ngg .under h1{font-size:clamp(25px,3vw,43px)}
 body.in-ngg .workspace{padding-top:16px}
 body.in-ngg .top-right .pilot-pill{display:none}
 </style>
+<style>
+/* v5.48 – užpuoliko valdymo skydelis */
+.attacker-panel{border:2px solid #c85e56!important;box-shadow:inset 4px 0 0 rgba(177,51,55,.13)}
+.attacker-panel-head{border-bottom:2px solid #d27871!important;background:linear-gradient(112deg,#ffe5e2 0%,#fff1ed 69%,#fff8f4 100%)!important;padding:16px 17px!important;gap:10px;min-height:80px}
+.attacker-panel-identity{display:flex;align-items:center;gap:11px;min-width:0}
+.attacker-icon{height:35px;width:35px;min-width:35px;display:grid;place-items:center;border-radius:7px;background:#ab3237;color:white;font:900 22px/1 var(--mono);box-shadow:0 3px 0 rgba(94,18,24,.24)}
+.attacker-title-wrap{display:flex;flex-direction:column;gap:5px;min-width:0}
+.attacker-panel-head .pane-title{font:800 15px/1.25 var(--mono)!important;letter-spacing:.4px;color:#8f272e!important;overflow-wrap:anywhere}
+.attacker-subtitle{font:800 12px/1.25 var(--mono);letter-spacing:.7px;color:#a7353b;overflow-wrap:anywhere}
+.attacker-panel-tag{flex:none;border:1px solid #dcaba5;background:#fffcf9;color:#982d32;font:800 10px/1 var(--mono);letter-spacing:.6px;padding:8px 9px}
+.attacker-panel>.pane-head+.inspect-section{background:#fffafa;border-left:4px solid #c7544f;padding-left:15px}
+.attacker-panel>.pane-head+.inspect-section .field-label{color:#a7373b;font-weight:850}
+.attacker-panel>.pane-head+.inspect-section h3{color:#792a2f}
+.attacker-panel>.pane-head+.inspect-section .attack:not(:disabled){border-color:#d6a29e;background:#fff7f6;color:#752b30}
+.attacker-panel>.pane-head+.inspect-section .attack:hover:not(:disabled){background:#ffe5e1;border-color:#c7544f}
+.spy{border-color:#ba4549!important;background:#fff0ee!important;box-shadow:5px 6px 0 #a93a3f24,0 4px 16px #a93a3f1c!important}
+.spy .spy-label{color:#9d2d34!important}.spy strong{color:#72262c!important}
+.spy .spy-info-title{color:#98343a!important}
+@media(max-width:1270px){.attacker-panel{grid-column:1/-1}}
+@media(max-width:600px){.attacker-panel-head{padding:14px!important;min-height:73px}.attacker-panel-head .pane-title{font-size:13px!important}.attacker-subtitle{font-size:11px}.attacker-icon{width:32px;min-width:32px;height:32px}}
+</style>
 </head>
 <body>
 <header class="top"><div class="brand">SECURE<span>/</span>LINK</div><div class="top-mid">NGG Informatika · Ryšio konstravimo laboratorija</div><div class="top-right"><span class="pill">ETAPAS 01 / PILOTAS</span><span class="pill pilot-pill">~10–15 MIN.</span></div></header>
@@ -124,7 +145,7 @@ body.in-ngg .top-right .pilot-pill{display:none}
 <div class="spy" id="spyCard" aria-label="Užpuoliko stebėjimo skydelis"><span class="spy-label">◉ UŽPUOLIKAS / TINKLO STEBĖTOJAS</span><strong>Nežinomas asmuo</strong><div class="spy-info-title">KĄ ŠIUO METU MATO?</div><div class="spy-output" id="spyState" role="status" aria-live="polite">Dar nėra srauto, kurį būtų galima perimti.</div></div>
 </div><div class="packet-strip"><div><div class="strip-label">PERDUODAMAS PAKETAS / TINKLO LYGIS</div><div id="packetView" class="packet-text" aria-live="polite">Nėra. Sukonstruok ryšį ir išsiųsk pirmą žinutę.</div></div><span class="packet-tag" id="packetTag">–</span></div>
 <div class="recipient-pane"><div class="recipient-head"><span class="field-label">GAVĖJAS / BENO EKRANAS — KĄ PERSKAITĖ?</span><span id="receiverBadge" class="receipt-badge">LAUKIAMA</span></div><p class="recipient-why">Čia rodoma, <strong>ką iš tiesų gavo ir sugebėjo perskaityti Benas</strong>. Saugus ryšys turi ne tik paslėpti žinutę nuo užpuoliko, bet ir leisti ją perskaityti teisėtam gavėjui.</p><div id="receiverView" class="feedback"><strong>Laukiama</strong>Benas dar negavo žinutės.</div></div></section>
-<section class="pane inspect"><div class="pane-head"><span class="pane-title">03 / SAUGUMO BANDYMAI</span><span class="pane-code">TESTAI</span></div>
+<section class="pane inspect attacker-panel" aria-label="Užpuoliko ir tinklo stebėtojo bandymai"><div class="pane-head attacker-panel-head"><div class="attacker-panel-identity"><span class="attacker-icon" aria-hidden="true">!</span><span class="attacker-title-wrap"><span class="pane-title">03 / UŽPUOLIKAS</span><span class="attacker-subtitle">TINKLO STEBĖTOJAS</span></span></div><span class="attacker-panel-tag">ATAKOS</span></div>
 <div class="inspect-section"><span class="field-label">Perėmimo bandymai</span><h3>Ką užpuolikas gali perskaityti?</h3><p>Išsiųsk pranešimą, tada atlik perėmimo bandymą. Palygink siunčiamą paketą su tuo, ką mato Benas.</p><div class="attack-buttons"><button class="attack" id="intercept" type="button" disabled>Perimti tinklo paketą <span aria-hidden="true">↗</span></button><button class="attack" id="bruteforce" type="button" disabled>Atlikti Cezario šifro analizę <span aria-hidden="true">↗</span></button></div></div>
 <div class="inspect-section experiment-section"><span class="field-label">Paketo pažeidimų laboratorija</span><h3>Kas nutinka pakeitus duomenis ar raktą?</h3><p>Tai <strong>du palyginimo eksperimentai</strong>: pirmuoju pakeisi perduodamo paketo baitą, antruoju paketą paliksi nepakitusį, bet bandysi jį atidaryti svetimu raktu. Stebėk gavėjo ekraną ir įvykių žurnalą.</p><div class="attack-buttons"><button class="attack warn" id="tamper" type="button" disabled>Pakeisti vieną šifruotą baitą <span aria-hidden="true">↗</span></button><button class="attack warn" id="wrongKey" type="button" disabled>Išbandyti netinkamą raktą <span aria-hidden="true">↗</span></button></div><p class="experiment-note">Informacija: abu bandymai gali baigtis atmetimu, tačiau viename <strong>pakeičiami duomenys</strong>, kitame <strong>pakeičiamas raktas</strong>. Atlik eksperimentus ir palygink įvykių žurnalą.</p></div>
 <div class="inspect-section"><span class="field-label">Paskutinio bandymo analizė</span><div id="feedback" class="feedback" role="status"><strong>Pradėk nuo bandymo</strong>Perimk neužšifruotą žinutę ir sužinok, ką mato pašalinis žmogus.</div></div></section>
