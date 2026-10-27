@@ -1,0 +1,23 @@
+NGG INFORMATIKA v5.45 — SECURE LINK
+
+NAUJA:
+1. Nauja atskira 11 klasės temos „Kriptografinės sistemos, viešasis ir privatusis raktas“ laboratorija SECURE LINK.
+2. Mokytojas: Klasė > Temos > SECURE LINK → pažymi arba atžymi „Rodyti mokiniams“.
+3. Mokytojas gali atidaryti peržiūrą net neišleidęs laboratorijos mokiniams.
+4. Mokinys: Mano klasė > Kriptografinės sistemos > SECURE LINK (tik kai mokytojas įjungė ir tema atidaryta).
+5. Laboratorijoje veikia Cezario šifras, AES-GCM ir RSA-OAEP, užpuoliko perėmimo ir paketo pažeidimo bandymai.
+6. Išsaugomi 5 įrodymų langeliai, galutinio sprendimo pasirinkimas ir mokinio išvada.
+7. Slapti kriptografiniai raktai nesiunčiami į Supabase.
+8. Ankstesnė CYBERLAB laboratorija mokiniams ir mokytojui daugiau nerodoma. Seni jos progreso duomenys neliečiami.
+
+DIEGIMAS
+A) SQL failas: SECURE_LINK_SUPABASE.sql (yra ZIP, taip pat atskirai); Supabase Dashboard > SQL Editor > New query > nukopijuokite visą failą > Run.
+B) GitHub: ZIP išarchyvuoti ir VISĄ informatika11-12-main aplanko turinį įkelti į dabartinį GitHub projektą, pakeičiant ankstesnius failus. Būtinai įkelti katalogą secure-link su index.html.
+C) Perkrauti https://ngg-informatika.lt/ (Ctrl+F5).
+D) Mokytojo aplinkoje Klasė > Temos; spauskite „Atidaryti mokytojo peržiūrą“; pažymėkite varnelę „Rodyti mokiniams“ tik kai išbandysite.
+
+PASTABOS
+- Šiame atnaujinime naujoji laboratorija yra mokomoji, ji nerašo pažymių į atsiskaitymus ir neprideda motyvacinių taškų.
+- Prieiga prie mokinių progreso apsaugota Supabase RLS. Statinės demonstracijos HTML failo viešumo negalima visiškai paslėpti vien GitHub Pages, tačiau be prisijungimo negalima skaityti ar keisti mokinio paskyros progreso.
+- Baigus ir spaudžiant Atgal pažanga papildomai išsaugoma; jei mokytojas išjungia užduotį, nauji mokinių bandymai neįrašomi.
+- Laboratoriją reikia bandyti gyvoje HTTPS svetainėje, nes Web Crypto AES/RSA reikalauja saugaus konteksto.

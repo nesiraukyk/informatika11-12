@@ -1,0 +1,15 @@
+/* SECURE LINK – įdėta mokymosi laboratorija NGG platformoje */
+#view-cyberlab{position:relative;left:50%;width:min(calc(100vw - 28px),1720px);transform:translateX(-50%);margin:0;max-width:none}
+.sl-integrated-header{display:flex;align-items:center;gap:15px;justify-content:space-between;padding:12px 6px 18px;flex-wrap:wrap}
+.sl-integrated-header h2{font-size:20px;margin:0}.sl-integrated-header p{font-size:13px;color:var(--muted,#52655e);margin:4px 0 0}
+.sl-integration-frame{display:block;width:100%;min-height:calc(100vh - 170px);border:1px solid var(--line,#d8dfd8);background:#f4f3ee;border-radius:12px}
+.sl-state-panel{border:1px solid var(--line,#d8dfd8);padding:16px;border-radius:14px;background:var(--surface,#fff);margin-top:14px}
+.sl-state-title{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center}
+.sl-teacher-top{display:flex;align-items:center;gap:12px;justify-content:space-between;flex-wrap:wrap}
+.sl-teacher-top h3{margin:3px 0;font-size:19px}.sl-teacher-panel p{font-size:13px;line-height:1.5;margin:5px 0;color:var(--muted,#52655e)}
+.sl-checkbox{display:inline-flex;align-items:center;gap:11px;font-weight:700;font-size:14px;cursor:pointer;background:var(--surface2,#f4f7f3);border:1px solid var(--line,#dce5de);padding:12px 15px;border-radius:12px}
+.sl-checkbox input{width:19px;height:19px;accent-color:#137d65;cursor:pointer}
+.sl-teacher-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}.sl-teacher-actions button{padding:10px 15px;border-radius:10px}
+.sl-teacher-students{margin-top:15px;display:grid;gap:6px}.sl-student-row{display:flex;gap:12px;align-items:center;justify-content:space-between;background:var(--surface2,#f5f7f4);padding:9px 11px;border-radius:9px;font-size:13px}
+.sl-subtle{font-size:12px;color:var(--muted,#63746a)}
+@media(max-width:700px){#view-cyberlab{width:calc(100vw - 16px)}.sl-integrated-header h2{font-size:17px}.sl-integration-frame{border-radius:8px}}

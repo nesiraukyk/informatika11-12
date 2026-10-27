@@ -230,7 +230,7 @@ function viewFromHash(){
  const p=new URLSearchParams(hash);
  const kind=p.get('view');
  if(!kind)return null;
- const allowed=['teacher','teacher-class','teacher-posts','teacher-question-bank','teacher-grade10-bank','teacher-preview','teacher-topic-preview','student','student-topic','student-results','achievements','classmates','profile','assessment-quiz','assessment-practical','practice-quiz','results','crypto-mission','crypto-teacher'];
+ const allowed=['teacher','teacher-class','teacher-posts','teacher-question-bank','teacher-grade10-bank','teacher-preview','teacher-topic-preview','student','student-topic','student-results','achievements','classmates','profile','assessment-quiz','assessment-practical','practice-quiz','results','crypto-mission','crypto-teacher','cyberlab','cyberlab-preview'];
  if(!allowed.includes(kind))return null;
  return {kind,classId:p.get('class')||null,topicId:p.get('topic')||null,panel:p.get('panel')||null,attemptId:p.get('attempt')||null};
 }
@@ -290,6 +290,13 @@ async function restoreNavigation(view){
  if(view.kind==='classmates')return profile.role==='student'?renderClassmates():renderTeacher();
  if(view.kind==='student-results')return profile.role==='student'?renderStudentResults():renderTeacher();
  if(view.kind==='profile')return renderProfile();
+ if(view.kind==='cyberlab-preview'&&isTeacher){const c=await getTeacherClass();return c?openCyberLab(c.id,true,c):renderTeacher()}
+ if(view.kind==='cyberlab'&&profile.role==='student'){
+  const c=await getStudentClass();if(!c||c.id!==view.classId)return renderStudent();
+  await loadClassTopics(c.id);
+  if(view.topicId!=='kriptografija'||!activeClassTopics.some(t=>t.id==='kriptografija'))return renderStudent();
+  return openCyberLab(c.id,false,c);
+ }
  if(view.kind==='crypto-teacher'&&isTeacher){const c=await getTeacherClass();return c?openTeacherClass(c.id,'assignments'):renderTeacher();}
  if(view.kind==='crypto-mission'&&profile.role==='student'){const c=await getStudentClass();if(!c)return renderStudent();await loadClassTopics(c.id);const {data:access}=await sb.from('topic_access').select('*').eq('class_id',c.id);return (access||[]).some(a=>a.topic_id==='kriptografija'&&a.is_open)?openStudentTopic('kriptografija',c,access||[]):renderStudent();}
  if(view.kind==='results'&&profile.role==='student')return restoreResultsPage(view);
@@ -1101,6 +1108,10 @@ function renderTeacherClassPanel(panel,c,students,members,attempts,sessions,acce
   document.querySelectorAll('[data-assessment-settings]').forEach(b=>b.onclick=()=>openAssessmentSettingsModal(c,b.dataset.assessmentSettings,null,access,assessmentSettings,false));
   document.querySelectorAll('[data-topic-bank]').forEach(b=>b.onclick=()=>navigateTo(()=>c.grade_level==='10'?renderGrade10QuestionBlocks(c,b.dataset.topicBank,access):renderTeacherTopicQuestionBank(c,b.dataset.topicBank,access)));
   $('previewTopicsBtn').onclick=()=>navigateTo(()=>renderTeacherStudentPreview(c,()=>openTeacherClass(c.id,'topics')));
+  if(activeClassTopics.some(t=>t.id==='kriptografija')&&window.SecureLink){
+   const block=document.createElement('div');block.id='cyberlabTeacherControl';host.appendChild(block);
+   window.SecureLink.mountTeacher({host:block,sb,c,students,openPreview:()=>navigateTo(()=>openCyberLab(c.id,true,c))}).catch(err=>console.warn('SECURE LINK valdymas:',err));
+  }
  }
  if(panel==='resources')renderTeacherResources(c);
  if(panel==='assignments')renderTeacherAssignments(c);
@@ -2779,6 +2790,32 @@ async function showMyAssessmentReview(attemptId){
 // Išsaugome išskleistų mokinio užduočių būseną, kai grįžtama iš failo įkėlimo.
 const expandedStudentTasks=new Set();
 
+async function openCyberLab(classId,preview=false,c=null){
+ if(!window.SecureLink)return toast('Nepavyko įkelti laboratorijos modulio.');
+ if(!c){
+  if(preview){const {data:row}=await sb.from('classes').select('*').eq('id',classId).single();c=row}
+  else c=await getStudentClass();
+ }
+ if(!c||c.id!==classId)return toast('Klasė nerasta.');
+ if(!activeClassTopics.some(t=>t.id==='kriptografija'))await loadClassTopics(classId);
+ if(!activeClassTopics.some(t=>t.id==='kriptografija'))return toast('Ši klasė dar neturi kriptografijos temos.');
+ if(preview&&!['teacher','admin'].includes(profile?.role))return toast('Prieiga negalima.');
+ if(!preview&&profile?.role!=='student')return toast('Prieiga negalima.');
+ setCurrentRestore(()=>openCyberLab(classId,preview,c),{kind:preview?'cyberlab-preview':'cyberlab',classId,topicId:'kriptografija'});
+ show('cyberlab');
+ $('cyberlabContent').innerHTML='<div class="panel">Įkeliama SECURE LINK laboratorija...</div>';
+ const onBack=async()=>{
+  if(preview){
+   const {data:access}=await sb.from('topic_access').select('*').eq('class_id',classId);
+   appBack(()=>renderTeacherTopicPreview('kriptografija',c,access||[],()=>openTeacherClass(classId,'topics')));
+  }else{
+   const {data:access}=await sb.from('topic_access').select('*').eq('class_id',classId);
+   appBack(()=>openStudentTopic('kriptografija',c,access||[]));
+  }
+ };
+ await window.SecureLink.mount({host:$('cyberlabContent'),sb,classId,userId:me.id,preview,onBack});
+}
+
 async function openStudentTopic(topicId,c,access){
  setCurrentRestore(()=>openStudentTopic(topicId,c,access),{kind:'student-topic',classId:c.id,topicId});
  const t=topicById(topicId),a=access.find(x=>x.topic_id===topicId);if(!a?.is_open)return toast('Tema užrakinta.');
@@ -2799,10 +2836,12 @@ async function openStudentTopic(topicId,c,access){
   if(gradeRow){assessmentStatus.teacher_grade=gradeRow.grade;assessmentStatus.teacher_comment=gradeRow.teacher_comment;}
  }
  const motivation=await getMotivationSummary(c.id),topicMastery=masteryFor(motivation,topicId);
+ const showCyberLab=topicId==='kriptografija'&&window.SecureLink&&await window.SecureLink.available(sb,c.id);
  let existing=[];if(assignments?.length)({data:existing}=await sb.from('submissions').select('*').eq('student_id',me.id).in('assignment_id',assignments.map(x=>x.id)).order('submitted_at',{ascending:false}));
  $('topicContent').innerHTML=`<div class="pageHero studentTopicHero"><h1>${esc(t?.title||topicId)}</h1>${topicDescription(t)?`<p>${esc(topicDescription(t))}</p>`:''}</div>
  <div class="contentGrid"><div class="stack">
   ${renderStudentTeacherUpdates(topicPosts||[])}
+  ${showCyberLab?`<div class="cl-launch-card"><div><div class="cl-launch-eyebrow">✦ INTERAKTYVI LABORATORIJA</div><h3>🛡️ SECURE LINK: Ryšio laboratorija</h3><p>Interaktyvus ryšio konstruktorius: Cezario šifras, AES-GCM, RSA ir tikri saugumo bandymai.</p></div><button type="button" id="openCyberLabStudent">Pradėti laboratoriją →</button></div>`:''}
   <div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">PRAKTIKA</span><h2>Žinių treniruotė</h2></div><span class="badge ${a.practice_open?'ok':''}">${a.practice_open?'Atidaryta':'Užrakinta'}</span></div>
    ${motivation?.enabled?(topicMastery?`<div class="topicMasteryBox"><div class="masteryHead"><span>Temos įvaldymas</span><strong>${Number(topicMastery.mastery_percent)||0}%</strong></div><div class="masteryTrack"><span style="width:${Math.max(0,Math.min(100,Number(topicMastery.mastery_percent)||0))}%"></span></div><div class="subtle">Skaičiuojama pagal paskutines iki 5 treniruočių · geriausias rezultatas ${Number(topicMastery.best_score)||0}%</div></div>`:'<div class="topicMasteryBox empty"><b>Temos įvaldymas</b><span>Atlik pirmą treniruotę – čia atsiras tavo progresas.</span></div>'):''}
    ${c.grade_level==='10'?renderGrade10StudentPracticePicker(practiceBlocks||[],a.practice_open):`<p class="muted"><b>Praktikuotis gali tiek kartų, kiek nori.</b> Kiekvieną kartą sistema iš didesnio klausimų banko atsitiktinai parenka 10 klausimų ir sumaišo atsakymų variantus, todėl bandymai nėra vienodi. Po kiekvieno atsakymo gausi paaiškinimą, o rezultatas ir atlikimo laikas bus išsaugoti tavo paskyroje.</p><button class="primary" id="startPracticeTopic" ${a.practice_open?'':'disabled'}>Pradėti 10 klausimų praktiką</button>`}
@@ -2833,6 +2872,7 @@ async function openStudentTopic(topicId,c,access){
   <div class="panel"><span class="kicker">ATSISKAITYMAS</span><h3>Temos testas</h3>${renderStudentAssessmentCard(c,a,assessmentSetting,assessmentStatus)}</div>
  </div></div>`;
  show('topic');
+ if($('openCyberLabStudent'))$('openCyberLabStudent').onclick=()=>navigateTo(()=>openCyberLab(c.id,false,c));
  if(a.practice_open&&$('startPracticeTopic'))$('startPracticeTopic').onclick=()=>navigateTo(()=>startQuiz(topicId,c.id,'practice',10));
  if($('practiceAllBlocks'))$('practiceAllBlocks').onchange=()=>document.querySelectorAll('[data-practice-block]').forEach(ch=>ch.checked=$('practiceAllBlocks').checked);
  if($('startGrade10Practice'))$('startGrade10Practice').onclick=()=>{
@@ -2901,6 +2941,7 @@ async function renderTeacherStudentPreview(c,backFn=null){
 async function renderTeacherTopicPreview(topicId,c,access,backFn=null){
  setCurrentRestore(()=>renderTeacherTopicPreview(topicId,c,access,backFn),{kind:'teacher-topic-preview',classId:c.id,topicId});
  const t=topicById(topicId),a=(access||[]).find(x=>x.topic_id===topicId);if(!a?.is_open)return toast('Tema užrakinta.');
+ const showCyberLab=topicId==='kriptografija'&&window.SecureLink&&await window.SecureLink.available(sb,c.id);
  const [{data:resources},{data:assignments},{data:topicPosts}]=await Promise.all([
   sb.from('learning_resources').select('*').eq('class_id',c.id).eq('topic_id',topicId).order('created_at',{ascending:false}),
   sb.from('assignments').select('*').eq('class_id',c.id).eq('topic_id',topicId).eq('is_open',true).order('created_at',{ascending:false}),
@@ -2910,6 +2951,7 @@ async function renderTeacherTopicPreview(topicId,c,access,backFn=null){
  <div class="pageHero studentTopicHero previewTopicHero"><button class="back previewReturn" id="backPreviewTopic">← Mokinio klasės vaizdas</button><h1>${esc(t?.title||topicId)}</h1>${topicDescription(t)?`<p>${esc(topicDescription(t))}</p>`:''}</div>
  <div class="contentGrid"><div class="stack">
   ${renderStudentTeacherUpdates(topicPosts||[])}
+  ${showCyberLab?`<div class="cl-launch-card"><div><div class="cl-launch-eyebrow">✦ MOKINIO VAIZDO PERŽIŪRA</div><h3>🛡️ SECURE LINK: Ryšio laboratorija</h3><p>Galite atidaryti laboratorijos demonstraciją nekeičiant mokinių pažangos.</p></div><button type="button" id="openCyberLabPreview">Peržiūrėti →</button></div>`:''}
   <div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">PRAKTIKA</span><h2>Žinių treniruotė</h2></div><span class="badge ${a.practice_open?'ok':''}">${a.practice_open?'Atidaryta':'Užrakinta'}</span></div>
    <p class="muted"><b>Praktikuotis galima neribotai.</b> Kiekvieną kartą parenkami atsitiktiniai klausimai ir sumaišomi atsakymai.</p><button class="primary" disabled>${a.practice_open?'Pradėti 10 klausimų praktiką':'Praktika užrakinta'}</button>
   </div>
@@ -2922,6 +2964,7 @@ async function renderTeacherTopicPreview(topicId,c,access,backFn=null){
  </div><div class="stack"><div class="panel"><span class="kicker">ATSISKAITYMAS</span><h3>Temos testas</h3>${a.assessment_open?'<span class="badge ok">Atidaryta</span><p class="muted">Mokinys čia galėtų pradėti atsiskaitymą.</p><button class="primary" disabled>Pradėti atsiskaitymą</button>':'<div class="lockedBox">🔒 Mokytojas atsiskaitymo dar neatidarė.</div>'}</div></div></div>`;
  show('teacher');
  $('backPreviewTopic').onclick=()=>appBack(()=>renderTeacherStudentPreview(c,backFn));
+ if($('openCyberLabPreview'))$('openCyberLabPreview').onclick=()=>navigateTo(()=>openCyberLab(c.id,true,c));
  document.querySelectorAll('[data-preview-resource]').forEach(b=>b.onclick=()=>downloadResource(b.dataset.previewResource));
 }
 

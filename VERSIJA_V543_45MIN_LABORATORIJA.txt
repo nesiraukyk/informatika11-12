@@ -1,0 +1,17 @@
+CYBERLAB v5.43 – TYRIMO BYLA, 45 min.
+
+Pataisyta:
+- Visiškai atnaujintas laboratorijos dizainas (skaitmeninių įrodymų byla).
+- 5 etapai: 8+10+10+9+8 = 45 min.
+- Kiekvienam etapui būtini praktiniai eksperimentai, 2 pasitikrinimo klausimai ir rašytinė išvada.
+- Pažanga saugoma esamoje cyberlab_progress lentelėje, tik mokytojas gali atrakinti naują laboratoriją.
+- Nepridedami automatiniai pažymiai ir motyvaciniai taškai.
+- Mokytojo peržiūra nieko neišsaugo.
+- V5.42 saugomi ankstesni bandymai lieka DB; jų neužskaitys kaip V5.43 baigtų etapų.
+- Slapti raktai lieka tik naršyklės atmintyje.
+
+Diegimas: GitHub įkelti visą informatika11-12-main katalogo turinį.
+Jei v5.42 SQL jau buvo paleistas, naujo SQL nereikia.
+Jeigu dar nebuvo – prieš įkeliant į GitHub paleisti supabase/20261027_cyberlab.sql.
+
+Atkreipkite dėmesį: tai 45 min. siūlomos mokymosi veiklos apimtis, o ne priverstinis laikmatis. Mokinys turi atlikti tikrus eksperimentus, atsakyti į 10 klausimų ir pateikti 5 savarankiškas išvadas. Mokytojas turi peržiūrėti išvadų kokybę.

@@ -1,0 +1,18 @@
+NGG CYBERLAB v5.44 – papildyti penki 45 min. tyrimai.
+
+Nauja:
+- Prieš kiekvienos misijos lemiamą eksperimentą – hipotezės pasirinkimas;
+- Po eksperimento: ryškus PRIEŠ / PO pokyčio vizualizavimas ir paaiškinimas;
+- Po kiekvieno pasirenkamo varianto aiški, individuali priežastis, kodėl tinka / netinka;
+- Kiekvienoje misijoje 2 papildomi realūs taikymo scenarijai (iš viso 10);
+- Antroje misijoje reikalaujama papildomai užšifruoti pakeistą žinutę;
+- Ketvirtoje misijoje pasirašomas paties mokinio įvestas tekstas;
+- Penktoje misijoje siunčiamas paties mokinio sukurtas dokumentas;
+- Patikrinamas ir svetimas gavėjas.
+- Ankstesnės mokytojo valdymo / pažangos / duomenų saugumo funkcijos paliktos.
+
+Ši versija perskaičiuoja 5.43 eksperimento įrodymus pagal naują užduočių turinį.
+Svarbu: 45 min. yra metodinė pamokos planavimo apimtis, ne privalomas laikmatis.
+
+Įkėlimas: visą informatika11-12-main turinį pakeisti GitHub.
+SQL: jeigu v5.42 SQL jau paleistas, naujo SQL nereikia.

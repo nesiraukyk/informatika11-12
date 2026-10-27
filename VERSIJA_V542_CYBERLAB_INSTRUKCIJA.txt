@@ -1,0 +1,65 @@
+NGG INFORMATIKA v5.42 – CYBERLAB: SAUGUS RYŠYS
+=================================================
+
+Naujas papildomas 11 klasės mokymosi modulis (ne savarankiškas atsiskaitymas).
+5 interaktyvios misijos (~85 minutės + 5 min. aptarimas):
+1. Kažkas skaito tavo žinutes – atviras tinklas ir Cezario šifras;
+2. Vienas slaptas raktas – tikras AES-GCM šifravimas/iššifravimas;
+3. Du raktai – RSA-OAEP su 2048 bitų raktų pora;
+4. Ar tikrai tai Agnės raktas? – mokomasis sertifikato pasirinkimas
+   ir tikras RSA-PSS parašo tikrinimas;
+5. Sukurk saugų ryšį – tikras hibridinis RSA+AES bandymas.
+
+DIEGIMAS
+========
+1) Į Supabase SQL Editor įkelkite ir paleiskite:
+   supabase/20261027_cyberlab.sql
+   (tas pats kaip atskiras NGG_Informatika_v5_42_CYBERLAB_SUPABASE.sql).
+2) Išarchyvuokite visą ZIP ir įkelkite esamos
+   informatika11-12-main/ katalogo TURINĮ į esamą GitHub saugyklą.
+   Nekeiskite CNAME ir autentifikavimo nustatymų.
+3) Atidarykite https://ngg-informatika.lt ir perkraukite su Ctrl+F5.
+4) Prisijunkite MOKYTOJO paskyra:
+   Mokytojo aplinka → klasė → Temos → CYBERLAB: Saugus ryšys.
+   Paspauskite "Išbandyti peržiūrą".
+   Mokytojo peržiūra nieko nerašo į mokinių progresą.
+5) Kai įsitikinsite, kad viskas gerai, paspauskite
+   "Atrakinti laboratoriją" (tema irgi turi būti atidaryta).
+6) Mokinys matys: Mano klasė → Kriptografinės sistemos
+   → CYBERLAB: Saugus ryšys → Pradėti laboratoriją.
+
+SVARBU
+======
+- Laboratorija po SQL diegimo pagal nutylėjimą yra UŽRAKINTA.
+- Pažanga išsaugoma pagal mokinį ir klasę, RLS riboja prieigas.
+- Tikri slapti raktai niekada nesiunčiami į Supabase ir nesisaugo;
+  jie egzistuoja tik einamojo eksperimentavimo metu.
+- Naršyklės perkrovus reikia per naujo generuoti eksperimento raktus,
+  tačiau baigtų misijų žymos ir pasitikrinimo atsakymai atkuriami.
+- Nei esami pažymiai, nei darbai, nei taškų sistema nekeičiama.
+- CYBERLAB nėra egzamino testas, neskiria pažymių ir XP.
+- RSA-OAEP/AES-GCM nėra tiksli TLS 1.3 protokolo demonstracija.
+- Cezario šifras nėra saugus šiuolaikinis algoritmas.
+- Sertifikatai 4 misijoje yra specialiai sukurta edukacinė simuliacija.
+
+ATLIKTI PATIKRINIMAI
+===================
+✓ JavaScript sintaksė: node --check visiems JS failams.
+✓ Penkių misijų veikimo scenarijus su Node Web Crypto:
+  AES-GCM šifravimas, iššifravimas, netinkamas raktas,
+  pakeisto šifro aptikimas, RSA-OAEP šifravimas ir iššifravimas,
+  netinkamas privatus raktas, RSA-PSS pasirašymas ir tikrinimas,
+  hibridinis wrapKey/unwrapKey ir sėkmingas iššifravimas.
+✓ Mokytojo peržiūra: neturi pažangos įrašų (programinė simuliacija).
+✓ Mokinio progreso išsaugojimas ir atkūrimas (programinė simuliacija).
+✓ SQL DDL ir RLS politikos sintaksė gyvoje Supabase su ROLLBACK.
+✓ ZIP vientisumas, failų versijų nuorodos.
+NEATLIKTA: tikras prisijungimo ir SQL RLS funkcinis E2E bandymas
+su mokinio ir mokytojo paskyromis gyvoje svetainėje;
+Chromium automatinė ekrano peržiūra šiame konteineryje užstrigo.
+
+PAPILDOMI FAILAI
+================
+cyber-lab.js – misijų ir Web Crypto eksperimento logika.
+cyber-lab.css – izoliuotas dizainas.
+index.html ir app.js – integracija į esamą NGG Informatika.
