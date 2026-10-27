@@ -52,6 +52,48 @@ body{font-size:16px}
 
 .proof-desc{font-size:12px;line-height:1.5;color:#64776b;margin:7px 0 0}.proof.done .proof-desc{color:#3f6651}
 @media(max-width:600px){.proof-desc{font-size:11px}}
+
+</style>
+<style>
+/* SECURE LINK v5.47 · aiškesnė vaidmenų ir tyrimo rezultatų hierarchija */
+.sender-card{border:2px solid #8fb6b5;background:#f0f8f5;padding:14px;box-shadow:inset 5px 0 0 #167b76}
+.sender-card-head{display:flex;gap:11px;align-items:center;padding:0 0 13px;margin-bottom:13px;border-bottom:1px solid #c8e1d9}
+.sender-role-mark{display:grid;place-items:center;flex:none;width:38px;height:38px;border:2px solid #248b7e;background:#fff;color:#096a64;font:800 17px var(--mono)}
+.sender-card-head strong{display:block;font-size:14px;line-height:1.4;color:#174e4e}
+.sender-card-label{display:block;font:800 11px var(--mono);letter-spacing:1px;color:#16786c;margin-bottom:4px}
+.endpoint{border-width:2px!important;box-shadow:6px 7px 0 #2b4e4140,0 6px 25px #122a2417!important;transition:box-shadow .25s,transform .25s}
+.endpoint.sender{background:#eef7f7!important;border-color:#328d8b!important}
+.endpoint.receiver{background:#eff8f0!important;border-color:#5caa82!important}
+.endpoint .num{font-size:10px!important;font-weight:800!important;letter-spacing:.5px}
+.endpoint strong{font-size:21px!important;margin-top:2px}
+.endpoint small{font-size:13px!important;font-weight:700!important}
+.spy{border:2px solid #d27e48!important;background:#fff2e7!important;box-shadow:5px 6px 0 #c9753840,0 4px 16px #9a442f24!important;min-width:190px;max-width:min(295px,70%);padding:13px!important;transition:background .25s,border-color .25s}
+.spy-label{font:800 11px/1.5 var(--mono)!important;letter-spacing:.7px;color:#97441f!important}
+.spy strong{font-size:17px!important;color:#602d1a!important;display:block;margin-top:5px}
+.spy-info-title{font:800 10px var(--mono);letter-spacing:.65px;color:#794a31;margin:10px 0 5px}
+.spy-output{display:block;background:#fff;border:1px solid #ebbca0;border-left:4px solid #c9703c;padding:10px;color:#813619!important;font-size:13px!important;line-height:1.5;font-weight:800!important;overflow-wrap:anywhere;max-height:118px;overflow-y:auto}
+.spy.spy-danger{background:#ffe2d3!important;border-color:#c74726!important}
+.spy.spy-danger .spy-output{background:#fff0ea;border-color:#f1a27d;border-left-color:#d33d27;color:#921b13!important}
+.spy.spy-safe{background:#e3f4eb!important;border-color:#4a9673!important}
+.spy.spy-safe .spy-output{background:#f7fff9;border-color:#93ccb0;border-left-color:#23885b;color:#176846!important}
+.experiment-section{border-top:3px solid #dcaa7c!important;box-shadow:inset 4px 0 0 #dfb08b}
+.experiment-section .experiment-note{padding:10px 12px;background:#fff9f1;border:1px solid #e8d4be;line-height:1.55!important}
+.candidate-workbench{border:3px solid #087968;scroll-margin-top:16px;box-shadow:0 0 0 6px #c9e5d280,0 20px 45px #123c2d28}
+.candidate-workbench .overline{font-size:12px;color:#0c8067}
+.workbench-arrived{animation:workbenchHere 1.4s ease-out}
+@keyframes workbenchHere{0%{box-shadow:0 0 0 0 #d0e883,0 0 0 0 #0f695a}40%{box-shadow:0 0 0 9px #d0e88399,0 0 0 14px #0f695a36}100%{box-shadow:0 0 0 6px #c9e5d280,0 20px 45px #123c2d28}}
+.evidencebar{border-top:4px solid #117f64!important}
+.progress-legend{display:inline-block;vertical-align:middle;margin-left:12px;font:700 11px var(--mono);letter-spacing:0;padding:7px 10px;background:#e0eee1;color:#197152;border:1px solid #b7d9ba}
+.proofgrid .proof{position:relative;border:2px solid #d6ddd5;transition:background .25s,border-color .25s,box-shadow .25s,transform .25s}
+.proofgrid .proof.done{border-color:#268c61!important;background:#e0f3db!important;box-shadow:inset 0 0 0 1px #92cba6,0 5px 13px #2f9e6133}
+.proofgrid .proof.done:before{content:'✓';position:absolute;right:12px;top:10px;width:25px;height:25px;display:grid;place-items:center;background:#25865b;color:white;font:bold 19px sans-serif;border-radius:50%}
+.proofgrid .proof.done .marker{font-weight:900!important;color:#126143!important;font-size:12px!important;padding-right:29px}
+.proofgrid .proof.done strong{color:#124e39;font-size:15px!important}
+.proof-just-done{animation:proofPop .8s ease-out}
+@keyframes proofPop{25%{transform:translateY(-4px) scale(1.015);box-shadow:0 10px 24px #33a56855}100%{transform:none}}
+@media(max-width:1000px){.endpoint strong{font-size:18px!important}.spy{min-width:0;max-width:45%;padding:10px!important}.spy-output{font-size:12px!important}}
+@media(max-width:600px){.sender-card{padding:12px}.spy{max-width:70%;}.spy strong{font-size:14px!important}.spy-output{font-size:12px!important;padding:7px}.progress-legend{margin-left:0;margin-top:8px}}
+@media(prefers-reduced-motion:reduce){.workbench-arrived,.proof-just-done{animation:none!important}}
 </style>
 <style>
 body.in-ngg .pilot-pill{background:#d8f36d;color:#172223}
@@ -67,7 +109,7 @@ body.in-ngg .top-right .pilot-pill{display:none}
 <section class="under"><div><div class="overline">UŽDUOTIS / 001 — SUGAUK NUTEKĖJIMĄ</div><h1>Ar tavo žinutė <em>tikrai saugi?</em></h1><p class="intro">Sukurk ryšį tarp Agnės ir Beno. Siųsk pranešimą, patikrink, ką mato pašalinis stebėtojas, ir savo bandymais įrodyk, kuris apsaugos būdas veikia. <a class="knowledge-link" href="#sąvokų-žinynas">Sąvokų paaiškinimai ↓</a></p></div><div class="goal"><div class="label">TAVO TIKSLAS</div><strong>5 privalomi patikrinimai</strong><small>Kiekvieną įrodymą gausi tik pats atlikęs atitinkamą bandymą.</small><div class="progress-details" id="topProgress" aria-label="Tyrimo pažanga"></div></div></section>
 <main class="workspace">
 <section class="pane"><div class="pane-head"><span class="pane-title">01 / SISTEMOS KONSTRUKTORIUS</span><span class="pane-code">VALDYMAS</span></div><div class="controls">
-<div><label class="field-label" for="message">Pranešimas gavėjui</label><textarea id="message" class="message-input" maxlength="120" spellcheck="false">PROJEKTAS: susitikime bibliotekoje 15:30</textarea><div class="hint">Gali keisti tekstą – svarbu išsiųsti tikrą žinutę, ne žiūrėti pavyzdį.</div></div>
+<div class="sender-card"><div class="sender-card-head"><span class="sender-role-mark">A</span><div><span class="sender-card-label">SIUNTĖJA / AGNĖ</span><strong>Ruošia pranešimą Benui</strong></div></div><label class="field-label" for="message">Pranešimas gavėjui</label><textarea id="message" class="message-input" maxlength="120" spellcheck="false">PROJEKTAS: susitikime bibliotekoje 15:30</textarea><div class="hint">Gali keisti tekstą – svarbu išsiųsti tikrą žinutę, ne žiūrėti pavyzdį.</div></div>
 <div><span class="field-label">Apsaugos metodas</span><div class="mode-list"><label class="mode-choice"><input type="radio" name="mode" value="plain" checked><span><b>Be šifravimo</b><small>Pranešimas keliauja atvirai</small></span><span class="mode-badge">00</span></label><label class="mode-choice"><input type="radio" name="mode" value="caesar"><span><b>Cezario šifras</b><small>Mokomasis raidžių poslinkis</small></span><span class="mode-badge">01</span></label><label class="mode-choice"><input type="radio" name="mode" value="aes"><span><b>AES-GCM</b><small>Simetrinis šifravimas – vienas slaptas raktas</small></span><span class="mode-badge">02</span></label>
 <label class="mode-choice"><input type="radio" name="mode" value="rsa"><span><b>RSA-OAEP <span class="extra-label">PAPILDOMAI</span></b><small>Asimetrinis šifravimas – du skirtingi raktai</small></span><span class="mode-badge">03</span></label></div></div>
 <div id="caesarControl" hidden><label class="field-label" for="shift">Pasirink slaptą poslinkį</label><div class="control-slider"><input id="shift" type="range" min="1" max="25" value="7"><output id="shiftValue">7</output></div><div class="hint">Demonstracijoje keičiamos A–Z lotyniškos raidės. Tai nesaugus šifras.</div></div>
@@ -77,19 +119,19 @@ body.in-ngg .top-right .pilot-pill{display:none}
 </div></section>
 <section class="pane main-stage"><div class="stage-top"><span class="pane-title">02 / RYŠIO ŽEMĖLAPIS</span><span class="status" id="stageStatus">● SISTEMA PARUOŠTA</span></div><div class="network-board" role="img" aria-label="Agnė siunčia žinutę Benui per tinklą, kurį stebi įsilaužėlis">
 <svg class="wires" viewBox="0 0 600 350" preserveAspectRatio="none" aria-hidden="true"><path class="wire" d="M125,120 L475,120"/><path class="wire-b" d="M300,120 L300,246"/><circle cx="300" cy="120" r="5" fill="#557e6f"/><path d="m455 110 20 10-20 10" fill="none" stroke="#6d9d8a" stroke-width="2"/><path d="m290 234 10 12 10-12" fill="none" stroke="#d89c75" stroke-width="2"/></svg>
-<div id="packetMotion" class="moving-packet" aria-hidden="true">▰</div><div class="endpoint sender"><span class="num">MAZGAS / A</span><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="6" y="5" width="20" height="16" rx="1"/><path d="M3 25h26M12 21l-1 4M20 21l1 4M10 9h12"/></svg><strong>Agnė</strong><small>Siuntėja</small></div>
-<div class="endpoint receiver"><span class="num">MAZGAS / B</span><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="6" y="5" width="20" height="16" rx="1"/><path d="M3 25h26M12 21l-1 4M20 21l1 4M10 9h12"/></svg><strong>Benas</strong><small>Gavėjas</small></div>
-<div class="spy"><span class="spy-label">◉ TINKLO STEBĖTOJAS</span><strong>Nežinomas asmuo</strong><small id="spyState">Dar nėra srauto, kurį būtų galima perimti.</small></div>
+<div id="packetMotion" class="moving-packet" aria-hidden="true">▰</div><div class="endpoint sender" aria-label="Siuntėja Agnė"><span class="num">SIUNTĖJA / MAZGAS A</span><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="6" y="5" width="20" height="16" rx="1"/><path d="M3 25h26M12 21l-1 4M20 21l1 4M10 9h12"/></svg><strong>Agnė</strong><small>Siuntėja</small></div>
+<div class="endpoint receiver" aria-label="Gavėjas Benas"><span class="num">GAVĖJAS / MAZGAS B</span><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="6" y="5" width="20" height="16" rx="1"/><path d="M3 25h26M12 21l-1 4M20 21l1 4M10 9h12"/></svg><strong>Benas</strong><small>Gavėjas</small></div>
+<div class="spy" id="spyCard" aria-label="Užpuoliko stebėjimo skydelis"><span class="spy-label">◉ UŽPUOLIKAS / TINKLO STEBĖTOJAS</span><strong>Nežinomas asmuo</strong><div class="spy-info-title">KĄ ŠIUO METU MATO?</div><div class="spy-output" id="spyState" role="status" aria-live="polite">Dar nėra srauto, kurį būtų galima perimti.</div></div>
 </div><div class="packet-strip"><div><div class="strip-label">PERDUODAMAS PAKETAS / TINKLO LYGIS</div><div id="packetView" class="packet-text" aria-live="polite">Nėra. Sukonstruok ryšį ir išsiųsk pirmą žinutę.</div></div><span class="packet-tag" id="packetTag">–</span></div>
-<div class="recipient-pane"><div class="recipient-head"><span class="field-label">GAVĖJO BENO EKRANAS</span><span id="receiverBadge" class="receipt-badge">LAUKIAMA</span></div><p class="recipient-why">Čia rodoma, <strong>ką iš tiesų gavo ir sugebėjo perskaityti Benas</strong>. Saugus ryšys turi ne tik paslėpti žinutę nuo užpuoliko, bet ir leisti ją perskaityti teisėtam gavėjui.</p><div id="receiverView" class="feedback"><strong>Laukiama</strong>Benas dar negavo žinutės.</div></div></section>
+<div class="recipient-pane"><div class="recipient-head"><span class="field-label">GAVĖJAS / BENO EKRANAS — KĄ PERSKAITĖ?</span><span id="receiverBadge" class="receipt-badge">LAUKIAMA</span></div><p class="recipient-why">Čia rodoma, <strong>ką iš tiesų gavo ir sugebėjo perskaityti Benas</strong>. Saugus ryšys turi ne tik paslėpti žinutę nuo užpuoliko, bet ir leisti ją perskaityti teisėtam gavėjui.</p><div id="receiverView" class="feedback"><strong>Laukiama</strong>Benas dar negavo žinutės.</div></div></section>
 <section class="pane inspect"><div class="pane-head"><span class="pane-title">03 / SAUGUMO BANDYMAI</span><span class="pane-code">TESTAI</span></div>
 <div class="inspect-section"><span class="field-label">Perėmimo bandymai</span><h3>Ką užpuolikas gali perskaityti?</h3><p>Išsiųsk pranešimą, tada atlik perėmimo bandymą. Palygink siunčiamą paketą su tuo, ką mato Benas.</p><div class="attack-buttons"><button class="attack" id="intercept" type="button" disabled>Perimti tinklo paketą <span aria-hidden="true">↗</span></button><button class="attack" id="bruteforce" type="button" disabled>Atlikti Cezario šifro analizę <span aria-hidden="true">↗</span></button></div></div>
-<div class="inspect-section experiment-section"><span class="field-label">Paketo pažeidimų laboratorija</span><h3>Ar gavėjas aptiks klaidą?</h3><p>Šie du bandymai <strong>skiriasi</strong>. Vienu pakeisi patį šifruotą paketą, kitu – bandysi iššifruoti jį netinkamu raktu.</p><div class="attack-buttons"><button class="attack warn" id="tamper" type="button" disabled>Pakeisti vieną šifruotą baitą <span aria-hidden="true">↗</span></button><button class="attack warn" id="wrongKey" type="button" disabled>Išbandyti netinkamą raktą <span aria-hidden="true">↗</span></button></div><p class="experiment-note">AES-GCM aptinka pakeistą paketą. Tiek pakeisto paketo, tiek netinkamo rakto atveju iššifravimas nepavyksta – bet priežastys yra skirtingos.</p></div>
+<div class="inspect-section experiment-section"><span class="field-label">Paketo pažeidimų laboratorija</span><h3>Kas nutinka pakeitus duomenis ar raktą?</h3><p>Tai <strong>du palyginimo eksperimentai</strong>: pirmuoju pakeisi perduodamo paketo baitą, antruoju paketą paliksi nepakitusį, bet bandysi jį atidaryti svetimu raktu. Stebėk gavėjo ekraną ir įvykių žurnalą.</p><div class="attack-buttons"><button class="attack warn" id="tamper" type="button" disabled>Pakeisti vieną šifruotą baitą <span aria-hidden="true">↗</span></button><button class="attack warn" id="wrongKey" type="button" disabled>Išbandyti netinkamą raktą <span aria-hidden="true">↗</span></button></div><p class="experiment-note">Informacija: abu bandymai gali baigtis atmetimu, tačiau viename <strong>pakeičiami duomenys</strong>, kitame <strong>pakeičiamas raktas</strong>. Atlik eksperimentus ir palygink įvykių žurnalą.</p></div>
 <div class="inspect-section"><span class="field-label">Paskutinio bandymo analizė</span><div id="feedback" class="feedback" role="status"><strong>Pradėk nuo bandymo</strong>Perimk neužšifruotą žinutę ir sužinok, ką mato pašalinis žmogus.</div></div></section>
 </main>
-<section id="caesarWorkbench" class="candidate-workbench" hidden><div class="workbench-top"><div><div class="overline">CEZARIO ŠIFRO BANDYMAI</div><h2>Iš 25 bandymų išrink prasmingą žinutę</h2><p>Raktai čia išbandomi automatiškai. <strong>Tavo darbas:</strong> palyginti gautus tekstus ir pasirinkti tą, kuris atitinka siunčiamą pranešimą.</p></div><button id="closeVariants" class="smallopt" type="button">Uždaryti</button></div><div id="variants" class="variant-list" aria-label="Cezario šifro iššifravimo bandymai"></div><div id="candidateNote" role="status" class="candidate-note">Pasirink vieną variantą. Patikrinimas parodys, ar tavo išvada teisinga.</div></section>
+<section id="caesarWorkbench" class="candidate-workbench" tabindex="-1" aria-label="25 Cezario šifro bandymų rezultatai" hidden><div class="workbench-top"><div><div class="overline">NAUJAS TYRIMO LANGAS · 25 GALIMI RAKTAI</div><h2>Iš 25 bandymų išrink prasmingą žinutę</h2><p>Raktai čia išbandomi automatiškai. <strong>Tavo darbas:</strong> palyginti gautus tekstus ir pasirinkti tą, kuris atitinka siunčiamą pranešimą.</p></div><button id="closeVariants" class="smallopt" type="button">Uždaryti</button></div><div id="variants" class="variant-list" aria-label="Cezario šifro iššifravimo bandymai"></div><div id="candidateNote" role="status" class="candidate-note">Pasirink vieną variantą. Patikrinimas parodys, ar tavo išvada teisinga.</div></section>
 <section class="event-ledger" aria-labelledby="eventTitle"><div class="event-head"><div><div class="overline">TIESIOGINIS STEBĖJIMAS</div><h2 id="eventTitle">Įvykių žurnalas <span id="eventCount">0</span></h2><p>Čia matysi <strong>kiekvieno paspaudimo pasekmę</strong>: kas išsiųsta, ką perėmė užpuolikas, ar paketas priimtas ir kodėl.</p></div><div class="event-live"><span class="live-dot" aria-hidden="true"></span> STEBIMA GYVAI</div></div><div id="lastEvent" class="last-event" role="status"><span class="event-signal">PASKUTINIS ĮVYKIS</span><strong>Laboratorija pasiruošusi</strong><span>Pasirink apsaugą ir išsiųsk pirmą žinutę.</span></div><div class="console" id="console" aria-label="Visų veiksmų įvykių žurnalas" aria-live="polite"></div></section>
-<section class="evidencebar"><div class="evidence-top"><div><div class="overline">TAVO DARBO KONTROLINIS SĄRAŠAS</div><h2>5 saugumo bandymai</h2><p><strong>Taip – čia tavo praktinės užduotys.</strong> Kiekvienas langelis taps žalias tik tada, kai pats atliksi konkretų bandymą. Jų rezultatus matysi aukščiau esančiame įvykių žurnale.</p></div><div class="counter" id="progressCount">0 / 5</div></div><div class="proofgrid" id="proofGrid"></div></section>
+<section class="evidencebar"><div class="evidence-top"><div><div class="overline">TAVO DARBO KONTROLINIS SĄRAŠAS</div><h2>5 saugumo bandymai <span class="progress-legend">Žalia = patikrinta praktiškai</span></h2><p><strong>Taip – čia tavo praktinės užduotys.</strong> Kiekvienas langelis taps žalias tik tada, kai pats atliksi konkretų bandymą. Jų rezultatus matysi aukščiau esančiame įvykių žurnale.</p></div><div class="counter" id="progressCount">0 / 5</div></div><div class="proofgrid" id="proofGrid"></div></section>
 <section class="terms" id="sąvokų-žinynas"><details><summary><span><span class="overline">TRUMPAS TEORIJOS ŽINYNAS</span><strong>Kas yra Cezario šifras, AES-GCM, IV ir kiti metodai?</strong><small>Paspausk ir išskleisk tik tada, kai reikės paaiškinimo – darbo ekranas lieka neužgriozdintas.</small></span><span class="details-arrow" aria-hidden="true">＋</span></summary><div class="terms-intro">Tai pagalba eksperimentuojant, ne papildomas testas. Atskiri metodai atlieka skirtingas funkcijas: <b>ne visos kriptografinės operacijos yra šifravimas.</b></div><div class="term-grid">
 <article><h3>Cezario šifras</h3><p>Istorinis raidžių perstūmimas per nustatytą skaičių pozicijų. 26 raidžių abėcėlėje yra tik 25 netrivialūs poslinkiai, todėl juos lengva patikrinti visus. Šiuolaikinei apsaugai netinka.</p></article>
 <article><h3>AES-GCM</h3><p>Modernus <b>simetrinis</b> šifravimas: Agnė ir Benas naudoja tą patį slaptą AES raktą. GCM režimas leidžia ne tik paslėpti turinį, bet ir patikrinti, ar šifruoti duomenys nebuvo pakeisti.</p></article>
@@ -122,12 +164,22 @@ function receiver(head,desc,warning=false){$('receiverView').className='feedback
 function store(){const payload={proof:state.proof.slice(),quiz:state.quiz,answer:$('conclusion').value.slice(0,1600)};
  if(EMBED){window.parent.postMessage({type:'secure-link-save',bridge:BRIDGE_ID,payload},location.origin);return}
  try{localStorage.setItem('securelink_pilot_02',JSON.stringify(payload))}catch{}}
-function mark(n){if(!state.proof[n])state.proof[n]=true;updateProgress();store()}
-function updateProgress(){const n=state.proof.filter(Boolean).length;$('progressCount').textContent=n+' / 5';$('topProgress').innerHTML=state.proof.map(b=>`<span class="${b?'done':''}"></span>`).join('');$('proofGrid').innerHTML=PROOF.map((x,i)=>`<div class="proof ${state.proof[i]?'done':''}"><div class="marker">${String(i+1).padStart(2,'0')} / ${state.proof[i]?'✓ ATLIKTA':'NEATLIKTA'}</div><strong>${x[0]}</strong><p class="proof-desc">${x[1]}</p></div>`).join('');updateReport()}
+function mark(n){const fresh=!state.proof[n];if(fresh)state.proof[n]=true;updateProgress();store();
+ if(fresh){const tile=$('proofGrid').children[n];if(tile){tile.classList.add('proof-just-done');tile.setAttribute('aria-label','Atliktas saugumo bandymas: '+PROOF[n][0]);}flash($('progressCount'));}}
+function updateProgress(){const n=state.proof.filter(Boolean).length;$('progressCount').textContent=n+' / 5';$('topProgress').innerHTML=state.proof.map(b=>`<span class="${b?'done':''}"></span>`).join('');$('proofGrid').innerHTML=PROOF.map((x,i)=>`<div class="proof ${state.proof[i]?'done':''}"><div class="marker">${state.proof[i]?'✓ '+String(i+1).padStart(2,'0')+' / ATLIKTA':String(i+1).padStart(2,'0')+' / LAUKIAMA'}</div><strong>${x[0]}</strong><p class="proof-desc">${x[1]}</p></div>`).join('');updateReport()}
 function caesar(text,shift){return [...text].map(c=>{const x=c.charCodeAt(0);if(x>=65&&x<=90)return String.fromCharCode(65+(x-65+shift+26)%26);if(x>=97&&x<=122)return String.fromCharCode(97+(x-97+shift+26)%26);return c}).join('')}
 function b64(bytes){let s='';for(let i=0;i<bytes.length;i++)s+=String.fromCharCode(bytes[i]);return btoa(s)}
 function brief(s,n=190){return String(s).length>n?String(s).slice(0,n)+' …':String(s)}
 function flash(el){if(!el)return;el.classList.remove('flash-update');void el.offsetWidth;el.classList.add('flash-update')}
+function spySet(value){const text=String(value);const element=$('spyState'), card=$('spyCard');
+ element.textContent=text;
+ const risky=/PERSKAITYTA|NULAUŽTA|IŠŠIFRUOTA|NUTEKĖJO/.test(text);
+ const blocked=/NEPERSKAIT|RAKTO NĖRA|PRIVATAUS RAKTO|MODIFIKUOTI/.test(text);
+ card.classList.toggle('spy-danger',risky);
+ card.classList.toggle('spy-safe',blocked&&!risky);
+ flash(element);flash(card);
+}
+
 function facts(title,body){$('controlFeedback').textContent=title+' – '+body;}
 
 function configure(){
@@ -139,7 +191,7 @@ function configure(){
  const instruction={plain:'Išsiųsk neužšifruotą žinutę ir perimk paketą.',caesar:'Pasirink raidžių poslinkį. Po siuntimo išbandyk 25 raktus.',aes:'Nuspręsk, kaip perduotas slaptas raktas, ir siųsk AES-GCM paketą.',rsa:'Įvedęs trumpą žinutę išsiųsk ją RSA viešuoju raktu. Patikrink, ką gali užpuolikas.'};
  $('controlFeedback').textContent=instruction[state.mode];
 }
-function invalidate(){if(!state.tx)return;state.tx=null;$('packetView').textContent='Pakeitei ryšio nustatymus. Išsiųsk naują žinutę, kad juos išbandytum.';$('packetTag').textContent='PARUOŠTA';$('spyState').textContent='Laukiama naujo paketo';receiver('Laukiama','Žinutė gavėjui dar neišsiųsta.');enableActions()}
+function invalidate(){if(!state.tx)return;state.tx=null;$('packetView').textContent='Pakeitei ryšio nustatymus. Išsiųsk naują žinutę, kad juos išbandytum.';$('packetTag').textContent='PARUOŠTA';spySet('Laukiama naujo paketo');receiver('Laukiama','Žinutė gavėjui dar neišsiųsta.');enableActions()}
 function enableActions(){const tx=state.tx;$('intercept').disabled=!tx;$('bruteforce').disabled=!(tx&&tx.mode==='caesar');$('tamper').disabled=!(tx&&(tx.mode==='aes'||tx.mode==='rsa'));$('wrongKey').disabled=!(tx&&(tx.mode==='aes'||tx.mode==='rsa'));$('caesarWorkbench').hidden=true;$('variants').innerHTML=''}
 async function send(){
  if(state.busy)return;const text=$('message').value.trim();if(text.length<9){feedback('Per trumpas pranešimas','Parašyk bent 9 simbolius, kad matytume, ką bandome apsaugoti.',true);return}
@@ -165,7 +217,7 @@ async function send(){
   const pulse=$('packetMotion');pulse.classList.remove('go');void pulse.offsetWidth;pulse.classList.add('go');
   $('packetTag').textContent={plain:'PLAIN / 01',caesar:'SHIFT / 01',aes:'AES-256-GCM / 01',rsa:'RSA-OAEP / 01'}[tx.mode];
   $('packetView').textContent=tx.mode==='aes'?'IV (12 baitų, viešas): '+b64(tx.iv)+' • UŽŠIFRUOTAS TURINYS + ŽYMA: '+brief(tx.packet,370):tx.packet;
-  $('spyState').textContent='Srautas matomas. Paleisk perėmimo bandymą.';
+  spySet('Srautas matomas. Paleisk perėmimo bandymą.');
   receiver('Pranešimas sėkmingai gautas',`Benas perskaitė: „${brief(tx.delivered,145)}“. ${tx.mode==='aes'?'Iššifruota su bendru AES raktu.':tx.mode==='rsa'?'Iššifruota su Beno privačiuoju RSA raktu.':'Gavėjas atkuria tekstą pagal pasirinktą metodą.'}`);
   feedback('Paketas išsiųstas','Kairėje gali keisti ryšio metodą. Dabar atlik perėmimo arba paketo pažeidimo bandymą.');
   log('Išsiųstas '+tx.mode.toUpperCase()+' paketas; Benas jį gavo.','good');enableActions();flash($('packetView'));$('stageStatus').textContent='● PRANEŠIMAS PRISTATYTAS';
@@ -175,11 +227,11 @@ async function send(){
 async function intercept(){
  const tx=state.tx;if(!tx)return;
  try{
- if(tx.mode==='plain'){feedback('PERIMTA: žinutė perskaityta',`Užpuolikas pamatė visą tekstą: „${brief(tx.text,140)}“. Atviras ryšys konfidencialumo nesaugo.`,true);log('Užpuolikas perskaitė atvirą žinutę.','bad');$('spyState').textContent='PERSKAITYTA: '+brief(tx.text,54);mark(0)}
- else if(tx.mode==='caesar'){feedback('Perimtas Cezario šifras',`Užpuolikas mato: „${brief(tx.packet,130)}“. Šifras atrodo painus, tačiau turi tik 25 netrivialius poslinkius. Išbandyk juos, surask suprantamą tekstą.`);$('spyState').textContent='MATOMA: '+brief(tx.packet,52);log('Perimtas Cezario šifro tekstas, dabar jį galima analizuoti.','info')}
- else if(tx.mode==='rsa'){feedback('RSA paketas perimtas','Užpuolikas gavo užšifruotus baitus. Vien viešojo rakto neužtenka pranešimui iššifruoti – reikalingas Beno privatusis raktas. Vis dėlto šifravimas nepatvirtina, ar viešasis raktas tikrai priklauso Benui.');$('spyState').textContent='RSA PERIMTA • NETURI PRIVATAUS RAKTO';log('RSA paketas perimtas, bet be privataus rakto neperskaitytas.','good')}
- else if(tx.share==='leak'){const real=await crypto.subtle.decrypt({name:'AES-GCM',iv:tx.iv},tx.key,tx.bytes);const decoded=dec.decode(real);feedback('KRITINĖ KLAIDA: nutekėjo raktas',`Užpuolikas gavo AES raktą tuo pačiu viešu kanalu ir sėkmingai atkūrė žinutę: „${brief(decoded,140)}“. Šifras nebuvo nulaužtas – buvo prarastas raktas.`,true);$('spyState').textContent='IŠŠIFRUOTA, NES RAKTAS NUTEKĖJO';log('Užpuolikas iššifravo žinutę nutekintu AES raktu.','bad');mark(2)}
- else{feedback('Perimta, tačiau neperskaitoma','Užpuolikas gali kopijuoti IV ir užšifruotus baitus, bet be slapto AES rakto negali atkurti pranešimo. IV nėra paslaptis.');$('spyState').textContent='DUOMENYS PERIMTI • RAKTO NĖRA';log('AES paketas perimtas: žinutė be rakto neperskaitoma.','good');mark(3)}
+ if(tx.mode==='plain'){feedback('PERIMTA: žinutė perskaityta',`Užpuolikas pamatė visą tekstą: „${brief(tx.text,140)}“. Atviras ryšys konfidencialumo nesaugo.`,true);log('Užpuolikas perskaitė atvirą žinutę.','bad');spySet('PERSKAITYTA: '+brief(tx.text,54));mark(0)}
+ else if(tx.mode==='caesar'){feedback('Perimtas Cezario šifras',`Užpuolikas mato: „${brief(tx.packet,130)}“. Šifras atrodo painus, tačiau turi tik 25 netrivialius poslinkius. Išbandyk juos, surask suprantamą tekstą.`);spySet('MATOMA: '+brief(tx.packet,52));log('Perimtas Cezario šifro tekstas, dabar jį galima analizuoti.','info')}
+ else if(tx.mode==='rsa'){feedback('RSA paketas perimtas','Užpuolikas gavo užšifruotus baitus. Vien viešojo rakto neužtenka pranešimui iššifruoti – reikalingas Beno privatusis raktas. Vis dėlto šifravimas nepatvirtina, ar viešasis raktas tikrai priklauso Benui.');spySet('RSA PERIMTA • NETURI PRIVATAUS RAKTO');log('RSA paketas perimtas, bet be privataus rakto neperskaitytas.','good')}
+ else if(tx.share==='leak'){const real=await crypto.subtle.decrypt({name:'AES-GCM',iv:tx.iv},tx.key,tx.bytes);const decoded=dec.decode(real);feedback('KRITINĖ KLAIDA: nutekėjo raktas',`Užpuolikas gavo AES raktą tuo pačiu viešu kanalu ir sėkmingai atkūrė žinutę: „${brief(decoded,140)}“. Šifras nebuvo nulaužtas – buvo prarastas raktas.`,true);spySet('IŠŠIFRUOTA, NES RAKTAS NUTEKĖJO');log('Užpuolikas iššifravo žinutę nutekintu AES raktu.','bad');mark(2)}
+ else{feedback('Perimta, tačiau neperskaitoma','Užpuolikas gali kopijuoti IV ir užšifruotus baitus, bet be slapto AES rakto negali atkurti pranešimo. IV nėra paslaptis.');spySet('DUOMENYS PERIMTI • RAKTO NĖRA');log('AES paketas perimtas: žinutė be rakto neperskaitoma.','good');mark(3)}
  }catch(err){feedback('Perėmimo bandymo klaida',err.message||'Operacija nepavyko.',true)}
 }
 function brute(){
@@ -189,14 +241,16 @@ function brute(){
   const label=caesar(tx.packet,26-guess),b=document.createElement('button');b.type='button';b.className='variant';b.textContent=`Raktas ${String(guess).padStart(2,'0')} → ${brief(label,95)}`;
   b.addEventListener('click',()=>{
    holder.querySelectorAll('button').forEach(n=>n.classList.remove('selected'));b.classList.add('selected');const note=$('candidateNote');
-   if(guess===tx.shift){const desc=`Poslinkis ${guess} atkūrė originalų tekstą. Užpuolikui užteko vos 25 bandymų – Cezario šifras nėra saugus.`;feedback('RASTAS TEISINGAS RAKTAS',desc,true);note.className='candidate-note';note.textContent='✓ '+desc;$('spyState').textContent='NULAUŽTA: '+brief(tx.text,45);log('Cezario šifras nulaužtas parinkus poslinkį '+guess+'.','bad');mark(1)}
+   if(guess===tx.shift){const desc=`Poslinkis ${guess} atkūrė originalų tekstą. Užpuolikui užteko vos 25 bandymų – Cezario šifras nėra saugus.`;feedback('RASTAS TEISINGAS RAKTAS',desc,true);note.className='candidate-note';note.textContent='✓ '+desc;spySet('NULAUŽTA: '+brief(tx.text,45));log('Cezario šifras nulaužtas parinkus poslinkį '+guess+'.','bad');mark(1)}
    else{const desc=`Poslinkis ${guess} nesutampa su siuntėjo naudotu. Palygink, ar gautas tekstas skaitomas.`;feedback('Bandymas netiko',desc);note.className='candidate-note error';note.textContent=desc;log('Cezario rakto bandymas '+guess+': neatkūrė originalo.','info')}
    flash(note);
   });holder.appendChild(b)
  }
  $('caesarWorkbench').hidden=false;
  feedback('25 galimi poslinkiai','Žemiau atidaryta atskira raktų analizės darbo erdvė. Surask prasmingą žinutę.');log('Sugeneruoti 25 galimi Cezario rakto variantai.','info');
- $('caesarWorkbench').scrollIntoView({behavior:'smooth',block:'start'});
+ const workbench=$('caesarWorkbench');workbench.classList.remove('workbench-arrived');void workbench.offsetWidth;workbench.classList.add('workbench-arrived');
+ workbench.focus({preventScroll:true});
+ window.requestAnimationFrame(()=>workbench.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'}));
 }
 async function tamper(){
  const tx=state.tx;if(!tx||!['aes','rsa'].includes(tx.mode))return;
@@ -206,7 +260,7 @@ async function tamper(){
  catch{
   feedback('PAKEITIMAS APTIKTAS',tx.mode==='aes'?'Vienas šifruoto paketo baitas pakeistas XOR 01. AES-GCM žymos patikra nepavyko, todėl gavėjas paketą atmeta.':'Vienas RSA-OAEP šifro baitas pakeistas. RSA-OAEP iššifravimo patikra nepavyko, todėl paketas atmestas. Tai nepatvirtina siuntėjo tapatybės.');
   receiver('Paketas atmestas',tx.mode==='aes'?'Benas neatkūrė žinutės: AES-GCM aptiko pakeistą šifrą.':'Benas neatkūrė žinutės: pakeisti RSA-OAEP duomenys atmesti.',true);
-  $('packetView').textContent='PAKEISTAS PAKETAS (XOR 01): '+brief(b64(copy),360);$('packetTag').textContent='PAŽEISTA';$('spyState').textContent='BANDYTA MODIFIKUOTI PAKETĄ';flash($('packetView'));log(tx.mode.toUpperCase()+': pakeistas vienas paketo baitas → gavėjas atmetė.','good');if(tx.mode==='aes')mark(4)
+  $('packetView').textContent='PAKEISTAS PAKETAS (XOR 01): '+brief(b64(copy),360);$('packetTag').textContent='PAŽEISTA';spySet('BANDYTA MODIFIKUOTI PAKETĄ');flash($('packetView'));log(tx.mode.toUpperCase()+': pakeistas vienas paketo baitas → gavėjas atmetė.','good');if(tx.mode==='aes')mark(4)
  }
 }
 async function wrongKey(){

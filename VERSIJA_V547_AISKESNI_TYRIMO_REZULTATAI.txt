@@ -1,0 +1,10 @@
+NGG Informatika v5.47
+
+1. SECURE LINK siuntejo blokas atskirtas nuo kitu valdikliu, gavejo ir uzpuoliko vaidmenys ryskiau pazymeti.
+2. Stebetojo rezultatas paryskinamas ir animuojamas po kiekvieno pasikeitimo, o pavojaus/saugaus rezultato spalva skiriasi.
+3. Paketo keitimo ir netinkamo rakto bandymai isdestyti kaip informaciniai palyginimo eksperimentai.
+4. 25 Cezario sifro bandymu langas gauna automatini slinkima, fokusavima ir matoma akcenta.
+5. Patvirtinti 5 saugumo bandymai zaliai paryskinami, rodomas varnes simbolis ir trumpa animacija.
+6. secure-link.js integruotas HTML atnaujintas is tos pacios secure-link.html versijos, be papildomu atskiru failu priklausomybes.
+
+SQL nereikia. Ikele i GitHub privalomai pakeiskite index.html ir secure-link.js.
