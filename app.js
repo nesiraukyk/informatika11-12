@@ -3,7 +3,7 @@ const SETTINGS=window.SUPABASE_SETTINGS||{};
 const configured=SETTINGS.url && SETTINGS.publishableKey &&
  !SETTINGS.url.includes('PAKEISKITE_') && !SETTINGS.publishableKey.includes('PAKEISKITE_');
 const sb=configured?window.supabase.createClient(SETTINGS.url,SETTINGS.publishableKey):null;
-const CFG=window.SITE_CONFIG,PRACTICE=window.PRACTICE_QUESTIONS||[],ASSESSMENT=window.ASSESSMENT_QUESTIONS||[];
+const CFG=window.SITE_CONFIG,PRACTICE=window.PRACTICE_QUESTIONS||[],ASSESSMENT=window.ASSESSMENT_QUESTIONS||[],VBE_CRYPTO=window.VBE_CRYPTO_PRACTICE_QUESTIONS||[];
 let activeClassTopics=[];
 const $=id=>document.getElementById(id);
 const topicById=id=>activeClassTopics.find(t=>t.id===id)||CFG.topics.find(t=>t.id===id);
@@ -349,7 +349,7 @@ function restorePracticeQuiz(view){
  let saved;try{saved=JSON.parse(sessionStorage.getItem(practiceProgressKey())||'null')}catch(_err){}
  if(!saved||saved.topicId!==view.topicId||saved.classId!==view.classId||!String(saved.mode).startsWith('practice')||!Array.isArray(saved.items)||!saved.items.length)return renderStudent();
  quiz=saved;setCurrentRestore(null,{kind:'practice-quiz',classId:quiz.classId,topicId:quiz.topicId});
- $('quizMode').textContent='PRAKTIKA';$('quizTitle').textContent=topicById(quiz.topicId)?.title||'Praktika';
+ $('quizMode').textContent=quiz.mode==='practice-vbe-crypto'?'VBE PRAKTIKA':'PRAKTIKA';$('quizTitle').textContent=quiz.mode==='practice-vbe-crypto'?'Kriptografija · ankstesnių egzaminų klausimai':topicById(quiz.topicId)?.title||'Praktika';
  show('quiz');renderQ();
 }
 function storeResultsPage(){
@@ -2842,6 +2842,7 @@ async function openStudentTopic(topicId,c,access){
  <div class="contentGrid"><div class="stack">
   ${renderStudentTeacherUpdates(topicPosts||[])}
   ${showCyberLab?`<div class="cl-launch-card"><div><div class="cl-launch-eyebrow">✦ INTERAKTYVI LABORATORIJA</div><h3>🛡️ SECURE LINK: Ryšio laboratorija</h3><p>Interaktyvus ryšio konstruktorius: Cezario šifras, AES-GCM, RSA ir tikri saugumo bandymai.</p></div><button type="button" id="openCyberLabStudent">Pradėti laboratoriją →</button></div>`:''}
+  ${topicId==='kriptografija'&&c.grade_level==='11'&&a.practice_open&&VBE_CRYPTO.length?`<div class="panel vbeCryptoPractice"><span class="kicker">PAPILDOMA ŽINIŲ TRENIRUOTĖ</span><h3>Kriptografija · ankstesnių egzaminų klausimai</h3><p class="muted">${VBE_CRYPTO.length} klausimai pagal ankstesnius valstybinius, pakartotinius ir bandomuosius / pavyzdinius egzaminus. Mokomosios, perfrazuotos užduotys. Po atsakymo pateikiamas paaiškinimas. Rezultatas išsaugomas.</p><button class="primary" id="startVbeCrypto">Pradėti ${VBE_CRYPTO.length} klausimų treniruotę</button></div>`:''}
   <div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">PRAKTIKA</span><h2>Žinių treniruotė</h2></div><span class="badge ${a.practice_open?'ok':''}">${a.practice_open?'Atidaryta':'Užrakinta'}</span></div>
    ${motivation?.enabled?(topicMastery?`<div class="topicMasteryBox"><div class="masteryHead"><span>Temos įvaldymas</span><strong>${Number(topicMastery.mastery_percent)||0}%</strong></div><div class="masteryTrack"><span style="width:${Math.max(0,Math.min(100,Number(topicMastery.mastery_percent)||0))}%"></span></div><div class="subtle">Skaičiuojama pagal paskutines iki 5 treniruočių · geriausias rezultatas ${Number(topicMastery.best_score)||0}%</div></div>`:'<div class="topicMasteryBox empty"><b>Temos įvaldymas</b><span>Atlik pirmą treniruotę – čia atsiras tavo progresas.</span></div>'):''}
    ${c.grade_level==='10'?renderGrade10StudentPracticePicker(practiceBlocks||[],a.practice_open):`<p class="muted"><b>Praktikuotis gali tiek kartų, kiek nori.</b> Kiekvieną kartą sistema iš didesnio klausimų banko atsitiktinai parenka 10 klausimų ir sumaišo atsakymų variantus, todėl bandymai nėra vienodi. Po kiekvieno atsakymo gausi paaiškinimą, o rezultatas ir atlikimo laikas bus išsaugoti tavo paskyroje.</p><button class="primary" id="startPracticeTopic" ${a.practice_open?'':'disabled'}>Pradėti 10 klausimų praktiką</button>`}
@@ -2874,6 +2875,7 @@ async function openStudentTopic(topicId,c,access){
  show('topic');
  if($('openCyberLabStudent'))$('openCyberLabStudent').onclick=()=>navigateTo(()=>openCyberLab(c.id,false,c));
  if(a.practice_open&&$('startPracticeTopic'))$('startPracticeTopic').onclick=()=>navigateTo(()=>startQuiz(topicId,c.id,'practice',10));
+ if($('startVbeCrypto'))$('startVbeCrypto').onclick=()=>navigateTo(()=>startVbeCryptoQuiz(c.id));
  if($('practiceAllBlocks'))$('practiceAllBlocks').onchange=()=>document.querySelectorAll('[data-practice-block]').forEach(ch=>ch.checked=$('practiceAllBlocks').checked);
  if($('startGrade10Practice'))$('startGrade10Practice').onclick=()=>{
   const single=$('startGrade10Practice').dataset.singleBlock;
@@ -3156,6 +3158,24 @@ async function startSecureAssessment(topicId,classId,status=null){
  }finally{assessmentStartPending=false}
 }
 
+async function startVbeCryptoQuiz(classId){
+ const topicId='kriptografija';
+ const c=await getStudentClass();
+ if(!c||c.id!==classId)return toast('Treniruotė pasiekiama tik savo klasėje.');
+ await loadClassTopics(classId);
+ const {data:access,error:accessError}=await sb.from('topic_access').select('is_open,practice_open').eq('class_id',classId).eq('topic_id',topicId).maybeSingle();
+ if(accessError||!access?.is_open||!access?.practice_open)return toast('Kriptografijos treniruotė dar neatidaryta.');
+ if(VBE_CRYPTO.length!==8)return toast('Nepavyko įkelti visų 8 egzaminų klausimų.');
+ const selected=shuffle(VBE_CRYPTO);
+ const {data:attempt,error}=await sb.from('practice_attempts').insert({student_id:me.id,class_id:classId,topic_id:topicId,mode:'practice',total_questions:selected.length}).select('id,started_at').single();
+ if(error)return toast(error.message);
+ setPresenceContext('VBE kriptografijos žinių treniruotė',topicId);
+ quiz={topicId,classId,mode:'practice-vbe-crypto',items:selected.map(prepareClientQuestion),index:0,answers:Array(selected.length).fill(null),attemptId:attempt.id,startMs:Date.now(),last:null,completed:false};
+ setCurrentRestore(null,{kind:'practice-quiz',classId,topicId});
+ $('quizMode').textContent='VBE PRAKTIKA';
+ $('quizTitle').textContent='Kriptografija · ankstesnių egzaminų klausimai';
+ show('quiz');renderQ();
+}
 async function startQuiz(topicId,classId,mode,count){
  setPresenceContext(`Žinių treniruotė: ${topicById(topicId)?.title||topicId}`,topicId);
  if(mode==='assessment')return toast('Šiam atsiskaitymui naudok saugų atsiskaitymo režimą.');
@@ -3307,7 +3327,7 @@ async function finishQuiz(){
  }
 
  $('resultPercent').textContent=pct+'%';$('scoreCircle').style.setProperty('--score',pct+'%');$('correctCount').textContent=correct;$('wrongCount').textContent=total-correct;$('resultGoal').textContent=pass+'%';$('resultTitle').textContent=pct>=pass?(pct===100?'Puiku – 100%!':'Tikslas pasiektas!'):'Dar pasipraktikuok';
- $('resultSubtitle').textContent=quiz.mode==='assessment-secure'?`Atsiskaitymo trukmė: ${fmtDurationDetailed(seconds)}. Užfiksuoti išėjimo / fokuso įvykiai: ${focusEvents}.`:`Bandymo trukmė: ${fmtDurationDetailed(seconds)}.`;
+ $('resultSubtitle').textContent=quiz.mode==='assessment-secure'?`Atsiskaitymo trukmė: ${fmtDurationDetailed(seconds)}. Užfiksuoti išėjimo / fokuso įvykiai: ${focusEvents}.`:`${quiz.mode==='practice-vbe-crypto'?'Ankstesnių egzaminų klausimų treniruotė · ':''}Bandymo trukmė: ${fmtDurationDetailed(seconds)}.`;
  if(String(quiz.mode).startsWith('practice'))renderPracticeMotivationReward(motivationReward,quiz.topicId,pct);
  else if($('motivationResult')){$('motivationResult').classList.add('hidden');$('motivationResult').innerHTML=''}
  if(quiz.mode==='assessment-secure'){
@@ -3319,7 +3339,7 @@ async function finishQuiz(){
  }
  show('results');
 }
-$('retryQuiz').onclick=()=>{const r=quiz.last;if(!r||r.mode==='assessment-secure')return;if(r.mode==='practice-g10')return startGrade10BlockQuiz(r.topicId,r.classId,r.blockIds||[],r.items.length);startQuiz(r.topicId,r.classId,'practice',r.items.length)};
+$('retryQuiz').onclick=()=>{const r=quiz.last;if(!r||r.mode==='assessment-secure')return;if(r.mode==='practice-g10')return startGrade10BlockQuiz(r.topicId,r.classId,r.blockIds||[],r.items.length);(r.mode==='practice-vbe-crypto'?startVbeCryptoQuiz(r.classId):startQuiz(r.topicId,r.classId,'practice',r.items.length))};
 $('reviewErrors').onclick=()=>{const r=quiz.last;if(!r)return;if(r.mode==='assessment-secure'){if(r.resultsReleased)return showMyAssessmentReview(r.attemptId);return}const bad=r.items.map((q,i)=>({q,a:r.answers[i]})).filter(x=>!answerEquals(x.a,x.q.correct,qType(x.q)));$('errorsReview').classList.remove('hidden');$('errorsReview').innerHTML=bad.length?`<span class="kicker">PERŽIŪRA</span><h2>Klaidos ir paaiškinimai</h2>`+bad.map((x,i)=>`<div class="errorItem"><b>${i+1}. ${esc(x.q.question)}</b><p>Tavo atsakymas: <b>${esc(formatClientAnswer(x.q,x.a))}</b><br>Teisingas: <b>${esc(formatClientAnswer(x.q,x.q.correct))}</b><br>${esc(x.q.explanation)}</p></div>`).join(''):`<h2>Be klaidų 🎉</h2>`};
 
 async function logAssessmentExit(type){
