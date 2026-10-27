@@ -90,7 +90,8 @@ async function mount({host,sb,classId,userId,preview=false,onBack}){
  const injectedContext='<script>window.SECURE_LINK_CONTEXT='+JSON.stringify({embed:true,bridge,origin:location.origin})+';</script>';
  const embedReady=SECURE_LINK_EMBED_HTML.replace(externalScript,injectedContext+externalScript)
  .replace("const EMBED=new URLSearchParams(location.search).get('embed')==='1';const BRIDGE_ID=new URLSearchParams(location.search).get('bridge')||'';","const EMBED=true;const BRIDGE_ID="+JSON.stringify(bridge)+";");
- frame.srcdoc=embedReady;
+ // about:srcdoc URL neturi patikimos location.origin reikšmės; naudojame tikrą tėvinės svetainės kilmę.
+ frame.srcdoc=embedReady.replaceAll('location.origin',JSON.stringify(location.origin));
  if(!preview){
   const watcher=setInterval(()=>{
    if(!active()){clearInterval(watcher);window.removeEventListener('message',listener);clearTimeout(saveTimeout);return}
