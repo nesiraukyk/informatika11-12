@@ -1160,3 +1160,41 @@ main.wrap.authWide{max-width:none;width:100%;padding-inline:0}
 .previewStudentClassHero,.previewTopicHero{padding-top:20px}
 .previewReturn{margin:0 0 16px}
 @media(max-width:520px){.learningFileRow.resourceDownloadCard{padding:9px 10px}.learningFileRow .resourceFileGlyph{width:33px;height:33px;flex-basis:33px}.learningFileRow .learningFileActions{gap:4px}.learningFileRow .resourceDownloadAction,.learningFileRow .learningFileDelete{width:32px;height:32px;flex-basis:32px}.teacherTaskStatus{font-size:10px}.refreshedTeacherResourcesHead{gap:10px}}
+
+
+/* v5.52 — SECURE LINK temos kortelė. Šis stilius taikomas tik laboratorijos įėjimui. */
+.cl-launch-card{position:relative;isolation:isolate;display:grid;grid-template-columns:minmax(0,1.55fr) minmax(198px,.82fr);gap:18px;align-items:stretch;overflow:hidden;border:1px solid #203d47;border-radius:20px;background:linear-gradient(118deg,#101f29 0%,#162b35 68%,#193743 100%);box-shadow:0 15px 32px rgba(12,29,37,.15);color:#f4f8f5;padding:25px}
+.cl-launch-card::before{content:"";position:absolute;inset:auto auto -90px -60px;width:240px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(143,213,154,.08),transparent 70%);pointer-events:none}
+.cl-launch-card .cl-launch-body{position:relative;z-index:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start}
+.cl-launch-card .cl-launch-eyebrow{display:flex;align-items:center;flex-wrap:wrap;gap:8px;color:#afcbc3;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:10px;font-weight:750;letter-spacing:1.05px}
+.cl-launch-status-dot{width:7px;height:7px;display:inline-block;flex-shrink:0;background:#c7e97c;border-radius:50%;box-shadow:0 0 0 4px rgba(199,233,124,.13)}
+.cl-launch-eyebrow-tag{border:1px solid rgba(218,238,216,.22);border-radius:5px;padding:4px 6px;color:#d5e5dd;font-size:9px;letter-spacing:.5px}
+.cl-launch-card .cl-launch-title{font-size:clamp(25px,2.7vw,34px);letter-spacing:-.055em;line-height:1.08;color:#f4f8f5;margin:19px 0 12px;font-weight:860;overflow-wrap:anywhere}
+.cl-launch-title>span{color:#d5f37d;margin-left:7px}
+.cl-launch-card .cl-launch-title small{display:block;color:#e5efe9;font-size:16px;font-weight:570;letter-spacing:-.015em;margin-top:6px}
+.cl-launch-card .cl-launch-description{font-size:13px;line-height:1.62;color:#bbcfc9;margin:0 0 18px;max-width:475px}
+.cl-launch-actions{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:auto}
+.cl-launch-card .cl-launch-cta{appearance:none;display:inline-flex;align-items:center;justify-content:center;gap:11px;background:#d6f17f;color:#162927;font-weight:830;font-size:13px;line-height:1.2;padding:13px 15px;border:1px solid #d6f17f;border-radius:9px;min-height:45px;box-shadow:0 3px 0 #a3bd5b;transition:transform .15s,background .15s,box-shadow .15s}
+.cl-launch-card .cl-launch-cta svg{width:17px;height:17px;flex-shrink:0;transition:transform .15s}
+.cl-launch-card .cl-launch-cta:hover{background:#e5faac;transform:translateY(-2px);box-shadow:0 5px 0 #a3bd5b}
+.cl-launch-card .cl-launch-cta:hover svg{transform:translateX(3px)}
+.cl-launch-card .cl-launch-cta:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.cl-launch-card .cl-launch-count{display:inline-flex;align-items:center;gap:6px;color:#b8cbc2;font-size:11px;font-weight:650;white-space:nowrap}
+.cl-launch-count svg{width:16px;height:16px;color:#b7d991}
+.cl-launch-card .cl-launch-visual{min-height:205px;border:1px solid rgba(180,218,207,.16);border-radius:12px;padding:13px;display:flex;flex-direction:column;background:radial-gradient(circle at 50% 50%,rgba(90,142,126,.17),transparent 70%),repeating-linear-gradient(0deg,transparent 0 19px,rgba(182,221,210,.047) 20px),repeating-linear-gradient(90deg,transparent 0 19px,rgba(182,221,210,.047) 20px),rgba(6,25,31,.52)}
+.cl-launch-visual-header{display:flex;align-items:center;gap:6px;font:700 9px/1.3 ui-monospace,Consolas,monospace;color:#b1cfc4;letter-spacing:.25px}
+.cl-launch-live-dot{width:6px;height:6px;background:#bce77d;border-radius:50%}
+.cl-launch-visual-count{margin-left:auto;color:#89aa9c}
+.cl-launch-network{display:flex;align-items:center;justify-content:space-between;gap:5px;flex:1;min-height:107px}
+.cl-launch-person{display:flex;flex-direction:column;align-items:center;gap:7px;flex:0 0 52px;color:#d8e8e2;font:740 10px ui-monospace,Consolas,monospace;letter-spacing:.35px}
+.cl-launch-person-circle{display:grid;place-items:center;width:44px;height:44px;background:#294941;border:1px solid #658c7b;border-radius:11px;color:#eaf7ed;font:800 21px Inter,system-ui,sans-serif}
+.cl-launch-person:last-child .cl-launch-person-circle{background:#294b54;border-color:#669ca4}
+.cl-launch-path{height:1px;flex:1;min-width:35px;max-width:116px;border-top:2px dashed #73b49f;position:relative;display:flex;justify-content:center}
+.cl-launch-path-lock{position:absolute;top:-20px;display:grid;place-items:center;width:38px;height:38px;background:#24443d;border:1px solid #629786;color:#d4eea1;border-radius:11px}
+.cl-launch-path-lock svg{width:18px;height:18px}
+.cl-launch-observer{display:flex;align-items:center;gap:7px;margin-top:auto;padding:9px 10px;background:rgba(177,79,59,.11);border:1px solid rgba(215,129,106,.25);border-radius:8px;color:#f1bba7;font:730 9px ui-monospace,Consolas,monospace;letter-spacing:.3px}
+.cl-launch-observer-indicator{width:6px;height:6px;border-radius:50%;background:#ec9578}
+.cl-launch-observer-symbol{margin-left:auto;font-size:14px}
+@media(max-width:850px){.cl-launch-card{grid-template-columns:minmax(0,1fr);padding:20px}.cl-launch-visual{min-height:150px}.cl-launch-network{min-height:95px}.cl-launch-person{flex-basis:76px}}
+@media(max-width:560px){.cl-launch-card{padding:17px;gap:14px;border-radius:16px}.cl-launch-card .cl-launch-title{font-size:28px;margin-top:13px}.cl-launch-card .cl-launch-description{font-size:13px;margin-bottom:16px}.cl-launch-actions{gap:11px}.cl-launch-card .cl-launch-cta{width:100%;justify-content:space-between}.cl-launch-card .cl-launch-count{padding:0 2px}.cl-launch-visual{min-height:160px}}
+@media(prefers-reduced-motion:reduce){.cl-launch-card .cl-launch-cta,.cl-launch-card .cl-launch-cta svg{transition:none}.cl-launch-card .cl-launch-cta:hover{transform:none}}
