@@ -1803,16 +1803,18 @@ async function updateTopicAccess(classId,topicId,field,value){
 }
 async function openAssessmentSettingsModal(c,topicId,checkbox,access,settings,openAfterSave=false){
  const row=settings.find(s=>s.topic_id===topicId)||{};
- const current=row.question_count||30;
+ const cryptoLimited=['kriptografija','kriptografija-vbe-atsiskaitymas'].includes(topicId);
+ const maxQuestions=cryptoLimited?10:30;
+ const current=Math.min(maxQuestions,row.question_count||maxQuestions);
  const t=topicById(topicId);
  const supportsLogo=c.grade_level==='11'&&topicId==='vektorine-grafika';
  const logoEnabled=supportsLogo?(row.practical_enabled!==false):false;
- modal(`<span class="kicker">ATSISKAITYMO NUSTATYMAI</span><h2>${esc(t?.title||topicId)}</h2><p class="muted">Pasirink, kiek klausimų gaus kiekvienas mokinys. Sistema naudoja vienodą balanso karkasą: kiekvienam mokiniui tenka tokios pačios temos, tie patys sunkumo lygiai ir tie patys klausimų tipai, bet parenkami skirtingi lygiaverčiai klausimų variantai.</p><form id="assessmentSettingsForm" class="formGroup"><label>Klausimų skaičius<input id="assessmentQuestionCountInput" type="number" min="5" max="30" step="1" value="${current}" required></label><p class="formHint">Rekomenduojama: 30 klausimų. Galima rinktis nuo 5 iki 30.</p>
+ modal(`<span class="kicker">ATSISKAITYMO NUSTATYMAI</span><h2>${esc(t?.title||topicId)}</h2><p class="muted">Pasirink, kiek klausimų gaus kiekvienas mokinys. Sistema naudoja vienodą balanso karkasą: kiekvienam mokiniui tenka tokios pačios temos, tie patys sunkumo lygiai ir tie patys klausimų tipai, bet parenkami skirtingi lygiaverčiai klausimų variantai.</p><form id="assessmentSettingsForm" class="formGroup"><label>Klausimų skaičius<input id="assessmentQuestionCountInput" type="number" min="5" max="${maxQuestions}" step="1" value="${current}" required></label><p class="formHint">${cryptoLimited?'Šioje kriptografijos temoje parengta 10 subalansuotų klausimų grupių, todėl daugiausia galima rinktis 10 klausimų.':'Rekomenduojama: 30 klausimų. Galima rinktis nuo 5 iki 30.'}</p>
  ${supportsLogo?`<label class="assessmentPracticalSetting"><input id="assessmentPracticalEnabled" type="checkbox" ${logoEnabled?'checked':''}><span><b>II dalis – logotipo kūrimas</b><small>Mokinys po teorijos pateiks SVG originalą ir PNG peržiūrą. Praktinę dalį mokytojas vertina iki 10 taškų.</small></span></label>`:''}
  <button class="primary" type="submit">${openAfterSave?'Išsaugoti ir atidaryti atsiskaitymą':'Išsaugoti'}</button></form>`);
  $('assessmentSettingsForm').onsubmit=async e=>{
   e.preventDefault();
-  const count=Math.max(5,Math.min(30,Number($('assessmentQuestionCountInput').value)||30));
+  const count=Math.max(5,Math.min(maxQuestions,Number($('assessmentQuestionCountInput').value)||maxQuestions));
   const practicalEnabled=supportsLogo?$('assessmentPracticalEnabled').checked:false;
   const payload={class_id:c.id,topic_id:topicId,question_count:count,updated_by:me.id,updated_at:new Date().toISOString()};
   if(supportsLogo){Object.assign(payload,{practical_enabled:practicalEnabled,practical_title:'Logotipo kūrimas',practical_max_points:10,practical_instructions:'Sukurkite originalų vektorinį logotipą pasirinkta tema. Naudokite bent 3 vektorinius objektus, geometrines formas, bent vieną Bezjė kreivę, užpildą ir kontūrą, gradientą bei tekstą. Išlaikykite aiškią ir tvarkingą kompoziciją. Pateikite SVG originalą ir PNG peržiūrą.'})}
