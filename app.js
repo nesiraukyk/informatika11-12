@@ -2841,25 +2841,11 @@ async function openStudentTopic(topicId,c,access){
  $('topicContent').innerHTML=`<div class="pageHero studentTopicHero"><h1>${esc(t?.title||topicId)}</h1>${topicDescription(t)?`<p>${esc(topicDescription(t))}</p>`:''}</div>
  <div class="contentGrid"><div class="stack">
   ${renderStudentTeacherUpdates(topicPosts||[])}
-  ${showCyberLab?`<section class="cl-launch-card" aria-label="SECURE LINK interaktyvi kriptografijos laboratorija">
-  <div class="cl-launch-body">
-    <div class="cl-launch-eyebrow"><span class="cl-launch-status-dot" aria-hidden="true"></span> INTERAKTYVI LABORATORIJA <span class="cl-launch-eyebrow-tag">KRIPTOGRAFIJA</span></div>
-    <h3 class="cl-launch-title">SECURE<span>LINK</span><small>Ryšio laboratorija</small></h3>
-    <p class="cl-launch-description">Sukurk ryšį tarp Agnės ir Beno. Perimk žinutę, išbandyk šifravimo metodus ir sužinok, kas iš tiesų apsaugo duomenis.</p>
-    <div class="cl-launch-actions">
-      <button type="button" class="cl-launch-cta" id="openCyberLabStudent">Atidaryti laboratoriją <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7"/></svg></button>
-      <span class="cl-launch-count"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 4v5c0 5-3.3 8.1-8 9-4.7-.9-8-4-8-9V7l8-4z"/><path d="m9 12 2 2 4-4"/></svg> 5 saugumo bandymai</span>
-    </div>
-  </div>
-  <div class="cl-launch-visual" aria-hidden="true">
-    <div class="cl-launch-visual-header"><span class="cl-launch-live-dot"></span> SAUGAUS RYŠIO SIMULIACIJA <span class="cl-launch-visual-count">01 / 05</span></div>
-    <div class="cl-launch-network">
-      <div class="cl-launch-person"><span class="cl-launch-person-circle">A</span><span>AGNĖ</span></div>
-      <div class="cl-launch-path"><span class="cl-launch-path-lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span></div>
-      <div class="cl-launch-person"><span class="cl-launch-person-circle">B</span><span>BENAS</span></div>
-    </div>
-    <div class="cl-launch-observer"><span class="cl-launch-observer-indicator"></span><span>TINKLO STEBĖTOJAS</span><span class="cl-launch-observer-symbol">◉</span></div>
-  </div>
+  ${showCyberLab?`<section class="cl-launch-card" aria-label="SECURE LINK ryšio laboratorija">
+  <span class="cl-launch-eyebrow">INTERAKTYVI LABORATORIJA</span>
+  <h3>SECURE LINK · Ryšio laboratorija</h3>
+  <p>Išbandyk Cezario šifrą, AES ir RSA. Patikrink, ką gali perskaityti tinklo stebėtojas.</p>
+  <button type="button" class="cl-launch-cta" id="openCyberLabStudent">Atidaryti laboratoriją <span aria-hidden="true">→</span></button>
 </section>`:''}
   ${topicId==='kriptografija'&&c.grade_level==='11'&&a.practice_open&&VBE_CRYPTO.length?`<div class="panel vbeCryptoPractice"><span class="kicker">PAPILDOMA ŽINIŲ TRENIRUOTĖ</span><h3>Kriptografija · ankstesnių egzaminų klausimai</h3><p class="muted">${VBE_CRYPTO.length} klausimai pagal ankstesnius valstybinius, pakartotinius ir bandomuosius / pavyzdinius egzaminus. Mokomosios, perfrazuotos užduotys. Po atsakymo pateikiamas paaiškinimas. Rezultatas išsaugomas.</p><button class="primary" id="startVbeCrypto">Pradėti ${VBE_CRYPTO.length} klausimų treniruotę</button></div>`:''}
   <div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">PRAKTIKA</span><h2>Žinių treniruotė</h2></div><span class="badge ${a.practice_open?'ok':''}">${a.practice_open?'Atidaryta':'Užrakinta'}</span></div>
