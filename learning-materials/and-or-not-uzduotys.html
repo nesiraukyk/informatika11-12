@@ -41,4 +41,44 @@ small,.muted{color:#657288}li{margin:9px 0}.task{padding:14px 0;border-bottom:1p
 <div class="task"><b>12 užduotis – paneigimas.</b> Su <code>NOT</code> ir <code>OR</code> sudaryk formulę, grąžinančią TRUE, jeigu A2 yra <b>nuo 20 iki 50 imtinai</b>.</div>
 </section>
 <section><h2>Vertinimo gairės</h2><table><tr><th>Kriterijus</th><th>Taškai</th></tr><tr><td>AND / OR / NOT logikos supratimas</td><td>4</td></tr><tr><td>Taisyklingos IF jungtinės formulės ir jų kopijavimas</td><td>8</td></tr><tr><td>Sudėtinės, įdėtinės loginės sąlygos</td><td>5</td></tr><tr><td>Formulių patikrinimas ir tvarkinga lentelė</td><td>3</td></tr><tr><th>Iš viso</th><th>20</th></tr></table>
-<div class="toolbar"><a class="btn alt" href="and-or-not-teorija.html">Teorija</a><a class="btn" href="and-or-not-duomenys.csv" download>Atsisiųsti duomenis CSV</a><button class="noprint" onclick="window.print()">Spausdinti užduotis</button></div><p class="muted">CSV rinkmeną galima atidaryti Excel programoje. Jei stulpeliai nesuskirstomi automatiškai, importuok pasirenkant kabliataškį kaip skirtuką.</p></section></main></body></html>
+<div class="toolbar"><a class="btn alt" href="and-or-not-teorija.html">Teorija</a><button type="button" id="downloadExcelWorkbook">Atsisiųsti Excel šabloną (.xlsx)</button><a class="btn alt" href="and-or-not-duomenys.csv" download>Atsisiųsti CSV</a><button class="noprint" onclick="window.print()">Spausdinti užduotis</button></div><p class="muted">CSV rinkmeną galima atidaryti Excel programoje. Jei stulpeliai nesuskirstomi automatiškai, importuok pasirenkant kabliataškį kaip skirtuką.</p></section></main><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script>
+document.getElementById('downloadExcelWorkbook').addEventListener('click',function(){
+ if(!window.XLSX){alert('Nepavyko įkelti Excel failo kūrimo bibliotekos. Atsisiųsk CSV failą arba bandyk dar kartą.');return;}
+ const marks=[['Jonas',8,9,10],['Ona',7,9,8],['Mantas',4,6,5],['Ieva',10,10,9],['Lukas',8,8,8],['Rugilė',9,6,10],['Nojus',3,8,9],['Gabija',7,7,7],['Arnas',9,8,9],['Laura',10,7,10],['Emilis',5,4,7],['Smiltė',8,10,10]];
+ const wb=XLSX.utils.book_new();
+ const append=(name,rows,widths)=>{
+  const ws=XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols']=(widths||[]).map(w=>({wch:w}));
+  XLSX.utils.book_append_sheet(wb,ws,name);
+ };
+ append('INSTRUKCIJA',[
+ ['EXCEL LOGINĖS FUNKCIJOS – AND, OR, NOT'],
+ ['11 klasė – praktinės užduotys – formulės rašomos geltonų stulpelių vietose'],
+ ['1','Lapas AND: visi trys pažymiai turi būti bent 8.'],
+ ['2','Lapas OR_NOT: konsultacijos jei bent vienas pažymys < 7.'],
+ ['3','Lapas OR_NOT: NOT su OR – nėra nė vieno pažymio < 4.'],
+ ['4','Lapas DERINIAI: visi pažymiai bent 8 ir bent vienas = 10.'],
+ ['5','Lapas PREKES: kaina ≤50 ir likutis bent 3.'],
+ ['Taisyklė','Įrašyk formulę antroje eilutėje ir nukopijuok žemyn.']
+ ],[17,82]);
+ append('AND',[
+ ['Mokinys','I darbas','II darbas','III darbas','Pateko? (AND+IF)'],
+ ...marks.map(m=>[...m,''])
+ ],[22,14,14,14,32]);
+ append('OR_NOT',[
+ ['Mokinys','I darbas','II darbas','III darbas','Konsultacijos? (OR+IF)','Nėra neigiamų? (NOT+OR+IF)'],
+ ...marks.map(m=>[...m,'',''])
+ ],[22,14,14,14,32,37]);
+ append('DERINIAI',[
+ ['Mokinys','I darbas','II darbas','III darbas','Apdovanojimas? (AND+OR+IF)'],
+ ...marks.map(m=>[...m,''])
+ ],[22,14,14,14,40]);
+ const products=[['Sąsiuvinis',2.50,50],['Ausinės',49.99,2],['Pelė',25,5],['Klaviatūra',58,12],['USB laikmena',10.99,0],['Kuprinė',39.99,8],['Monitorius',160,3],['Pelės kilimėlis',6.99,2],['Laidas',9.50,3],['Kėdė',120,0]];
+ append('PREKES',[
+ ['Prekė','Kaina (€)','Likutis (vnt.)','Vykdyti užsakymą?','Sąlyga: kaina ≤50 IR likutis ≥3'],
+ ...products.map(p=>[...p,'',''])
+ ],[25,15,18,29,44]);
+ XLSX.writeFile(wb,'AND_OR_NOT_praktines_uzduotys_11kl.xlsx',{compression:true});
+});
+</script></body></html>
