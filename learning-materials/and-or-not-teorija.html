@@ -1,0 +1,56 @@
+<!doctype html><html lang="lt"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Teorija | Excel AND OR NOT · 11 kl.</title><style>
+:root{font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:#17243e}*{box-sizing:border-box}
+body{margin:0;background:#f4f6fa;line-height:1.62}main{max-width:950px;margin:32px auto 70px;padding:0 22px}
+.hero{background:linear-gradient(125deg,#14345b,#3655a6);padding:34px 40px;color:white;border-radius:24px}
+.hero h1{margin:6px 0;font-size:35px;line-height:1.2}.hero p{margin:8px 0}.kicker{letter-spacing:1.6px;text-transform:uppercase;font-weight:800;font-size:12px;color:#b7d4ff}
+section{margin-top:18px;background:#fff;padding:28px 34px;border:1px solid #e4e9f1;border-radius:18px;box-shadow:0 5px 18px #19345e0a}
+h2{font-size:21px;margin:0 0 12px;color:#173455}h3{font-size:17px;margin:24px 0 6px}p{margin:9px 0}
+table{width:100%;border-collapse:collapse;margin:14px 0}td,th{border:1px solid #d6deea;padding:9px 12px;text-align:left}th{background:#eaf0fa;color:#173455}
+code,pre{font-family:Consolas,monospace;font-size:14px}code{background:#edf3fc;padding:2px 5px;border-radius:5px;overflow-wrap:anywhere}
+pre{background:#edf3fc;padding:14px 18px;border-radius:10px;overflow:auto;color:#193458}
+.note{padding:14px 18px;background:#eef5ff;border-left:4px solid #4670d4;border-radius:8px}
+.warning{padding:14px 18px;background:#fffaec;border-left:4px solid #d89b33;border-radius:8px}
+.tag{display:inline-block;background:#e5edff;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:800;color:#2947a1}
+.cols{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.tile{padding:15px;border-radius:12px;background:#f0f4fb}.tile b{display:block;font-size:20px;color:#234e93}
+a.btn,button{display:inline-block;background:#3155ce;border:0;color:#fff;border-radius:9px;font:inherit;font-weight:700;padding:11px 20px;text-decoration:none;cursor:pointer}
+a.btn.alt{background:#eaf0fa;color:#294f96}.pill{display:inline-block;font-size:12px;font-weight:700;border-radius:16px;background:#dcf6e6;color:#207847;padding:3px 9px}
+small,.muted{color:#657288}li{margin:9px 0}.task{padding:14px 0;border-bottom:1px solid #e1e6ee}.blank{height:26px;border-bottom:1px dotted #98a6ba}
+.toolbar{display:flex;justify-content:space-between;flex-wrap:wrap;gap:9px;align-items:center;margin-top:16px}
+@media(max-width:680px){main{padding:0 12px}.hero{padding:25px}section{padding:21px}.cols{grid-template-columns:1fr}table{font-size:12px}td,th{padding:6px}}
+@media print{body{background:#fff}main{margin:0;max-width:none}.hero{background:#203f78!important;print-color-adjust:exact}.toolbar,.noprint{display:none!important}section{break-inside:avoid;box-shadow:none;border-color:#ddd;margin-top:12px;padding:16px}a{color:inherit;text-decoration:none}}
+</style></head><body><main>
+<header class="hero"><div class="kicker">11 KLASĖ · EXCEL · TEORIJA</div><h1>Loginės funkcijos<br>AND · OR · NOT</h1><p>Kaip tikrinti kelias sąlygas ir sudaryti formules su IF</p><div class="toolbar"><span>2 × 45 min. · teorinė medžiaga</span><span>2026–2027 m. mokomoji medžiaga</span></div></header>
+<section><h2>1. Ką jau moki ir ko išmoksi?</h2><p>Tu jau žinai funkciją <code>IF</code>. Iki šiol dažniausiai tikrinai vieną sąlygą. Dabar mokysiesi tikrinti kelias sąlygas vienu metu.</p>
+<div class="cols"><div class="tile"><b>AND</b>Visos sąlygos turi būti teisingos.</div><div class="tile"><b>OR</b>Užtenka bent vienos teisingos sąlygos.</div><div class="tile"><b>NOT</b>Apverčia loginės išraiškos rezultatą.</div></div>
+<p class="note"><b>TRUE</b> reiškia „teisinga“, <b>FALSE</b> – „klaidinga“. Kai naudojame IF, TRUE ir FALSE galima pakeisti norimais žodžiais, pvz., „Pateko“ / „Nepateko“.</p></section>
+<section><h2>2. AND – loginė IR</h2><p><b>AND grąžina TRUE tik jei VISOS sąlygos teisingos.</b></p><pre>=AND(A2>=8;B2>=8;C2>=8)</pre><p>Pavyzdys: mokinys patenka į kitą etapą, jei visų trijų darbų pažymiai bent 8.</p>
+<table><tr><th>A2</th><th>B2</th><th>C2</th><th>AND rezultatas</th></tr><tr><td>9</td><td>8</td><td>10</td><td>TRUE</td></tr><tr><td>9</td><td>7</td><td>10</td><td>FALSE</td></tr></table>
+<p>Jei norime rodyti tekstą, jungiam su IF:</p><pre>=IF(AND(B2>=8;C2>=8;D2>=8);"Pateko";"Nepateko")</pre></section>
+<section><h2>3. OR – loginė ARBA</h2><p><b>OR grąžina TRUE, kai bent viena sąlyga teisinga.</b></p>
+<pre>=OR(B2<7;C2<7;D2<7)</pre><p>Pavyzdys: konsultacijos reikalingos, jei bent viename iš trijų darbų gauta mažiau nei 7.</p>
+<pre>=IF(OR(B2<7;C2<7;D2<7);"Reikia";"Nereikia")</pre>
+<table><tr><th>B2</th><th>C2</th><th>D2</th><th>OR rezultatas</th></tr><tr><td>8</td><td>9</td><td>10</td><td>FALSE</td></tr><tr><td>6</td><td>9</td><td>10</td><td>TRUE</td></tr></table></section>
+<section><h2>4. NOT – loginė NE</h2><p><b>NOT pakeičia TRUE į FALSE, o FALSE į TRUE.</b> Ji turi vieną loginį argumentą.</p><pre>=NOT(8>10)  → TRUE
+=NOT(8=8)   → FALSE</pre>
+<p>Sudėtingesnis pavyzdys: pažymių sąraše nėra nė vieno neigiamo (čia neigiamu laikomas pažymys mažesnis nei 4).</p>
+<pre>=NOT(OR(B2<4;C2<4;D2<4))</pre>
+<p>Jei bent vienas pažymys mažesnis nei 4, OR grąžina TRUE. NOT jį pakeičia į FALSE.</p>
+<pre>=IF(NOT(OR(B2<4;C2<4;D2<4));"Nėra neigiamų";"Yra neigiamas")</pre></section>
+<section><h2>5. AND ir OR palyginimas</h2><table><tr><th>1 sąlyga</th><th>2 sąlyga</th><th>AND</th><th>OR</th></tr><tr><td>TRUE</td><td>TRUE</td><td>TRUE</td><td>TRUE</td></tr><tr><td>TRUE</td><td>FALSE</td><td>FALSE</td><td>TRUE</td></tr><tr><td>FALSE</td><td>TRUE</td><td>FALSE</td><td>TRUE</td></tr><tr><td>FALSE</td><td>FALSE</td><td>FALSE</td><td>FALSE</td></tr></table>
+<p class="note"><b>Greita atmintinė:</b> AND = „viskas“; OR = „bent vienas“; NOT = „ne“.</p></section>
+<section><h2>6. Sudėtinės sąlygos – VBE tipo mąstymas</h2><p>Apdovanojimas skiriamas tik jei <b>visi trys pažymiai ne mažesni nei 8</b> ir <b>bent vienas iš jų yra 10</b>.</p>
+<pre>=IF(AND(B2>=8;C2>=8;D2>=8;
+       OR(B2=10;C2=10;D2=10));
+    "Apdovanojimas";"Neskiriama")</pre>
+<p>Formulę patogu kurti nuo vidaus į išorę: pirma OR (ar yra 10?), tada AND (ar viskas atitinka?), galiausiai IF (ką parodyti?).</p></section>
+<section><h2>7. Dažniausios klaidos</h2><ol>
+<li><b>Netinkama funkcija:</b> užduotyje „bent vienas“ naudok OR, ne AND.</li>
+<li><b>Painiojama riba:</b> „bent 8“ = <code>>=8</code>, o „daugiau už 8“ = <code>>8</code>.</li>
+<li><b>Trūksta skliaustų:</b> kiekviena atidaryta funkcija turi užsidaryti.</li>
+<li><b>Neteisingas argumentų skirtukas:</b> šiame pavyzdyje naudojamas kabliataškis <code>;</code>. Kai kuriuose „Excel“ nustatymuose naudojamas kablelis.</li>
+<li><b>Netaisyklingos citatos:</b> tekstą visada rašyk kabutėse: <code>"Pateko"</code>.</li>
+<li><b>NOT(OR(...))</b> nereiškia to paties kaip OR – rezultatas apverčiamas.</li></ol>
+<div class="warning">Mokomoji medžiaga skirta 11 klasei. Pirmiausia suprask loginę sąlygą, tada įrašyk formulę „Excel“ ir patikrink bent du skirtingus atvejus.</div></section>
+<section><h2>8. Pasitikrink</h2><ol><li>Ar AND(8>5;2=3) grąžina TRUE?</li><li>Ar OR(8>5;2=3) grąžina TRUE?</li><li>Ar NOT(5<2) grąžina TRUE?</li><li>Kokią funkciją pasirinksi, jei būtina įvykdyti visas tris sąlygas?</li><li>Kurią funkciją naudosi, jei pakanka vieno tinkamo rezultato?</li></ol>
+<div class="toolbar"><a class="btn" href="and-or-not-uzduotys.html">Pereiti prie užduočių</a><button class="noprint" onclick="window.print()">Spausdinti teoriją</button></div>
+</section></main></body></html>
