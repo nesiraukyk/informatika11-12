@@ -1992,17 +1992,19 @@ function previewTaskRow(a){
 }
 
 async function renderTeacherResources(c){
- const [resourcesResult,assignmentsResult]=await Promise.all([
+ const [resourcesResult,assignmentsResult,foldersResult]=await Promise.all([
   sb.from('learning_resources').select('*').eq('class_id',c.id).order('created_at',{ascending:false}),
-  sb.from('assignments').select('id,topic_id,title,is_open,due_at').eq('class_id',c.id).order('created_at',{ascending:false})
+  sb.from('assignments').select('id,topic_id,title,is_open,due_at').eq('class_id',c.id).order('created_at',{ascending:false}),
+  sb.from('learning_resource_folders').select('*').eq('class_id',c.id).order('name')
  ]);
  if(resourcesResult.error)return toast(resourcesResult.error.message);
  if(assignmentsResult.error)return toast(assignmentsResult.error.message);
- const rows=resourcesResult.data||[],tasks=assignmentsResult.data||[];
+ if(foldersResult.error)return toast('Aplankų klaida: '+foldersResult.error.message);
+ const rows=resourcesResult.data||[],tasks=assignmentsResult.data||[],folders=foldersResult.data||[];
  const knownIds=new Set(activeClassTopics.map(t=>t.id));
  const extraTopicIds=[...new Set([...rows.map(r=>r.topic_id),...tasks.map(t=>t.topic_id)].filter(id=>id&&!knownIds.has(id)))];
  const groupTopics=[...activeClassTopics,...extraTopicIds.map(id=>topicById(id)||{id,title:id,icon:'📁'})];
- const groups=groupTopics.map(topic=>({topic,items:rows.filter(r=>r.topic_id===topic.id),tasks:tasks.filter(t=>t.topic_id===topic.id)}));
+ const groups=groupTopics.map(topic=>({topic,items:rows.filter(r=>r.topic_id===topic.id),tasks:tasks.filter(t=>t.topic_id===topic.id),folders:folders.filter(f=>f.topic_id===topic.id)}));
  $('teacherClassPanel').innerHTML=`<div class="panel teacherThemePanel">
   <div class="sectionTitle teacherThemeHead refreshedTeacherResourcesHead"><div class="grow"><h2>Mokymosi failai</h2></div>
    <button class="primary refreshedUploadButton" id="uploadResourceBtn" ${activeClassTopics.length?'':'disabled'}>+ Įkelti failą</button></div>
@@ -2010,7 +2012,11 @@ async function renderTeacherResources(c){
     <summary>${teacherTopicHeader(g.topic,`${g.items.length} fail. · ${g.tasks.length} užd.`)}</summary>
     <div class="topicContentBody">
       <div class="topicGroupToolbar compactResourceToolbar"><span class="topicSubsectionLabel">Failai atsisiuntimui</span><button class="compactTaskUpload compactResourceAdd" data-resource-topic="${esc(g.topic.id)}" ${activeClassTopics.some(t=>t.id===g.topic.id)?'':'disabled'}>+ Pridėti</button></div>
-      <div class="learningFileList">${g.items.length?g.items.map(r=>learningFileRow(r,'teacher')).join(''):'<div class="compactTaskEmpty">Failų nėra.</div>'}</div>
+      <div class="topicGroupToolbar compactResourceToolbar"><span class="subtle">Nutempk failą į aplanką arba pasirink „Perkelti“</span><button type="button" class="smallBtn" data-create-resource-folder="${esc(g.topic.id)}">+ Aplankas</button></div>
+      <div class="resourceFolderGrid">
+       ${g.folders.map(folder=>`<details class="resourceFolder" data-folder-drop="${esc(folder.id)}"><summary>📁 ${esc(folder.name)} <span class="subtle">(${g.items.filter(r=>r.folder_id===folder.id).length})</span></summary><div class="learningFileList">${g.items.filter(r=>r.folder_id===folder.id).map(r=>teacherFolderFileRow(r)).join('')||'<div class="compactTaskEmpty">Aplankas tuščias. Nutempk failą čia.</div>'}</div><button type="button" class="smallBtn" data-rename-resource-folder="${esc(folder.id)}">Pervadinti</button> <button type="button" class="smallBtn" data-delete-resource-folder="${esc(folder.id)}">Pašalinti aplanką</button></details>`).join('')}
+      </div>
+      <div class="resourceFolderLoose" data-folder-drop="" data-topic-drop="${esc(g.topic.id)}"><b>Failai be aplanko</b><div class="learningFileList">${g.items.filter(r=>!r.folder_id).map(r=>teacherFolderFileRow(r)).join('')||'<div class="compactTaskEmpty">Visi failai suskirstyti į aplankus.</div>'}</div></div>
       <div class="topicSubsection refreshedTasksSubsection"><div class="topicGroupToolbar compactResourceToolbar"><span class="topicSubsectionLabel">Užduotys mokiniams</span><button class="compactTaskUpload compactResourceAdd" data-resource-new-assignment="${esc(g.topic.id)}" ${activeClassTopics.some(t=>t.id===g.topic.id)?'':'disabled'}>+ Nauja</button></div>
        <div class="compactTaskList">${g.tasks.length?g.tasks.map(a=>`<section class="compactTask teacherResourceTask"><div class="compactTaskHeader"><div class="compactTaskGlyph" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3.5" width="14" height="17" rx="2.6"/><path d="M8.5 9h7M8.5 13h7"/></svg></div><div class="compactTaskInfo"><b>${esc(a.title)}</b><div class="compactTaskSecondary">${a.due_at?`Iki ${esc(fmtDate(a.due_at).split(' ')[0])}`:'Be termino'}</div></div><span class="teacherTaskStatus ${a.is_open?'isOpen':''}">${a.is_open?'Atidaryta':'Uždaryta'}</span></div></section>`).join(''):'<div class="compactTaskEmpty">Užduočių nėra.</div>'}</div></div>
     </div>
@@ -2021,7 +2027,54 @@ async function renderTeacherResources(c){
  document.querySelectorAll('[data-resource-new-assignment]').forEach(b=>b.onclick=()=>newAssignmentModal(c,b.dataset.resourceNewAssignment,true));
  document.querySelectorAll('[data-download-resource]').forEach(b=>b.onclick=()=>downloadResource(b.dataset.downloadResource));
  document.querySelectorAll('[data-delete-resource]').forEach(b=>b.onclick=()=>deleteResource(b.dataset.deleteResource,c));
+ document.querySelectorAll('[data-create-resource-folder]').forEach(b=>b.onclick=()=>createResourceFolder(c,b.dataset.createResourceFolder));
+ document.querySelectorAll('[data-rename-resource-folder]').forEach(b=>b.onclick=()=>renameResourceFolder(c,b.dataset.renameResourceFolder,folders));
+ document.querySelectorAll('[data-delete-resource-folder]').forEach(b=>b.onclick=()=>deleteResourceFolder(c,b.dataset.deleteResourceFolder));
+ document.querySelectorAll('[data-move-resource]').forEach(b=>b.onclick=()=>chooseResourceFolder(c,b.dataset.moveResource,rows,folders));
+ document.querySelectorAll('[data-resource-drag]').forEach(el=>el.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/plain',el.dataset.resourceDrag);e.dataTransfer.effectAllowed='move'}));
+ document.querySelectorAll('[data-folder-drop]').forEach(el=>{
+  el.addEventListener('dragover',e=>{e.preventDefault();e.dataTransfer.dropEffect='move';el.classList.add('dragOver')});
+  el.addEventListener('dragleave',()=>el.classList.remove('dragOver'));
+  el.addEventListener('drop',async e=>{e.preventDefault();el.classList.remove('dragOver');const id=e.dataTransfer.getData('text/plain');if(!id)return;await moveResourceIntoFolder(c,id,el.dataset.folderDrop||null)});
+ });
  rememberTeacherTopicExpansion('resources');
+}
+
+
+function teacherFolderFileRow(r){
+ const html=learningFileRow(r,'teacher');
+ return '<div draggable="true" data-resource-drag="'+esc(r.id)+'" class="resourceDraggable">'+html+'<button type="button" class="smallBtn" data-move-resource="'+esc(r.id)+'">Perkelti</button></div>';
+}
+async function createResourceFolder(c,topicId){
+ const name=prompt('Naujo aplanko pavadinimas:')?.trim();if(!name)return;
+ const {error}=await sb.from('learning_resource_folders').insert({class_id:c.id,topic_id:topicId,name,created_by:me.id});
+ if(error)return toast('Nepavyko sukurti aplanko: '+error.message);
+ teacherExpandedTopics.resources.add(topicId);await renderTeacherResources(c);
+}
+async function renameResourceFolder(c,id,folders){
+ const folder=folders.find(x=>x.id===id);if(!folder)return;
+ const name=prompt('Aplanko pavadinimas:',folder.name)?.trim();if(!name||name===folder.name)return;
+ const {error}=await sb.from('learning_resource_folders').update({name}).eq('id',id).eq('class_id',c.id);
+ if(error)return toast(error.message);await renderTeacherResources(c);
+}
+async function deleteResourceFolder(c,id){
+ if(!confirm('Pašalinti aplanką? Jame esantys failai nebus ištrinti – liks be aplanko.'))return;
+ const {error}=await sb.from('learning_resource_folders').delete().eq('id',id).eq('class_id',c.id);
+ if(error)return toast(error.message);await renderTeacherResources(c);
+}
+async function moveResourceIntoFolder(c,resourceId,folderId){
+ const {error}=await sb.rpc('set_learning_resource_folder',{p_resource_id:resourceId,p_folder_id:folderId});
+ if(error)return toast('Perkėlimo klaida: '+error.message);
+ toast('Failas perkeltas.');await renderTeacherResources(c);
+}
+async function chooseResourceFolder(c,id,rows,folders){
+ const resource=rows.find(r=>r.id===id);if(!resource)return;
+ const list=folders.filter(f=>f.topic_id===resource.topic_id);
+ const options=['Be aplanko',...list.map(f=>f.name)];
+ const choice=prompt('Kur perkelti failą? Įvesk numerį:\\n'+options.map((s,i)=>i+' – '+s).join('\\n'));
+ if(choice===null)return;
+ const n=Number(choice);if(!Number.isInteger(n)||n<0||n>=options.length)return toast('Netinkamas aplanko numeris.');
+ await moveResourceIntoFolder(c,id,n===0?null:list[n-1].id);
 }
 
 function resourceUploadModal(c,presetTopicId=null){
