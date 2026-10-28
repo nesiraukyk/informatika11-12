@@ -2017,7 +2017,7 @@ async function renderTeacherResources(c){
       <div class="topicGroupToolbar compactResourceToolbar"><span class="topicSubsectionLabel">Failai atsisiuntimui</span><button class="compactTaskUpload compactResourceAdd" data-resource-topic="${esc(g.topic.id)}" ${activeClassTopics.some(t=>t.id===g.topic.id)?'':'disabled'}>+ Pridėti</button></div>
       <div class="topicGroupToolbar compactResourceToolbar"><span class="subtle">Nutempk failą į aplanką arba pasirink „Perkelti“</span><button type="button" class="smallBtn" data-create-resource-folder="${esc(g.topic.id)}">+ Aplankas</button></div>
       <div class="resourceFolderGrid">
-       ${g.folders.map(folder=>`<details class="resourceFolder" data-folder-drop="${esc(folder.id)}"><summary>📁 ${esc(folder.name)} <span class="subtle">(${g.items.filter(r=>r.folder_id===folder.id).length})</span></summary><div class="learningFileList">${g.items.filter(r=>r.folder_id===folder.id).map(r=>teacherFolderFileRow(r)).join('')||'<div class="compactTaskEmpty">Aplankas tuščias. Nutempk failą čia.</div>'}</div><button type="button" class="smallBtn" data-rename-resource-folder="${esc(folder.id)}">Pervadinti</button> <button type="button" class="smallBtn" data-delete-resource-folder="${esc(folder.id)}">Pašalinti aplanką</button></details>`).join('')}
+       ${g.folders.map(folder=>`<details class="resourceFolder" data-folder-drop="${esc(folder.id)}"><summary>📁 ${esc(folder.name)} <span class="subtle">(${g.items.filter(r=>r.folder_id===folder.id).length})</span></summary><div class="learningFileList">${g.items.filter(r=>r.folder_id===folder.id).map(r=>teacherFolderFileRow(r)).join('')||'<div class="compactTaskEmpty">Aplankas tuščias. Nutempk failą čia.</div>'}</div><button type="button" class="smallBtn" data-resource-add-folder="${esc(folder.id)}" data-folder-topic="${esc(g.topic.id)}">+ Įkelti čia</button> <button type="button" class="smallBtn" data-rename-resource-folder="${esc(folder.id)}">Pervadinti</button> <button type="button" class="smallBtn" data-delete-resource-folder="${esc(folder.id)}">Pašalinti aplanką</button></details>`).join('')}
       </div>
       <div class="resourceFolderLoose" data-folder-drop="" data-topic-drop="${esc(g.topic.id)}"><b>Failai be aplanko</b><div class="learningFileList">${g.items.filter(r=>!r.folder_id).map(r=>teacherFolderFileRow(r)).join('')||'<div class="compactTaskEmpty">Visi failai suskirstyti į aplankus.</div>'}</div></div>
       <div class="topicSubsection refreshedTasksSubsection"><div class="topicGroupToolbar compactResourceToolbar"><span class="topicSubsectionLabel">Užduotys mokiniams</span><button class="compactTaskUpload compactResourceAdd" data-resource-new-assignment="${esc(g.topic.id)}" ${activeClassTopics.some(t=>t.id===g.topic.id)?'':'disabled'}>+ Nauja</button></div>
@@ -2034,6 +2034,8 @@ async function renderTeacherResources(c){
  document.querySelectorAll('[data-rename-resource-folder]').forEach(b=>b.onclick=()=>renameResourceFolder(c,b.dataset.renameResourceFolder,folders));
  document.querySelectorAll('[data-delete-resource-folder]').forEach(b=>b.onclick=()=>deleteResourceFolder(c,b.dataset.deleteResourceFolder));
  document.querySelectorAll('[data-move-resource]').forEach(b=>b.onclick=()=>chooseResourceFolder(c,b.dataset.moveResource,rows,folders));
+ document.querySelectorAll('[data-change-resource-kind]').forEach(b=>b.onclick=()=>changeResourceKind(c,b.dataset.changeResourceKind,b.dataset.newKind));
+ document.querySelectorAll('[data-resource-add-folder]').forEach(b=>b.onclick=()=>resourceUploadModal(c,b.dataset.folderTopic,b.dataset.resourceAddFolder));
  document.querySelectorAll('[data-resource-drag]').forEach(el=>el.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/plain',el.dataset.resourceDrag);e.dataTransfer.effectAllowed='move'}));
  document.querySelectorAll('[data-folder-drop]').forEach(el=>{
   el.addEventListener('dragover',e=>{e.preventDefault();e.dataTransfer.dropEffect='move';el.classList.add('dragOver')});
@@ -2046,7 +2048,16 @@ async function renderTeacherResources(c){
 
 function teacherFolderFileRow(r){
  const html=learningFileRow(r,'teacher');
- return '<div draggable="true" data-resource-drag="'+esc(r.id)+'" class="resourceDraggable">'+html+'<button type="button" class="smallBtn" data-move-resource="'+esc(r.id)+'">Perkelti</button></div>';
+ const nextKind=r.resource_kind==='theory'?'task':'theory';
+ const nextTitle=nextKind==='theory'?'Pažymėti kaip teoriją':'Pažymėti kaip užduotis';
+ return '<div draggable="true" data-resource-drag="'+esc(r.id)+'" class="resourceDraggable">'+html+'<button type="button" class="smallBtn" data-change-resource-kind="'+esc(r.id)+'" data-new-kind="'+nextKind+'" title="'+nextTitle+'">Tipas</button><button type="button" class="smallBtn" data-move-resource="'+esc(r.id)+'">Perkelti</button></div>';
+}
+async function changeResourceKind(c,id,kind){
+ if(!['theory','task'].includes(kind))return;
+ const {error}=await sb.from('learning_resources').update({resource_kind:kind}).eq('id',id).eq('class_id',c.id);
+ if(error)return toast('Nepavyko pakeisti tipo: '+error.message);
+ toast(kind==='theory'?'Pažymėta kaip teorija.':'Pažymėta kaip užduotys.');
+ await renderTeacherResources(c);
 }
 async function createResourceFolder(c,topicId){
  const name=prompt('Naujo aplanko pavadinimas:')?.trim();if(!name)return;
@@ -2080,61 +2091,68 @@ async function chooseResourceFolder(c,id,rows,folders){
  await moveResourceIntoFolder(c,id,n===0?null:list[n-1].id);
 }
 
-function resourceUploadModal(c,presetTopicId=null){
+async function resourceUploadModal(c,presetTopicId=null,presetFolderId=null){
  if(!activeClassTopics.length)return toast('Pirmiausia klasėje sukurk bent vieną temą.');
+ const {data:folders,error:folderError}=await sb.from('learning_resource_folders')
+  .select('id,name,topic_id').eq('class_id',c.id).order('name');
+ if(folderError)return toast('Nepavyko gauti aplankų: '+folderError.message);
  modal(`<span class="kicker">MOKYMOSI FAILAS</span><h2>Įkelti mokiniams</h2><form id="resourceForm" class="formGroup">
  <label>Tema<select id="resourceTopic">${activeClassTopics.map(t=>`<option value="${t.id}" ${t.id===presetTopicId?'selected':''}>${esc(t.title)}</option>`).join('')}</select></label>
- <label>Pavadinimas<input id="resourceTitle" required placeholder="Pvz., Vektorinės grafikos teorija"></label>
+ <label>Aplankas<select id="resourceFolder"><option value="">Be aplanko</option></select></label>
+ <label>Medžiagos tipas<select id="resourceKind"><option value="task">📄 Užduotys (atsisiunčiamos)</option><option value="theory">📖 Teorija (atidaroma naujame skirtuke)</option></select></label>
+ <p class="formHint">Teoriją patogiausia kelti PDF formatu: naršyklė ją atvers naujame skirtuke. Word ir Excel dokumentus naršyklė gali atsisiųsti, net jei pažymėta „Teorija“.</p>
+ <label>Pavadinimas<input id="resourceTitle" required placeholder="Pvz., Loginės funkcijos AND, OR, NOT"></label>
  <label>Failas<input class="fileInput" type="file" id="resourceFile" required></label>
  <button class="primary" type="submit" style="margin-top:14px">Įkelti</button></form>`);
+ const updateFolderOptions=()=>{
+  const select=$('resourceFolder'),topic=$('resourceTopic').value;
+  select.innerHTML='<option value="">Be aplanko</option>'+((folders||[]).filter(x=>x.topic_id===topic).map(x=>`<option value="${esc(x.id)}">${esc(x.name)}</option>`).join(''));
+  if(presetFolderId&&(folders||[]).some(x=>x.id===presetFolderId&&x.topic_id===topic))select.value=presetFolderId;
+  presetFolderId=null;
+ };
+ $('resourceTopic').onchange=updateFolderOptions;updateFolderOptions();
  $('resourceForm').onsubmit=async e=>{
   e.preventDefault();
   const form=$('resourceForm'),button=form?.querySelector('button[type="submit"]');
   if(!form||form.dataset.uploading==='true')return;
   const file=$('resourceFile').files[0];if(!file)return toast('Pasirink failą.');
-  const topic=$('resourceTopic').value,title=$('resourceTitle').value.trim();
-  form.dataset.uploading='true';
-  if(button){button.disabled=true;button.textContent='Tikrinama...';}
-  const setStatus=(message,isError=false)=>{
+  const topic=$('resourceTopic').value,title=$('resourceTitle').value.trim(),
+        folderId=$('resourceFolder').value||null,resourceKind=$('resourceKind').value;
+  form.dataset.uploading='true';if(button){button.disabled=true;button.textContent='Tikrinama...';}
+  const status=(message,error=false)=>{
    let line=$('resourceUploadStatus');
    if(!line){line=document.createElement('p');line.id='resourceUploadStatus';line.setAttribute('role','status');form.appendChild(line);}
-   line.textContent=message;line.style.color=isError?'#b91c1c':'#475569';
+   line.textContent=message;line.style.color=error?'#b91c1c':'#475569';
   };
-  let path='',uploaded=false;
+  let path='';
   try{
-   const {data:duplicates,error:checkError}=await sb.from('learning_resources')
-    .select('id,storage_path').eq('class_id',c.id).eq('topic_id',topic)
+   const {data:duplicates,error:checkErr}=await sb.from('learning_resources')
+    .select('id').eq('class_id',c.id).eq('topic_id',topic)
     .eq('original_name',file.name).eq('size_bytes',file.size).limit(1);
-   if(checkError)throw checkError;
-   if(duplicates?.length){
-    setStatus('Šis failas jau įkeltas į pasirinktą temą. Patikrink mokymosi failų sąrašą.',true);
-    toast('Failas jau įkeltas – papildomos kopijos nekuriu.');
-    return;
-   }
+   if(checkErr)throw checkErr;
+   if(duplicates?.length){status('Toks failas jau įkeltas į pasirinktą temą.',true);toast('Failas jau įkeltas.');return;}
    path=`${c.id}/${topic}/${storageFileName(file.name)}`;
    if(button)button.textContent='Įkeliamas...';
-   setStatus('Failas siunčiamas į saugyklą. Mygtuko daugiau nespausk.');
+   status('Failas siunčiamas į saugyklą...');
    const {error:upErr}=await sb.storage.from('teacher-resources').upload(path,file,storageUploadOptions(file));
    if(upErr)throw upErr;
-   uploaded=true;
-   setStatus('Failas nusiųstas. Išsaugomas įrašas mokiniams...');
-   const {error:saveErr}=await sb.from('learning_resources').insert({
+   status('Failas įkeltas; išsaugomas jo tipas ir aplankas...');
+   const {error:dbErr}=await sb.from('learning_resources').insert({
     class_id:c.id,topic_id:topic,title,storage_path:path,original_name:file.name,
-    mime_type:uploadContentType(file),size_bytes:file.size,uploaded_by:me.id
+    mime_type:uploadContentType(file),size_bytes:file.size,uploaded_by:me.id,
+    folder_id:folderId,resource_kind:resourceKind
    });
-   if(saveErr){
-    const {error:cleanupErr}=await sb.storage.from('teacher-resources').remove([path]);
-    if(cleanupErr)console.warn('Nepavyko išvalyti nepavykusio įkėlimo:',cleanupErr);
-    uploaded=false;
-    throw saveErr;
+   if(dbErr){
+    const {error:cleanErr}=await sb.storage.from('teacher-resources').remove([path]);
+    if(cleanErr)console.warn('Nepašalintas neįregistruotas failas:',cleanErr);
+    throw dbErr;
    }
-   closeModal();
-   toast('Failas sėkmingai įkeltas mokiniams.');
+   teacherExpandedTopics.resources.add(topic);
+   closeModal();toast('Failas įkeltas į pasirinktą aplanką.');
    await renderTeacherResources(c);
   }catch(err){
-   const message=err?.message||'Nežinoma įkėlimo klaida.';
-   setStatus('Nepavyko įkelti: '+message,true);
-   toast('Įkėlimo klaida: '+message);
+   status('Nepavyko įkelti: '+(err?.message||'Nežinoma klaida'),true);
+   toast('Įkėlimo klaida: '+(err?.message||'Nežinoma klaida'));
    console.error('Mokymosi failo įkėlimo klaida:',err);
   }finally{
    form.dataset.uploading='false';
@@ -2142,6 +2160,7 @@ function resourceUploadModal(c,presetTopicId=null){
   }
  };
 }
+
 async function downloadResource(id,kind='task'){
  // Atidarome skirtuką sinchroniškai, kad naršyklė jo neužblokuotų po asinchroninio kreipinio.
  const tab=kind==='theory'?window.open('about:blank','_blank'):null;
