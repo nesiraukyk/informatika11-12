@@ -1972,12 +1972,15 @@ function teacherTopicHeader(t,countText){
 function learningFileRow(r,mode='student'){
  const id=esc(r.id),name=esc(r.title||r.original_name||'Failas'),original=esc(r.original_name||r.title||'');
  const key=mode==='teacher'?'data-download-resource':mode==='preview'?'data-preview-resource':'data-sresource';
- const downloadIcon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-4-4 4 4 4-4M4 19.5h16"/></svg>';
- const removeIcon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V5h6v2m-9 0 .7 12h10.6L18 7M10 10.5v5M14 10.5v5"/></svg>';
- return `<div class="resourceRow resourceDownloadCard learningFileRow">
-  <span class="resourceFileGlyph" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 3.5H7a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-9L13.5 3.5Z"/><path d="M13 3.5v6h6"/></svg></span>
-  <div class="grow"><b title="${name}">${name}</b><div class="subtle" title="${original}">${original}</div></div>
-  <div class="learningFileActions"><button type="button" class="smallBtn resourceDownloadAction" ${key}="${id}" aria-label="Atsisiųsti: ${name}" title="Atsisiųsti">${downloadIcon}</button>
+ const isTheory=r.resource_kind==='theory';
+ const typeLabel=isTheory?'Teorija':'Užduotys';
+ const fileActionLabel=isTheory?'Atidaryti naujame skirtuke':'Atsisiųsti';
+ const actionIcon=isTheory?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M13 5h6v6m0-6-9 9"/><path d="M19 13v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h6"/></svg>':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12m-4-4 4 4 4-4M4 19.5h16"/></svg>';
+ const removeIcon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5h6v2m-9 0 .7 12h10.6L18 7M10 10.5v5M14 10.5v5"/></svg>';
+ return `<div class="resourceRow resourceDownloadCard learningFileRow ${isTheory?'learningTheoryFile':'learningTaskFile'}">
+  <span class="resourceFileGlyph" aria-hidden="true">${isTheory?'📖':'📄'}</span>
+  <div class="grow"><b title="${name}">${name}</b> <span class="learningFileKind ${isTheory?'kindTheory':'kindTask'}">${typeLabel}</span><div class="subtle" title="${original}">${original}</div></div>
+  <div class="learningFileActions"><button type="button" class="smallBtn resourceDownloadAction" ${key}="${id}" data-resource-kind="${isTheory?'theory':'task'}" aria-label="${fileActionLabel}: ${name}" title="${fileActionLabel}">${actionIcon}</button>
   ${mode==='teacher'?`<button type="button" class="smallBtn learningFileDelete" data-delete-resource="${id}" aria-label="Ištrinti failą: ${name}" title="Ištrinti">${removeIcon}</button>`:''}</div>
  </div>`;
 }
@@ -2025,7 +2028,7 @@ async function renderTeacherResources(c){
  $('uploadResourceBtn').onclick=()=>resourceUploadModal(c);
  document.querySelectorAll('[data-resource-topic]').forEach(b=>b.onclick=()=>resourceUploadModal(c,b.dataset.resourceTopic));
  document.querySelectorAll('[data-resource-new-assignment]').forEach(b=>b.onclick=()=>newAssignmentModal(c,b.dataset.resourceNewAssignment,true));
- document.querySelectorAll('[data-download-resource]').forEach(b=>b.onclick=()=>downloadResource(b.dataset.downloadResource));
+ document.querySelectorAll('[data-download-resource]').forEach(b=>b.onclick=()=>downloadResource(b.dataset.downloadResource,b.dataset.resourceKind));
  document.querySelectorAll('[data-delete-resource]').forEach(b=>b.onclick=()=>deleteResource(b.dataset.deleteResource,c));
  document.querySelectorAll('[data-create-resource-folder]').forEach(b=>b.onclick=()=>createResourceFolder(c,b.dataset.createResourceFolder));
  document.querySelectorAll('[data-rename-resource-folder]').forEach(b=>b.onclick=()=>renameResourceFolder(c,b.dataset.renameResourceFolder,folders));
@@ -2139,14 +2142,53 @@ function resourceUploadModal(c,presetTopicId=null){
   }
  };
 }
-async function downloadResource(id){
- const {data:r,error}=await sb.from('learning_resources').select('*').eq('id',id).single();if(error)return toast(error.message);
- await downloadOriginalFile('teacher-resources',r.storage_path,r.original_name);
+async function downloadResource(id,kind='task'){
+ // Atidarome skirtuką sinchroniškai, kad naršyklė jo neužblokuotų po asinchroninio kreipinio.
+ const tab=kind==='theory'?window.open('about:blank','_blank'):null;
+ if(tab)tab.opener=null;
+ const {data:r,error}=await sb.from('learning_resources').select('*').eq('id',id).single();
+ if(error||!r){if(tab)tab.close();return toast('Failo nepavyko atidaryti: '+(error?.message||'Nerastas'));}
+ const theory=r.resource_kind==='theory';
+ try{
+  if(r.site_file_path){
+   if(!/^learning-materials\\/[A-Za-z0-9_./-]+$/.test(r.site_file_path))throw new Error('Netinkama failo nuoroda');
+   const url=new URL(r.site_file_path,location.origin);
+   if(theory){
+    if(tab)tab.location.replace(url.href);else window.open(url.href,'_blank','noopener');
+   }else{
+    const res=await fetch(url.href);
+    if(!res.ok)throw new Error('Nepavyko atsisiųsti failo ('+res.status+')');
+    const blob=await res.blob(),link=document.createElement('a'),blobUrl=URL.createObjectURL(blob);
+    link.href=blobUrl;link.download=r.original_name||url.pathname.split('/').pop()||'Užduotys';
+    document.body.appendChild(link);link.click();link.remove();
+    setTimeout(()=>URL.revokeObjectURL(blobUrl),60000);
+   }
+   return;
+  }
+  if(theory){
+   // Supabase privatus failas: laikinai pasirašyta nuoroda, be 'download' parametro.
+   const {data,error:signError}=await sb.storage.from('teacher-resources').createSignedUrl(r.storage_path,180);
+   if(signError||!data?.signedUrl)throw signError||new Error('Nepavyko gauti laikinos nuorodos');
+   if(tab)tab.location.replace(data.signedUrl);else window.open(data.signedUrl,'_blank','noopener');
+  }else await downloadOriginalFile('teacher-resources',r.storage_path,r.original_name);
+ }catch(err){
+  if(tab)tab.close();
+  toast('Failo klaida: '+(err?.message||'Nepavyko atidaryti'));
+ }
 }
 async function deleteResource(id,c){
- if(!confirm('Ištrinti failą?'))return;const {data:r}=await sb.from('learning_resources').select('*').eq('id',id).single();if(!r)return;
- await sb.storage.from('teacher-resources').remove([r.storage_path]);await sb.from('learning_resources').delete().eq('id',id);renderTeacherResources(c);
+ if(!confirm('Ištrinti failą?'))return;
+ const {data:r,error}=await sb.from('learning_resources').select('*').eq('id',id).single();
+ if(error||!r)return toast(error?.message||'Failas nerastas');
+ if(!r.site_file_path){
+  const {error:storageErr}=await sb.storage.from('teacher-resources').remove([r.storage_path]);
+  if(storageErr)return toast('Saugyklos klaida: '+storageErr.message);
+ }
+ const {error:dbErr}=await sb.from('learning_resources').delete().eq('id',id);
+ if(dbErr)return toast(dbErr.message);
+ await renderTeacherResources(c);
 }
+
 // Mokytojo aplankai – tai tik DB susiejimai. Originalūs mokinių failai neliečiami.
 const teacherWorkFolderFilter={};
 async function renderTeacherAssignments(c){
@@ -3009,7 +3051,7 @@ async function openStudentTopic(topicId,c,access){
  if(a.assessment_open&&$('startAssessmentTopic'))$('startAssessmentTopic').onclick=()=>navigateTo(()=>c.grade_level==='11'?startSecureAssessment(topicId,c.id,assessmentStatus):startQuiz(topicId,c.id,'assessment',CFG.assessmentQuestionCount));
  if($('continueAssessmentPractical'))$('continueAssessmentPractical').onclick=()=>navigateTo(()=>openAssessmentPractical(assessmentStatus.attempt_id,topicId,c.id));
  if($('studentAssessmentReview'))$('studentAssessmentReview').onclick=()=>showMyAssessmentReview(assessmentStatus.attempt_id);
- document.querySelectorAll('[data-sresource]').forEach(b=>b.onclick=()=>downloadResource(b.dataset.sresource));
+ document.querySelectorAll('[data-sresource]').forEach(b=>b.onclick=()=>downloadResource(b.dataset.sresource,b.dataset.resourceKind));
  document.querySelectorAll('[data-submit]').forEach(b=>b.onclick=()=>submissionModal(b.dataset.submit,c,topicId,access));
  document.querySelectorAll('[data-task-toggle]').forEach(b=>b.onclick=()=>{
    const id=b.dataset.taskToggle;
@@ -3090,7 +3132,7 @@ async function renderTeacherTopicPreview(topicId,c,access,backFn=null){
  show('teacher');
  $('backPreviewTopic').onclick=()=>appBack(()=>renderTeacherStudentPreview(c,backFn));
  if($('openCyberLabPreview'))$('openCyberLabPreview').onclick=()=>navigateTo(()=>openCyberLab(c.id,true,c));
- document.querySelectorAll('[data-preview-resource]').forEach(b=>b.onclick=()=>downloadResource(b.dataset.previewResource));
+ document.querySelectorAll('[data-preview-resource]').forEach(b=>b.onclick=()=>downloadResource(b.dataset.previewResource,b.dataset.resourceKind));
 }
 
 
