@@ -2906,6 +2906,7 @@ async function openStudentTopic(topicId,c,access){
   <button type="button" class="cl-launch-cta" id="openCyberLabStudent">Atidaryti laboratoriją <span aria-hidden="true">→</span></button>
 </section>`:''}
   ${topicId==='kriptografija'&&c.grade_level==='11'&&a.practice_open&&VBE_CRYPTO.length?`<div class="panel vbeCryptoPractice"><span class="kicker">PAPILDOMA ŽINIŲ TRENIRUOTĖ</span><h3>Kriptografija · ankstesnių egzaminų klausimai</h3><p class="muted">10 atsitiktinių klausimų iš ${VBE_CRYPTO.length} klausimų banko, parengtų pagal ankstesnius valstybinius, pakartotinius ir bandomuosius / pavyzdinius egzaminus. Mokomosios, perfrazuotos užduotys. Po atsakymo pateikiamas paaiškinimas. Rezultatas išsaugomas.</p><button class="primary" id="startVbeCrypto">Pradėti 10 klausimų treniruotę</button></div>`:''}
+  ${topicId==='duomenu-vizualizavimas'&&c.grade_level==='11'&&a.practice_open?`<section class="panel excelPracticeSets"><span class="kicker">PAPILDOMOS EXCEL ŽINIŲ TRENIRUOTĖS</span><h3>Skaičiuoklės užduotys · po 20 klausimų</h3><p class="muted">Pagal mokomųjų failų temų pavadinimus: IF, SUMIF ir COUNTIF, rikiavimas, filtravimas bei diagramos. Tai mokomosios, o ne patvirtintos istorinių egzaminų užduotys.</p><div style="display:flex;gap:10px;flex-wrap:wrap">${(window.EXCEL_PRACTICE_SETS||[]).map((set,i)=>`<button class="primary" type="button" data-excel-practice="${i}">${esc(set.title)} · 20 klausimų</button>`).join('')}</div></section>`:''}
   <div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">PRAKTIKA</span><h2>Žinių treniruotė</h2></div><span class="badge ${a.practice_open?'ok':''}">${a.practice_open?'Atidaryta':'Užrakinta'}</span></div>
    ${motivation?.enabled?(topicMastery?`<div class="topicMasteryBox"><div class="masteryHead"><span>Temos įvaldymas</span><strong>${Number(topicMastery.mastery_percent)||0}%</strong></div><div class="masteryTrack"><span style="width:${Math.max(0,Math.min(100,Number(topicMastery.mastery_percent)||0))}%"></span></div><div class="subtle">Skaičiuojama pagal paskutines iki 5 treniruočių · geriausias rezultatas ${Number(topicMastery.best_score)||0}%</div></div>`:'<div class="topicMasteryBox empty"><b>Temos įvaldymas</b><span>Atlik pirmą treniruotę – čia atsiras tavo progresas.</span></div>'):''}
    ${c.grade_level==='10'?renderGrade10StudentPracticePicker(practiceBlocks||[],a.practice_open):`<p class="muted"><b>Praktikuotis gali tiek kartų, kiek nori.</b> Kiekvieną kartą sistema iš didesnio klausimų banko atsitiktinai parenka 10 klausimų ir sumaišo atsakymų variantus, todėl bandymai nėra vienodi. Po kiekvieno atsakymo gausi paaiškinimą, o rezultatas ir atlikimo laikas bus išsaugoti tavo paskyroje.</p><button class="primary" id="startPracticeTopic" ${a.practice_open?'':'disabled'}>Pradėti 10 klausimų praktiką</button>`}
@@ -2939,6 +2940,7 @@ async function openStudentTopic(topicId,c,access){
  if($('openCyberLabStudent'))$('openCyberLabStudent').onclick=()=>navigateTo(()=>openCyberLab(c.id,false,c));
  if(a.practice_open&&$('startPracticeTopic'))$('startPracticeTopic').onclick=()=>navigateTo(()=>startQuiz(topicId,c.id,'practice',10));
  if($('startVbeCrypto'))$('startVbeCrypto').onclick=()=>navigateTo(()=>startVbeCryptoQuiz(c.id));
+ document.querySelectorAll('[data-excel-practice]').forEach(b=>b.onclick=()=>startExcelPractice(Number(b.dataset.excelPractice)));
  if($('practiceAllBlocks'))$('practiceAllBlocks').onchange=()=>document.querySelectorAll('[data-practice-block]').forEach(ch=>ch.checked=$('practiceAllBlocks').checked);
  if($('startGrade10Practice'))$('startGrade10Practice').onclick=()=>{
   const single=$('startGrade10Practice').dataset.singleBlock;
@@ -3602,4 +3604,40 @@ function finishTheoryExamSimulation(){
  ${errors.length?errors.map(x=>`<div style="padding:12px 0;border-bottom:1px solid #ddd"><b>${x.i+1}. ${esc(x.q.question)}</b><p>Teisingas: ${esc(x.q.options[x.q.correct])}</p><p class="muted">${esc(x.q.explanation)}</p></div>`).join(''):'<p>Visi atsakymai teisingi!</p>'}
  </details><button class="primary" id="theorySimAgain" style="margin-top:16px">Spręsti iš naujo</button>`);
  $('theorySimAgain').onclick=startTheoryExamSimulation;
+}
+
+
+/* Excel temos mokomosios 20 klausimų treniruotės. */
+let currentExcelPractice=null;
+function startExcelPractice(setIndex){
+ const set=(window.EXCEL_PRACTICE_SETS||[])[setIndex];
+ if(!set||set.questions.length!==20)return toast('Nepakanka klausimų pasirinktoje treniruotėje.');
+ currentExcelPractice={setIndex,title:set.title,items:[...set.questions],answers:Array(20).fill(null),index:0};
+ renderExcelPractice();
+}
+function renderExcelPractice(){
+ const r=currentExcelPractice;if(!r)return;
+ const q=r.items[r.index],i=r.index;
+ modal(`<span class="kicker">EXCEL ŽINIŲ TRENIRUOTĖ</span><h2>${esc(r.title)}</h2>
+ <p class="muted">Klausimas ${i+1} iš 20 · Mokomasis testas, ne oficialus VBE klausimynas</p>
+ <div style="height:7px;background:#e9edf8;border-radius:10px;overflow:hidden"><div style="height:100%;width:${(i+1)*5}%;background:#3154eb"></div></div>
+ <p style="font-weight:700;white-space:pre-wrap;margin-top:20px">${esc(q.question)}</p>
+ ${q.options.map((opt,j)=>`<label style="display:flex;align-items:center;gap:12px;border:1px solid #d8e0ec;border-radius:9px;padding:11px;margin:8px 0;cursor:pointer"><input type="radio" name="excelPracticeAnswer" value="${j}" ${r.answers[i]===j?'checked':''}><span>${esc(opt)}</span></label>`).join('')}
+ <div style="display:flex;justify-content:space-between;gap:10px;margin-top:18px">
+ <button class="ghost" id="excelPracticePrev" ${i===0?'disabled':''}>← Ankstesnis</button>
+ <button class="primary" id="excelPracticeNext">${i===19?'Baigti ir peržiūrėti':'Kitas →'}</button></div>`);
+ document.querySelectorAll('input[name="excelPracticeAnswer"]').forEach(inp=>inp.onchange=()=>{r.answers[i]=Number(inp.value)});
+ $('excelPracticePrev').onclick=()=>{if(i>0){r.index=i-1;renderExcelPractice()}};
+ $('excelPracticeNext').onclick=()=>{if(r.answers[i]===null)return toast('Pasirink atsakymą.');if(i===19)return finishExcelPractice();r.index=i+1;renderExcelPractice()};
+}
+function finishExcelPractice(){
+ const r=currentExcelPractice;
+ const n=r.items.reduce((count,q,i)=>count+Number(r.answers[i]===q.correct),0);
+ const wrong=r.items.map((q,i)=>({q,i})).filter(({q,i})=>r.answers[i]!==q.correct);
+ modal(`<span class="kicker">EXCEL PRAKTIKOS REZULTATAS</span><h2>${esc(r.title)} · ${n}/20 (${n*5} %)</h2>
+ <p class="muted">Tai žinių treniruotės, ne atsiskaitymo pažymys.</p>
+ <details open><summary>Klaidų peržiūra (${wrong.length})</summary>
+ ${wrong.length?wrong.map(({q,i})=>`<div style="border-bottom:1px solid #dee3ed;padding:12px 0"><b>${i+1}. ${esc(q.question)}</b><p>Teisingas atsakymas: ${esc(q.options[q.correct])}</p><p class="muted">${esc(q.explanation)}</p></div>`).join(''):'<p>Visi atsakymai teisingi!</p>'}
+ </details><button class="primary" type="button" id="excelPracticeRetry" style="margin-top:16px">Kartoti treniruotę</button>`);
+ $('excelPracticeRetry').onclick=()=>startExcelPractice(r.setIndex);
 }
