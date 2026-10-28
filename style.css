@@ -1244,3 +1244,14 @@ main.wrap.authWide{max-width:none;width:100%;padding-inline:0}
 @media(max-width:600px){.resourceFolderGrid{grid-template-columns:1fr}.resourceDraggable{flex-wrap:wrap}}
 
 .studentResourceFolders{display:grid;gap:12px}.studentResourceFolder{width:100%}.studentUngroupedFiles>h4{margin:12px 0 8px}
+
+
+/* Mokymosi failų tipai: teorija ir praktinės užduotys */
+.learningFileKind{display:inline-flex;align-items:center;margin-left:7px;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:750;line-height:1.5;white-space:nowrap;vertical-align:middle}
+.learningFileKind.kindTheory{background:#e4edff;color:#2856ad}
+.learningFileKind.kindTask{background:#e8f7ef;color:#177445}
+.learningTheoryFile .resourceFileGlyph{background:#edf3ff;border-radius:10px;font-size:20px}
+.learningTaskFile .resourceFileGlyph{background:#eff9f3;border-radius:10px;font-size:20px}
+.resourceDraggable .learningFileKind{margin-left:4px}
+.resourceDraggable .smallBtn{font-size:12px}
+@media(max-width:690px){.learningFileKind{display:table;margin:4px 0 0}.resourceDraggable .resourceDownloadCard{flex:1 1 100%}}
