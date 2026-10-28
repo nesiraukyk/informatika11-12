@@ -1998,36 +1998,455 @@ window.PRACTICE_QUESTIONS = [
     "explanation": "Maketo tankis, erdvė, kontrastas ir elementų derinimas tiesiogiai veikia aiškumą bei vizualinį vientisumą.",
     "difficulty": "Sunkesnis",
     "category": "Dizaino principai"
+  },
+  {
+    "id": "kr-v523-001",
+    "topic": "kriptografija",
+    "question": "Kokį raktą gavėjas naudoja, kad iššifruotų pranešimą, užšifruotą jo viešuoju raktu?",
+    "options": [
+      "Siuntėjo viešąjį",
+      "Gavėjo privatųjį",
+      "Gavėjo viešąjį",
+      "Siuntėjo privatųjį"
+    ],
+    "correct": 1,
+    "explanation": "Gavėjo privatųjį raktą žino tik gavėjas.",
+    "difficulty": "Lengvas",
+    "category": "Raktai ir algoritmai"
+  },
+  {
+    "id": "kr-v523-002",
+    "topic": "kriptografija",
+    "question": "Kurį raktą reikia perduoti žmogui, norinčiam tau išsiųsti slaptą pranešimą?",
+    "options": [
+      "Savo privatųjį",
+      "Savo viešąjį",
+      "Abu raktus",
+      "Jokio rakto"
+    ],
+    "correct": 1,
+    "explanation": "Siuntėjas naudoja tavo viešąjį raktą, o tu iššifruoji privačiuoju.",
+    "difficulty": "Lengvas",
+    "category": "Raktai ir algoritmai"
+  },
+  {
+    "id": "kr-v523-003",
+    "topic": "kriptografija",
+    "question": "Kuris teiginys apie skaitmeninio parašo sudarymą teisingas?",
+    "options": [
+      "Pasirašoma gavėjo viešuoju raktu",
+      "Pasirašoma siuntėjo privačiuoju raktu",
+      "Pasirašoma gavėjo privačiuoju raktu",
+      "Pasirašoma atsitiktiniu slaptažodžiu"
+    ],
+    "correct": 1,
+    "explanation": "Skaitmeninis parašas sukuriamas pasirašančiojo privačiuoju raktu; patikrinamas atitinkamu viešuoju raktu.",
+    "difficulty": "Lengvas",
+    "category": "Raktai ir algoritmai"
+  },
+  {
+    "id": "kr-v523-004",
+    "topic": "kriptografija",
+    "question": "Kuo tikrinamas siuntėjo skaitmeninis parašas?",
+    "options": [
+      "Siuntėjo viešuoju raktu",
+      "Gavėjo privačiuoju raktu",
+      "Tik siuntėjo slaptažodžiu",
+      "Tik failo pavadinimu"
+    ],
+    "correct": 0,
+    "explanation": "Parašo patikrai naudojamas pasirašiusio asmens viešasis raktas.",
+    "difficulty": "Lengvas",
+    "category": "Raktai ir algoritmai"
+  },
+  {
+    "id": "kr-v523-005",
+    "topic": "kriptografija",
+    "question": "Ką garantuoja sėkminga skaitmeninio parašo kriptografinė patikra, jei pasitikime raktų susiejimu?",
+    "options": [
+      "Kad turinys niekam nematomas",
+      "Kad turinys nebuvo pakeistas ir pasirašyta atitinkamu privačiuoju raktu",
+      "Kad failas neturi virusų",
+      "Kad pasirašė būtent įvardytas žmogus be papildomų patikrų"
+    ],
+    "correct": 1,
+    "explanation": "Parašas rodo vientisumą ir rakto valdymą; tapatybės susiejimą reikia papildomai pagrįsti.",
+    "difficulty": "Lengvas",
+    "category": "Raktai ir algoritmai"
+  },
+  {
+    "id": "kr-v523-006",
+    "topic": "kriptografija",
+    "question": "Koks pagrindinis AES šifravimo tipas?",
+    "options": [
+      "Asimetrinis",
+      "Simetrinis",
+      "Tik maišos",
+      "Elektroninis parašas"
+    ],
+    "correct": 1,
+    "explanation": "AES yra simetrinio šifravimo algoritmas.",
+    "difficulty": "Lengvas",
+    "category": "Raktai ir algoritmai"
+  },
+  {
+    "id": "kr-v523-007",
+    "topic": "kriptografija",
+    "question": "Kuo simetrinis šifravimas skiriasi nuo asimetrinio?",
+    "options": [
+      "Naudoja vieną bendrą slaptą raktą šifruoti ir iššifruoti",
+      "Nenaudoja raktų",
+      "Visada siunčia duomenis atviru tekstu",
+      "Veikia tik su paveikslėliais"
+    ],
+    "correct": 0,
+    "explanation": "Simetrinis šifravimas naudoja tą patį bendrą slaptą raktą.",
+    "difficulty": "Lengvas",
+    "category": "Raktai ir algoritmai"
+  },
+  {
+    "id": "kr-v523-008",
+    "topic": "kriptografija",
+    "question": "Kuri priemonė labiausiai padeda saugiai perduoti simetrinį sesijos raktą internetu?",
+    "options": [
+      "Viešojo rakto kriptografija ir autentifikuotas raktų apsikeitimas",
+      "Nusiųsti raktą tame pačiame laiške atviru tekstu",
+      "Prisegti raktą prie nuotraukos pavadinimo",
+      "Visur naudoti vienodą raktą"
+    ],
+    "correct": 0,
+    "explanation": "Autentifikuotas raktų apsikeitimas leidžia susitarti dėl sesijos rakto.",
+    "difficulty": "Lengvas",
+    "category": "Raktai ir algoritmai"
+  },
+  {
+    "id": "kr-v523-009",
+    "topic": "kriptografija",
+    "question": "Kam skirtas SHA-256?",
+    "options": [
+      "Atviram tekstui atkurti",
+      "Maišos reikšmei skaičiuoti",
+      "Vaizdui suspausti į ZIP",
+      "Privačiajam raktui išsiųsti"
+    ],
+    "correct": 1,
+    "explanation": "SHA-256 apskaičiuoja fiksuoto ilgio maišos reikšmę.",
+    "difficulty": "Lengvas",
+    "category": "Maiša ir saugus ryšys"
+  },
+  {
+    "id": "kr-v523-010",
+    "topic": "kriptografija",
+    "question": "Kiek bitų yra SHA-256 maišos reikšmėje?",
+    "options": [
+      "64",
+      "128",
+      "256",
+      "512"
+    ],
+    "correct": 2,
+    "explanation": "SHA-256 algoritmo rezultatas yra 256 bitų ilgio maišos reikšmė.",
+    "difficulty": "Lengvas",
+    "category": "Maiša ir saugus ryšys"
+  },
+  {
+    "id": "kr-v523-011",
+    "topic": "kriptografija",
+    "question": "Ar galima iš SHA-256 maišos patikimai atkurti pradinį tekstą?",
+    "options": [
+      "Taip, su viešuoju raktu",
+      "Taip, bet tik su slaptažodžiu",
+      "Ne, ji nėra grįžtamasis šifravimas",
+      "Taip, vienu mygtuku"
+    ],
+    "correct": 2,
+    "explanation": "Maiša nėra šifravimas ir nėra numatyta grįžtamajam atkūrimui.",
+    "difficulty": "Vidutinis",
+    "category": "Maiša ir saugus ryšys"
+  },
+  {
+    "id": "kr-v523-012",
+    "topic": "kriptografija",
+    "question": "Kas nutinka SHA-256 maišai pakeitus bent vieną dokumento simbolį?",
+    "options": [
+      "Ji paprastai labai pasikeičia",
+      "Ji visada lieka ta pati",
+      "Ji sutrumpėja vienu bitu",
+      "Pasikeičia tik paskutinis skaitmuo"
+    ],
+    "correct": 0,
+    "explanation": "Kriptografinė maiša turi lavinos efektą.",
+    "difficulty": "Vidutinis",
+    "category": "Maiša ir saugus ryšys"
+  },
+  {
+    "id": "kr-v523-013",
+    "topic": "kriptografija",
+    "question": "Kuris teiginys apie HTTPS teisingas?",
+    "options": [
+      "HTTPS garantuoja, kad svetainės turinys sąžiningas",
+      "HTTPS saugo perdavimo kanalą naudojant TLS, bet negarantuoja svetainės sąžiningumo",
+      "HTTPS reiškia, kad niekas negali pavogti slaptažodžio",
+      "HTTPS yra tas pats kaip skaitmeninis parašas"
+    ],
+    "correct": 1,
+    "explanation": "TLS užtikrina ryšio apsaugą, bet ne pačios svetainės ketinimus.",
+    "difficulty": "Vidutinis",
+    "category": "Maiša ir saugus ryšys"
+  },
+  {
+    "id": "kr-v523-014",
+    "topic": "kriptografija",
+    "question": "Kam reikalingas TLS sertifikatas?",
+    "options": [
+      "Padėti patikrinti serverio tapatybę ir susieti ją su viešuoju raktu",
+      "Padidinti interneto greitį",
+      "Paslėpti failo dydį",
+      "Automatiškai pašalinti virusus"
+    ],
+    "correct": 0,
+    "explanation": "Sertifikatas susieja domeną ir viešąjį raktą pagal pasitikėjimo grandinę.",
+    "difficulty": "Vidutinis",
+    "category": "Maiša ir saugus ryšys"
+  },
+  {
+    "id": "kr-v523-015",
+    "topic": "kriptografija",
+    "question": "Ką reiškia naršyklės įspėjimas, kad sertifikatas negalioja?",
+    "options": [
+      "Visada galima ignoruoti",
+      "Ryšio tapatybės patikra nepavyko; reikia įvertinti riziką",
+      "Reikia išjungti ugniasienę",
+      "Internetas veikia greičiau"
+    ],
+    "correct": 1,
+    "explanation": "Netinkamas sertifikatas silpnina ryšio tapatybės patikrą.",
+    "difficulty": "Vidutinis",
+    "category": "Maiša ir saugus ryšys"
+  },
+  {
+    "id": "kr-v523-016",
+    "topic": "kriptografija",
+    "question": "Ką vadiname elektroninio parašo vientisumo savybe?",
+    "options": [
+      "Dokumento formatą",
+      "Gebėjimą aptikti pasirašyto dokumento pakeitimą",
+      "Parašo spalvą",
+      "Dokumento dydį"
+    ],
+    "correct": 1,
+    "explanation": "Pakeitus pasirašytą turinį, parašo patikra nepavyksta.",
+    "difficulty": "Vidutinis",
+    "category": "Elektroninis parašas ir sauga"
+  },
+  {
+    "id": "kr-v523-017",
+    "topic": "kriptografija",
+    "question": "Kurį veiksmą atliktum gavęs pasirašytą dokumentą?",
+    "options": [
+      "Patikrinčiau parašą, sertifikatą ir dokumento vientisumą",
+      "Tik perskaityčiau failo vardą",
+      "Iš karto persiųsčiau",
+      "Pašalinčiau sertifikatą"
+    ],
+    "correct": 0,
+    "explanation": "Svarbi parašo, sertifikato ir vientisumo patikra.",
+    "difficulty": "Vidutinis",
+    "category": "Elektroninis parašas ir sauga"
+  },
+  {
+    "id": "kr-v523-018",
+    "topic": "kriptografija",
+    "question": "Ar kvalifikuotas elektroninis parašas ES turi tokią pačią teisinę galią kaip ranka rašytas parašas?",
+    "options": [
+      "Taip, pagal eIDAS",
+      "Ne, jis visada tik informacinis",
+      "Tik jei pasirašyta popieriuje",
+      "Tik privačiuose laiškuose"
+    ],
+    "correct": 0,
+    "explanation": "Pagal eIDAS kvalifikuotas elektroninis parašas prilyginamas ranka rašytam parašui.",
+    "difficulty": "Vidutinis",
+    "category": "Elektroninis parašas ir sauga"
+  },
+  {
+    "id": "kr-v523-019",
+    "topic": "kriptografija",
+    "question": "Kokią informaciją padeda patvirtinti kvalifikuota elektroninė laiko žyma?",
+    "options": [
+      "Patikimas laiko įrodymas, susietas su duomenimis",
+      "Kompiuterio ekrano laikrodis",
+      "Svetainės įkėlimo greitis",
+      "Slaptažodžio galiojimo laikas"
+    ],
+    "correct": 0,
+    "explanation": "Kvalifikuota elektroninė laiko žyma pateikia patikimą duomenų egzistavimo konkrečiu laiku įrodymą.",
+    "difficulty": "Vidutinis",
+    "category": "Elektroninis parašas ir sauga"
+  },
+  {
+    "id": "kr-v523-020",
+    "topic": "kriptografija",
+    "question": "Kas yra elektroninis spaudas eIDAS kontekste?",
+    "options": [
+      "Juridinio asmens kilmės ir vientisumo patvirtinimo priemonė",
+      "Asmens pieštas parašas",
+      "Kompiuterio prisijungimo slaptažodis",
+      "Pašto programos piktograma"
+    ],
+    "correct": 0,
+    "explanation": "Elektroninis spaudas susijęs su juridiniu asmeniu ir duomenų kilme bei vientisumu.",
+    "difficulty": "Vidutinis",
+    "category": "Elektroninis parašas ir sauga"
+  },
+  {
+    "id": "kr-v523-021",
+    "topic": "kriptografija",
+    "question": "Ką reikia daryti, jei privatusis raktas pateko pašaliniam asmeniui?",
+    "options": [
+      "Nieko, jis viešas",
+      "Nustoti juo pasitikėti, atšaukti atitinkamą sertifikatą kai taikoma ir sukurti naują raktų porą",
+      "Paskelbti jį internete",
+      "Pakeisti tik failo pavadinimą"
+    ],
+    "correct": 1,
+    "explanation": "Kompromituotas privatusis raktas nebeturi būti naudojamas.",
+    "difficulty": "Vidutinis",
+    "category": "Elektroninis parašas ir sauga"
+  },
+  {
+    "id": "kr-v523-022",
+    "topic": "kriptografija",
+    "question": "Ką reiškia RSA šifravimas su gavėjo viešuoju raktu?",
+    "options": [
+      "Duomenų slaptumo užtikrinimą, jei naudojama tinkama schema ir privatusis raktas saugus",
+      "Siuntėjo tapatybės garantiją be parašo",
+      "Visų virusų šalinimą",
+      "Failo automatinį suspaudimą"
+    ],
+    "correct": 0,
+    "explanation": "Viešojo rakto šifravimas skirtas slaptumui, o tapatybę vertina atskiros priemonės.",
+    "difficulty": "Vidutinis",
+    "category": "Elektroninis parašas ir sauga"
+  },
+  {
+    "id": "kr-v523-023",
+    "topic": "kriptografija",
+    "question": "Kuri priemonė skirta patikrinti, ar pasirašytas dokumentas po pasirašymo nebuvo pakeistas?",
+    "options": [
+      "Skaitmeninio parašo patikra",
+      "Failo pavadinimo pakeitimas",
+      "Vien failo dydžio palyginimas",
+      "Dokumento atspausdinimas"
+    ],
+    "correct": 0,
+    "explanation": "Skaitmeninio parašo patikra leidžia nustatyti, ar pasirašyti duomenys nebuvo pakeisti.",
+    "difficulty": "Vidutinis",
+    "category": "Elektroninis parašas ir sauga"
+  },
+  {
+    "id": "kr-v523-024",
+    "topic": "kriptografija",
+    "question": "Kokiu raktu tikrinamas pasirašančio asmens skaitmeninis parašas?",
+    "options": [
+      "Pasirašančiojo viešuoju raktu",
+      "Gavėjo privačiuoju raktu",
+      "Bet kuriuo atsitiktiniu slaptažodžiu",
+      "Vien failo pavadinimu"
+    ],
+    "correct": 0,
+    "explanation": "Parašas sukuriamas privačiuoju raktu, o patikrinamas jį atitinkančiu viešuoju raktu.",
+    "difficulty": "Sunkesnis",
+    "category": "Elektroninis parašas ir sauga"
+  },
+  {
+    "id": "kr-v523-025",
+    "topic": "kriptografija",
+    "question": "Kodėl skaitmeninis parašas pats savaime nepaslepia dokumento teksto?",
+    "options": [
+      "Nes parašas siekia autentiškumo ir vientisumo, o ne konfidencialumo",
+      "Nes parašas visada yra nuotrauka",
+      "Nes parašas skirtas tik slaptažodžiui",
+      "Nes jis veikia tik be interneto"
+    ],
+    "correct": 0,
+    "explanation": "Slaptumui reikia šifravimo, o parašas skirtas patikrai.",
+    "difficulty": "Sunkesnis",
+    "category": "Elektroninis parašas ir sauga"
+  },
+  {
+    "id": "kr-v523-026",
+    "topic": "kriptografija",
+    "question": "Kodėl nereikėtų saugoti naudotojų slaptažodžių duomenų bazėje atviru tekstu?",
+    "options": [
+      "Nes nutekėjus duomenims slaptažodžiai būtų iškart perskaitomi",
+      "Nes atviras tekstas užima daugiau vietos nei bet kuris failas",
+      "Nes serveris negalėtų prisijungti prie interneto",
+      "Nes neįmanoma įvesti slaptažodžio į naršyklę"
+    ],
+    "correct": 0,
+    "explanation": "Pavogus duomenų bazę, atviru tekstu saugomi slaptažodžiai iškart būtų atskleisti. Saugesnis būdas – saugoti specialiai slaptažodžiams apskaičiuotas maišas.",
+    "difficulty": "Sunkesnis",
+    "category": "Elektroninis parašas ir sauga"
+  },
+  {
+    "id": "kr-v523-027",
+    "topic": "kriptografija",
+    "question": "Kodėl skirtingose paskyrose svarbu naudoti skirtingus slaptažodžius?",
+    "options": [
+      "Kad vienos paskyros slaptažodžio nutekėjimas nesukompromituotų kitų paskyrų",
+      "Kad visi slaptažodžiai būtų vienodo ilgio",
+      "Kad nereikėtų dviejų veiksnių autentifikavimo",
+      "Kad naršyklė automatiškai šifruotų visus failus"
+    ],
+    "correct": 0,
+    "explanation": "Jeigu vienos paskyros slaptažodis nuteka, jo negalima panaudoti prisijungimui prie kitų paskyrų.",
+    "difficulty": "Sunkesnis",
+    "category": "Elektroninis parašas ir sauga"
+  },
+  {
+    "id": "kr-v523-028",
+    "topic": "kriptografija",
+    "question": "Koks elgesys tinkamas gavus nežinomo asmens tariamą sertifikatą?",
+    "options": [
+      "Patikrinti patikimą sertifikato grandinę ir tapatybės ryšį",
+      "Aklai pasitikėti kiekvienu sertifikatu",
+      "Atskleisti savo privatųjį raktą",
+      "Išjungti HTTPS"
+    ],
+    "correct": 0,
+    "explanation": "Vien sertifikato failo turėjimas savaime nepatvirtina tapatybės.",
+    "difficulty": "Sunkesnis",
+    "category": "Elektroninis parašas ir sauga"
+  },
+  {
+    "id": "kr-v523-029",
+    "topic": "kriptografija",
+    "question": "Kuris pavyzdys rodo duomenų konfidencialumą?",
+    "options": [
+      "Tik įgalioti asmenys gali perskaityti užšifruotą turinį",
+      "Matyti failo sukūrimo data",
+      "Failas turi piktogramą",
+      "Parašas būtinai suteikia slaptumą"
+    ],
+    "correct": 0,
+    "explanation": "Konfidencialumas reiškia, kad turinys neatskleidžiamas pašaliniams.",
+    "difficulty": "Sunkesnis",
+    "category": "Elektroninis parašas ir sauga"
+  },
+  {
+    "id": "kr-v523-030",
+    "topic": "kriptografija",
+    "question": "Kuris pavyzdys rodo duomenų vientisumo patikrą?",
+    "options": [
+      "Palyginti patikimai gautą maišą su atsisiųsto failo maiša",
+      "Pakeisti failo vardą",
+      "Padidinti šrifto dydį",
+      "Perkelti failą į kitą aplanką"
+    ],
+    "correct": 0,
+    "explanation": "Patikimos maišos palyginimas gali parodyti failo pakeitimus.",
+    "difficulty": "Sunkesnis",
+    "category": "Elektroninis parašas ir sauga"
   }
-,
-  {"id": "kr-v523-001", "topic": "kriptografija", "question": "Kokį raktą gavėjas naudoja, kad iššifruotų pranešimą, užšifruotą jo viešuoju raktu?", "options": ["Siuntėjo viešąjį", "Gavėjo privatųjį", "Gavėjo viešąjį", "Siuntėjo privatųjį"], "correct": 1, "explanation": "Gavėjo privatųjį raktą žino tik gavėjas.", "difficulty": "Lengvas", "category": "Raktai ir algoritmai"},
-  {"id": "kr-v523-002", "topic": "kriptografija", "question": "Kurį raktą reikia perduoti žmogui, norinčiam tau išsiųsti slaptą pranešimą?", "options": ["Savo privatųjį", "Savo viešąjį", "Abu raktus", "Jokio rakto"], "correct": 1, "explanation": "Siuntėjas naudoja tavo viešąjį raktą, o tu iššifruoji privačiuoju.", "difficulty": "Lengvas", "category": "Raktai ir algoritmai"},
-  {"id": "kr-v523-003", "topic": "kriptografija", "question": "Kuris veiksmas teisingai apibūdina skaitmeninio parašo sudarymą?", "options": ["Pasirašoma gavėjo viešuoju raktu", "Pasirašoma siuntėjo privačiuoju raktu", "Pasirašoma gavėjo privačiuoju raktu", "Pasirašoma atsitiktiniu slaptažodžiu"], "correct": 1, "explanation": "Parašą sukuria siuntėjo privatusis raktas.", "difficulty": "Lengvas", "category": "Raktai ir algoritmai"},
-  {"id": "kr-v523-004", "topic": "kriptografija", "question": "Kuo tikrinamas siuntėjo skaitmeninis parašas?", "options": ["Siuntėjo viešuoju raktu", "Gavėjo privačiuoju raktu", "Tik siuntėjo slaptažodžiu", "Tik failo pavadinimu"], "correct": 0, "explanation": "Parašo patikrai naudojamas pasirašiusio asmens viešasis raktas.", "difficulty": "Lengvas", "category": "Raktai ir algoritmai"},
-  {"id": "kr-v523-005", "topic": "kriptografija", "question": "Ką garantuoja sėkminga skaitmeninio parašo kriptografinė patikra, jei pasitikime raktų susiejimu?", "options": ["Kad turinys niekam nematomas", "Kad turinys nebuvo pakeistas ir pasirašyta atitinkamu privačiuoju raktu", "Kad failas neturi virusų", "Kad pasirašė būtent įvardytas žmogus be papildomų patikrų"], "correct": 1, "explanation": "Parašas rodo vientisumą ir rakto valdymą; tapatybės susiejimą reikia papildomai pagrįsti.", "difficulty": "Lengvas", "category": "Raktai ir algoritmai"},
-  {"id": "kr-v523-006", "topic": "kriptografija", "question": "Koks pagrindinis AES šifravimo tipas?", "options": ["Asimetrinis", "Simetrinis", "Tik maišos", "Elektroninis parašas"], "correct": 1, "explanation": "AES yra simetrinio šifravimo algoritmas.", "difficulty": "Lengvas", "category": "Raktai ir algoritmai"},
-  {"id": "kr-v523-007", "topic": "kriptografija", "question": "Kuo simetrinis šifravimas skiriasi nuo asimetrinio?", "options": ["Naudoja vieną bendrą slaptą raktą šifruoti ir iššifruoti", "Nenaudoja raktų", "Visada siunčia duomenis atviru tekstu", "Veikia tik su paveikslėliais"], "correct": 0, "explanation": "Simetrinis šifravimas naudoja tą patį bendrą slaptą raktą.", "difficulty": "Lengvas", "category": "Raktai ir algoritmai"},
-  {"id": "kr-v523-008", "topic": "kriptografija", "question": "Kuri priemonė labiausiai padeda saugiai perduoti simetrinį sesijos raktą internetu?", "options": ["Viešojo rakto kriptografija ir autentifikuotas raktų apsikeitimas", "Nusiųsti raktą tame pačiame laiške atviru tekstu", "Prisegti raktą prie nuotraukos pavadinimo", "Visur naudoti vienodą raktą"], "correct": 0, "explanation": "Autentifikuotas raktų apsikeitimas leidžia susitarti dėl sesijos rakto.", "difficulty": "Lengvas", "category": "Raktai ir algoritmai"},
-  {"id": "kr-v523-009", "topic": "kriptografija", "question": "Kam skirtas SHA-256?", "options": ["Atviram tekstui atkurti", "Maišos reikšmei skaičiuoti", "Vaizdui suspausti į ZIP", "Privačiajam raktui išsiųsti"], "correct": 1, "explanation": "SHA-256 apskaičiuoja fiksuoto ilgio maišos reikšmę.", "difficulty": "Lengvas", "category": "Maiša ir saugus ryšys"},
-  {"id": "kr-v523-010", "topic": "kriptografija", "question": "Kokia yra SHA-256 rezultato trukmė bitais?", "options": ["64", "128", "256", "512"], "correct": 2, "explanation": "SHA-256 išvestis yra 256 bitų.", "difficulty": "Lengvas", "category": "Maiša ir saugus ryšys"},
-  {"id": "kr-v523-011", "topic": "kriptografija", "question": "Ar galima iš SHA-256 maišos patikimai atkurti pradinį tekstą?", "options": ["Taip, su viešuoju raktu", "Taip, bet tik su slaptažodžiu", "Ne, ji nėra grįžtamasis šifravimas", "Taip, vienu mygtuku"], "correct": 2, "explanation": "Maiša nėra šifravimas ir nėra numatyta grįžtamajam atkūrimui.", "difficulty": "Vidutinis", "category": "Maiša ir saugus ryšys"},
-  {"id": "kr-v523-012", "topic": "kriptografija", "question": "Kas nutinka SHA-256 maišai pakeitus bent vieną dokumento simbolį?", "options": ["Ji paprastai labai pasikeičia", "Ji visada lieka ta pati", "Ji sutrumpėja vienu bitu", "Pasikeičia tik paskutinis skaitmuo"], "correct": 0, "explanation": "Kriptografinė maiša turi lavinos efektą.", "difficulty": "Vidutinis", "category": "Maiša ir saugus ryšys"},
-  {"id": "kr-v523-013", "topic": "kriptografija", "question": "Kuris teiginys apie HTTPS teisingas?", "options": ["HTTPS garantuoja, kad svetainės turinys sąžiningas", "HTTPS saugo perdavimo kanalą naudojant TLS, bet negarantuoja svetainės sąžiningumo", "HTTPS reiškia, kad niekas negali pavogti slaptažodžio", "HTTPS yra tas pats kaip skaitmeninis parašas"], "correct": 1, "explanation": "TLS užtikrina ryšio apsaugą, bet ne pačios svetainės ketinimus.", "difficulty": "Vidutinis", "category": "Maiša ir saugus ryšys"},
-  {"id": "kr-v523-014", "topic": "kriptografija", "question": "Kam reikalingas TLS sertifikatas?", "options": ["Padėti patikrinti serverio tapatybę ir susieti ją su viešuoju raktu", "Padidinti interneto greitį", "Paslėpti failo dydį", "Automatiškai pašalinti virusus"], "correct": 0, "explanation": "Sertifikatas susieja domeną ir viešąjį raktą pagal pasitikėjimo grandinę.", "difficulty": "Vidutinis", "category": "Maiša ir saugus ryšys"},
-  {"id": "kr-v523-015", "topic": "kriptografija", "question": "Ką reiškia naršyklės įspėjimas, kad sertifikatas negalioja?", "options": ["Visada galima ignoruoti", "Ryšio tapatybės patikra nepavyko; reikia įvertinti riziką", "Reikia išjungti ugniasienę", "Internetas veikia greičiau"], "correct": 1, "explanation": "Netinkamas sertifikatas silpnina ryšio tapatybės patikrą.", "difficulty": "Vidutinis", "category": "Maiša ir saugus ryšys"},
-  {"id": "kr-v523-016", "topic": "kriptografija", "question": "Ką vadiname elektroninio parašo vientisumo savybe?", "options": ["Dokumento formatą", "Gebėjimą aptikti pasirašyto dokumento pakeitimą", "Parašo spalvą", "Dokumento dydį"], "correct": 1, "explanation": "Pakeitus pasirašytą turinį, parašo patikra nepavyksta.", "difficulty": "Vidutinis", "category": "Elektroninis parašas ir sauga"},
-  {"id": "kr-v523-017", "topic": "kriptografija", "question": "Kurį veiksmą atliktum gavęs pasirašytą dokumentą?", "options": ["Patikrinčiau parašą, sertifikatą ir dokumento vientisumą", "Tik perskaityčiau failo vardą", "Iš karto persiųsčiau", "Pašalinčiau sertifikatą"], "correct": 0, "explanation": "Svarbi parašo, sertifikato ir vientisumo patikra.", "difficulty": "Vidutinis", "category": "Elektroninis parašas ir sauga"},
-  {"id": "kr-v523-018", "topic": "kriptografija", "question": "Ar kvalifikuotas elektroninis parašas ES turi tokią pačią teisinę galią kaip ranka rašytas parašas?", "options": ["Taip, pagal eIDAS", "Ne, jis visada tik informacinis", "Tik jei pasirašyta popieriuje", "Tik privačiuose laiškuose"], "correct": 0, "explanation": "Pagal eIDAS kvalifikuotas elektroninis parašas prilyginamas ranka rašytam parašui.", "difficulty": "Vidutinis", "category": "Elektroninis parašas ir sauga"},
-  {"id": "kr-v523-019", "topic": "kriptografija", "question": "Kas yra kvalifikuota laiko žyma?", "options": ["Patikimas laiko įrodymas, susietas su duomenimis", "Kompiuterio ekrano laikrodis", "Svetainės įkėlimo greitis", "Slaptažodžio galiojimo laikas"], "correct": 0, "explanation": "Laiko žyma padeda įrodyti duomenų buvimą tam tikru laiku.", "difficulty": "Vidutinis", "category": "Elektroninis parašas ir sauga"},
-  {"id": "kr-v523-020", "topic": "kriptografija", "question": "Kas yra elektroninis spaudas eIDAS kontekste?", "options": ["Juridinio asmens kilmės ir vientisumo patvirtinimo priemonė", "Asmens pieštas parašas", "Kompiuterio prisijungimo slaptažodis", "Pašto programos piktograma"], "correct": 0, "explanation": "Elektroninis spaudas susijęs su juridiniu asmeniu ir duomenų kilme bei vientisumu.", "difficulty": "Vidutinis", "category": "Elektroninis parašas ir sauga"},
-  {"id": "kr-v523-021", "topic": "kriptografija", "question": "Ką reikia daryti, jei privatusis raktas pateko pašaliniam asmeniui?", "options": ["Nieko, jis viešas", "Nustoti juo pasitikėti, atšaukti atitinkamą sertifikatą kai taikoma ir sukurti naują raktų porą", "Paskelbti jį internete", "Pakeisti tik failo pavadinimą"], "correct": 1, "explanation": "Kompromituotas privatusis raktas nebeturi būti naudojamas.", "difficulty": "Vidutinis", "category": "Elektroninis parašas ir sauga"},
-  {"id": "kr-v523-022", "topic": "kriptografija", "question": "Ką reiškia RSA šifravimas su gavėjo viešuoju raktu?", "options": ["Duomenų slaptumo užtikrinimą, jei naudojama tinkama schema ir privatusis raktas saugus", "Siuntėjo tapatybės garantiją be parašo", "Visų virusų šalinimą", "Failo automatinį suspaudimą"], "correct": 0, "explanation": "Viešojo rakto šifravimas skirtas slaptumui, o tapatybę vertina atskiros priemonės.", "difficulty": "Vidutinis", "category": "Elektroninis parašas ir sauga"},
-  {"id": "kr-v523-023", "topic": "kriptografija", "question": "Kuris teiginys apie RSA-OAEP teisingas?", "options": ["Tai RSA šifravimo schema su papildomu užpildymu", "Tai maišos algoritmas", "Tai vien tik piešimo programa", "Tai tas pats kaip RSA-PSS parašas"], "correct": 0, "explanation": "RSA-OAEP naudojama šifravimui; PSS naudojama parašams.", "difficulty": "Vidutinis", "category": "Elektroninis parašas ir sauga"},
-  {"id": "kr-v523-024", "topic": "kriptografija", "question": "Kam skirtas RSA-PSS?", "options": ["RSA skaitmeninių parašų kūrimui ir tikrinimui", "Vien tik duomenų suspaudimui", "AES raktams saugoti be slaptažodžio", "HTTP adresams trumpinti"], "correct": 0, "explanation": "RSA-PSS yra parašo schema.", "difficulty": "Sunkesnis", "category": "Elektroninis parašas ir sauga"},
-  {"id": "kr-v523-025", "topic": "kriptografija", "question": "Kodėl skaitmeninis parašas pats savaime nepaslepia dokumento teksto?", "options": ["Nes parašas siekia autentiškumo ir vientisumo, o ne konfidencialumo", "Nes parašas visada yra nuotrauka", "Nes parašas skirtas tik slaptažodžiui", "Nes jis veikia tik be interneto"], "correct": 0, "explanation": "Slaptumui reikia šifravimo, o parašas skirtas patikrai.", "difficulty": "Sunkesnis", "category": "Elektroninis parašas ir sauga"},
-  {"id": "kr-v523-026", "topic": "kriptografija", "question": "Kuri praktika tinkama slaptažodžiams saugoti serverio duomenų bazėje?", "options": ["Saugi slaptažodžių maišos funkcija su druska, pvz., Argon2id", "Paprastas SHA-256 be druskos visiems slaptažodžiams", "Atviras tekstas", "Vienas bendras slaptažodis visiems"], "correct": 0, "explanation": "Slaptažodžiams reikia specialios lėtosios maišos su druska.", "difficulty": "Sunkesnis", "category": "Elektroninis parašas ir sauga"},
-  {"id": "kr-v523-027", "topic": "kriptografija", "question": "Kas yra „druska“ (salt) slaptažodžių saugojime?", "options": ["Unikali atsitiktinė reikšmė prie slaptažodžio maišos skaičiavimo", "Privačiojo rakto viešinimas", "Tinklalapio slapukas", "Sertifikato galiojimo data"], "correct": 0, "explanation": "Druska trukdo naudoti iš anksto apskaičiuotas vienodas maišų lenteles.", "difficulty": "Sunkesnis", "category": "Elektroninis parašas ir sauga"},
-  {"id": "kr-v523-028", "topic": "kriptografija", "question": "Koks elgesys tinkamas gavus nežinomo asmens tariamą sertifikatą?", "options": ["Patikrinti patikimą sertifikato grandinę ir tapatybės ryšį", "Aklai pasitikėti kiekvienu sertifikatu", "Atskleisti savo privatųjį raktą", "Išjungti HTTPS"], "correct": 0, "explanation": "Vien sertifikato failo turėjimas savaime nepatvirtina tapatybės.", "difficulty": "Sunkesnis", "category": "Elektroninis parašas ir sauga"},
-  {"id": "kr-v523-029", "topic": "kriptografija", "question": "Kuris pavyzdys rodo duomenų konfidencialumą?", "options": ["Tik įgalioti asmenys gali perskaityti užšifruotą turinį", "Matyti failo sukūrimo data", "Failas turi piktogramą", "Parašas būtinai suteikia slaptumą"], "correct": 0, "explanation": "Konfidencialumas reiškia, kad turinys neatskleidžiamas pašaliniams.", "difficulty": "Sunkesnis", "category": "Elektroninis parašas ir sauga"},
-  {"id": "kr-v523-030", "topic": "kriptografija", "question": "Kuris pavyzdys rodo duomenų vientisumo patikrą?", "options": ["Palyginti patikimai gautą maišą su atsisiųsto failo maiša", "Pakeisti failo vardą", "Padidinti šrifto dydį", "Perkelti failą į kitą aplanką"], "correct": 0, "explanation": "Patikimos maišos palyginimas gali parodyti failo pakeitimus.", "difficulty": "Sunkesnis", "category": "Elektroninis parašas ir sauga"}
 ];
