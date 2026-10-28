@@ -2847,7 +2847,7 @@ async function openStudentTopic(topicId,c,access){
   <p>Išbandyk Cezario šifrą, AES ir RSA. Patikrink, ką gali perskaityti tinklo stebėtojas.</p>
   <button type="button" class="cl-launch-cta" id="openCyberLabStudent">Atidaryti laboratoriją <span aria-hidden="true">→</span></button>
 </section>`:''}
-  ${topicId==='kriptografija'&&c.grade_level==='11'&&a.practice_open&&VBE_CRYPTO.length?`<div class="panel vbeCryptoPractice"><span class="kicker">PAPILDOMA ŽINIŲ TRENIRUOTĖ</span><h3>Kriptografija · ankstesnių egzaminų klausimai</h3><p class="muted">${VBE_CRYPTO.length} klausimai pagal ankstesnius valstybinius, pakartotinius ir bandomuosius / pavyzdinius egzaminus. Mokomosios, perfrazuotos užduotys. Po atsakymo pateikiamas paaiškinimas. Rezultatas išsaugomas.</p><button class="primary" id="startVbeCrypto">Pradėti ${VBE_CRYPTO.length} klausimų treniruotę</button></div>`:''}
+  ${topicId==='kriptografija'&&c.grade_level==='11'&&a.practice_open&&VBE_CRYPTO.length?`<div class="panel vbeCryptoPractice"><span class="kicker">PAPILDOMA ŽINIŲ TRENIRUOTĖ</span><h3>Kriptografija · ankstesnių egzaminų klausimai</h3><p class="muted">10 atsitiktinių klausimų iš ${VBE_CRYPTO.length} klausimų banko, parengtų pagal ankstesnius valstybinius, pakartotinius ir bandomuosius / pavyzdinius egzaminus. Mokomosios, perfrazuotos užduotys. Po atsakymo pateikiamas paaiškinimas. Rezultatas išsaugomas.</p><button class="primary" id="startVbeCrypto">Pradėti 10 klausimų treniruotę</button></div>`:''}
   <div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">PRAKTIKA</span><h2>Žinių treniruotė</h2></div><span class="badge ${a.practice_open?'ok':''}">${a.practice_open?'Atidaryta':'Užrakinta'}</span></div>
    ${motivation?.enabled?(topicMastery?`<div class="topicMasteryBox"><div class="masteryHead"><span>Temos įvaldymas</span><strong>${Number(topicMastery.mastery_percent)||0}%</strong></div><div class="masteryTrack"><span style="width:${Math.max(0,Math.min(100,Number(topicMastery.mastery_percent)||0))}%"></span></div><div class="subtle">Skaičiuojama pagal paskutines iki 5 treniruočių · geriausias rezultatas ${Number(topicMastery.best_score)||0}%</div></div>`:'<div class="topicMasteryBox empty"><b>Temos įvaldymas</b><span>Atlik pirmą treniruotę – čia atsiras tavo progresas.</span></div>'):''}
    ${c.grade_level==='10'?renderGrade10StudentPracticePicker(practiceBlocks||[],a.practice_open):`<p class="muted"><b>Praktikuotis gali tiek kartų, kiek nori.</b> Kiekvieną kartą sistema iš didesnio klausimų banko atsitiktinai parenka 10 klausimų ir sumaišo atsakymų variantus, todėl bandymai nėra vienodi. Po kiekvieno atsakymo gausi paaiškinimą, o rezultatas ir atlikimo laikas bus išsaugoti tavo paskyroje.</p><button class="primary" id="startPracticeTopic" ${a.practice_open?'':'disabled'}>Pradėti 10 klausimų praktiką</button>`}
@@ -3170,8 +3170,8 @@ async function startVbeCryptoQuiz(classId){
  await loadClassTopics(classId);
  const {data:access,error:accessError}=await sb.from('topic_access').select('is_open,practice_open').eq('class_id',classId).eq('topic_id',topicId).maybeSingle();
  if(accessError||!access?.is_open||!access?.practice_open)return toast('Kriptografijos treniruotė dar neatidaryta.');
- if(VBE_CRYPTO.length!==8)return toast('Nepavyko įkelti visų 8 egzaminų klausimų.');
- const selected=shuffle(VBE_CRYPTO);
+ if(VBE_CRYPTO.length<10)return toast('Nepakanka egzaminų klausimų 10 klausimų treniruotei.');
+ const selected=shuffle([...VBE_CRYPTO]).slice(0,10);
  const {data:attempt,error}=await sb.from('practice_attempts').insert({student_id:me.id,class_id:classId,topic_id:topicId,mode:'practice',total_questions:selected.length}).select('id,started_at').single();
  if(error)return toast(error.message);
  setPresenceContext('VBE kriptografijos žinių treniruotė',topicId);
