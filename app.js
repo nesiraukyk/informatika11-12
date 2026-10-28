@@ -2931,8 +2931,9 @@ async function openStudentTopic(topicId,c,access){
  setCurrentRestore(()=>openStudentTopic(topicId,c,access),{kind:'student-topic',classId:c.id,topicId});
  const t=topicById(topicId),a=access.find(x=>x.topic_id===topicId);if(!a?.is_open)return toast('Tema užrakinta.');
  setPresenceContext(`Tema: ${t?.title||topicId}`,topicId);
- const [{data:resources},{data:assignments},{data:topicPosts},{data:practiceBlocks},{data:assessmentSetting},{data:assessmentStatusData}]=await Promise.all([
+ const [{data:resources},{data:folders},{data:assignments},{data:topicPosts},{data:practiceBlocks},{data:assessmentSetting},{data:assessmentStatusData}]=await Promise.all([
   sb.from('learning_resources').select('*').eq('class_id',c.id).eq('topic_id',topicId).order('created_at',{ascending:false}),
+  sb.from('learning_resource_folders').select('id,name').eq('class_id',c.id).eq('topic_id',topicId).order('name'),
   sb.from('assignments').select('*').eq('class_id',c.id).eq('topic_id',topicId).eq('is_open',true).order('created_at',{ascending:false}),
   sb.from('class_posts').select('*').eq('class_id',c.id).eq('topic_id',topicId).order('created_at',{ascending:false}),
   c.grade_level==='10'?sb.from('class_question_blocks').select('id,title,description').eq('class_id',c.id).eq('parent_topic_id',topicId).eq('is_enabled',true).order('sort_order',{ascending:true}):Promise.resolve({data:[]}),
@@ -2965,7 +2966,11 @@ async function openStudentTopic(topicId,c,access){
    ${c.grade_level==='10'?renderGrade10StudentPracticePicker(practiceBlocks||[],a.practice_open):`<p class="muted"><b>Praktikuotis gali tiek kartų, kiek nori.</b> Kiekvieną kartą sistema iš didesnio klausimų banko atsitiktinai parenka 10 klausimų ir sumaišo atsakymų variantus, todėl bandymai nėra vienodi. Po kiekvieno atsakymo gausi paaiškinimą, o rezultatas ir atlikimo laikas bus išsaugoti tavo paskyroje.</p><button class="primary" id="startPracticeTopic" ${a.practice_open?'':'disabled'}>Pradėti 10 klausimų praktiką</button>`}
   </div>
   <div class="panel"><div class="sectionTitle"><div class="grow"><span class="kicker">MOKYMOSI FAILAI</span><h2>Failai atsisiuntimui</h2></div></div>
-   <div class="learningFileList">${(resources||[]).length?(resources||[]).map(r=>learningFileRow(r,'student')).join(''):'<div class="compactTaskEmpty">Mokymosi failų dar nėra.</div>'}</div>
+   <div class="studentResourceFolders">
+   ${(folders||[]).map(folder=>`<details class="resourceFolder studentResourceFolder" ${(resources||[]).some(r=>r.folder_id===folder.id)?'':'data-empty-folder="true"'}><summary>📁 ${esc(folder.name)} <span class="subtle">(${(resources||[]).filter(r=>r.folder_id===folder.id).length})</span></summary><div class="learningFileList">${(resources||[]).filter(r=>r.folder_id===folder.id).map(r=>learningFileRow(r,'student')).join('')||'<div class="compactTaskEmpty">Aplankas tuščias.</div>'}</div></details>`).join('')}
+   ${(resources||[]).some(r=>!r.folder_id)?`<div class="studentUngroupedFiles">${(folders||[]).length?'<h4>Failai be aplanko</h4>':''}<div class="learningFileList">${(resources||[]).filter(r=>!r.folder_id).map(r=>learningFileRow(r,'student')).join('')}</div></div>`:''}
+   ${!(resources||[]).length&&!(folders||[]).length?'<div class="compactTaskEmpty">Mokymosi failų dar nėra.</div>':''}
+   </div>
   </div>
   <div class="panel topicAssignmentUploadPanel"><div class="sectionTitle compactTaskSectionHead"><div class="grow"><h2>Paskirtų užduočių įkėlimas</h2></div>${(assignments||[]).length?`<span class="compactTaskTotal">${assignments.length}</span>`:''}</div>
    <div class="compactTaskList">
