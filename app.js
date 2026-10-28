@@ -1726,13 +1726,17 @@ async function renderTeacherAssessments(c,students,attempts){
  for(const topicId of assessmentTopics){
   for(const st of studentsSorted){
    const studentAttempts=rows.filter(x=>x.topic_id===topicId&&x.student_id===st.id);
-   const submitted=studentAttempts.find(x=>x.completed_at)||null; // naujausias pateiktas bandymas
+   const submitted=[...studentAttempts].filter(x=>x.completed_at).sort((a,b)=>new Date(b.completed_at)-new Date(a.completed_at))[0]||null; // naujausias pateiktas bandymas
    const active=studentAttempts.find(x=>!x.completed_at)||null;
    const graded=submitted?assessmentTeacherGradesByAttempt[submitted.id]:null;
    const pct=submitted&&submitted.score_percent!=null?`${Math.round(Number(submitted.score_percent))}%`:'—';
    const status=submitted?(active?'Pateikė · kartoja':'Pateikė'):(active?'Vyksta':'Nepateikė');
    const grade=graded?`<span class="assessmentGradeBig" aria-label="Pažymys ${Number(graded.grade)}">${Number(graded.grade)}</span>`:(submitted?'<span class="subtle">Neįvertinta</span>':'<span class="subtle">—</span>');
-   const buttons=submitted?`<button class="smallBtn" data-assessment-grade="${submitted.id}" data-assessment-student="${st.id}">${graded?'Keisti':'Įvertinti'}</button><button class="smallBtn" data-assessment-result="${submitted.id}" data-assessment-student="${st.id}">Detalės</button>`:'<span class="subtle">—</span>';
+   const key=`${st.id}::${topicId}`;
+   const completedAttempts=studentAttempts.filter(x=>x.completed_at).length;
+   const allowedAttempts=1+Number(retryByKey[key]?.extra_attempts||0);
+   const retryAction=submitted?(active?'':(completedAttempts<allowedAttempts?'<span class="badge ok">Pakartojimas leistas</span>':`<button class="smallBtn" data-grant-assessment-retry="${st.id}" data-retry-topic="${esc(topicId)}" data-retry-name="${esc(st.full_name||'Mokinys')}">Leisti pakartoti</button>`)):'';
+   const buttons=submitted?`<button class="smallBtn" data-assessment-grade="${submitted.id}" data-assessment-student="${st.id}">${graded?'Keisti':'Įvertinti'}</button><button class="smallBtn" data-assessment-result="${submitted.id}" data-assessment-student="${st.id}">Detalės</button>${retryAction}`:'<span class="subtle">—</span>';
    overviewRows.push(`<tr data-overview-topic="${esc(topicId)}"><td><b>${esc(st.full_name||'Mokinys')}</b></td><td>${esc(status)}</td><td><b>${pct}</b></td><td>${grade}</td><td class="assessmentQuickActions">${buttons}</td></tr>`);
   }
  }
