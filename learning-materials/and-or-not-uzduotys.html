@@ -1,0 +1,44 @@
+<!doctype html><html lang="lt"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Užduotys | Excel AND OR NOT · 11 kl.</title><style>
+:root{font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:#17243e}*{box-sizing:border-box}
+body{margin:0;background:#f4f6fa;line-height:1.62}main{max-width:950px;margin:32px auto 70px;padding:0 22px}
+.hero{background:linear-gradient(125deg,#14345b,#3655a6);padding:34px 40px;color:white;border-radius:24px}
+.hero h1{margin:6px 0;font-size:35px;line-height:1.2}.hero p{margin:8px 0}.kicker{letter-spacing:1.6px;text-transform:uppercase;font-weight:800;font-size:12px;color:#b7d4ff}
+section{margin-top:18px;background:#fff;padding:28px 34px;border:1px solid #e4e9f1;border-radius:18px;box-shadow:0 5px 18px #19345e0a}
+h2{font-size:21px;margin:0 0 12px;color:#173455}h3{font-size:17px;margin:24px 0 6px}p{margin:9px 0}
+table{width:100%;border-collapse:collapse;margin:14px 0}td,th{border:1px solid #d6deea;padding:9px 12px;text-align:left}th{background:#eaf0fa;color:#173455}
+code,pre{font-family:Consolas,monospace;font-size:14px}code{background:#edf3fc;padding:2px 5px;border-radius:5px;overflow-wrap:anywhere}
+pre{background:#edf3fc;padding:14px 18px;border-radius:10px;overflow:auto;color:#193458}
+.note{padding:14px 18px;background:#eef5ff;border-left:4px solid #4670d4;border-radius:8px}
+.warning{padding:14px 18px;background:#fffaec;border-left:4px solid #d89b33;border-radius:8px}
+.tag{display:inline-block;background:#e5edff;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:800;color:#2947a1}
+.cols{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.tile{padding:15px;border-radius:12px;background:#f0f4fb}.tile b{display:block;font-size:20px;color:#234e93}
+a.btn,button{display:inline-block;background:#3155ce;border:0;color:#fff;border-radius:9px;font:inherit;font-weight:700;padding:11px 20px;text-decoration:none;cursor:pointer}
+a.btn.alt{background:#eaf0fa;color:#294f96}.pill{display:inline-block;font-size:12px;font-weight:700;border-radius:16px;background:#dcf6e6;color:#207847;padding:3px 9px}
+small,.muted{color:#657288}li{margin:9px 0}.task{padding:14px 0;border-bottom:1px solid #e1e6ee}.blank{height:26px;border-bottom:1px dotted #98a6ba}
+.toolbar{display:flex;justify-content:space-between;flex-wrap:wrap;gap:9px;align-items:center;margin-top:16px}
+@media(max-width:680px){main{padding:0 12px}.hero{padding:25px}section{padding:21px}.cols{grid-template-columns:1fr}table{font-size:12px}td,th{padding:6px}}
+@media print{body{background:#fff}main{margin:0;max-width:none}.hero{background:#203f78!important;print-color-adjust:exact}.toolbar,.noprint{display:none!important}section{break-inside:avoid;box-shadow:none;border-color:#ddd;margin-top:12px;padding:16px}a{color:inherit;text-decoration:none}}
+</style></head><body><main>
+<header class="hero"><div class="kicker">11 KLASĖ · EXCEL · PRAKTIKOS UŽDUOTYS</div><h1>AND · OR · NOT</h1><p>2 pamokų darbas: 12 užduočių nuo pagrindų iki sudėtinių sąlygų</p><div class="toolbar"><span>Mokinio vardas, pavardė: ____________________</span><span>Klasė: __________</span></div></header>
+<section><h2>Kaip atlikti?</h2><p>Atidaryk priskirtą „Excel“ šabloną arba sukurk duomenų lentelę pagal žemiau pateiktus pavyzdžius. Visose geltonose šablono ląstelėse turi būti tavo įrašytos formulės. Kiekvienoje užduotyje formulę rašyk pirmame duomenų eilutės langelyje ir nukopijuok žemyn.</p>
+<div class="note">Naudok <code>IF</code>, <code>AND</code>, <code>OR</code> ir <code>NOT</code>. 4–7 užduotys remiasi ta pačia mokinių pažymių lentele. Užduočių šablone pateiktų duomenų nekeisk.</div></section>
+<section><h2>1 dalis. Loginės išraiškos</h2>
+<div class="task"><b>1 užduotis.</b> Nustatyk <b>TRUE/FALSE</b>: <code>=AND(8>5;10=10)</code>, <code>=AND(7>10;5<9)</code>, <code>=OR(3>8;12>5)</code>, <code>=OR(4=7;9<3)</code>, <code>=NOT(6>10)</code>.</div>
+<div class="task"><b>2 užduotis.</b> Parašyk formules, jei A2 yra skaičius. Tikrink: (a) nuo 10 iki 20 imtinai; (b) mažesnis už 10 arba didesnis už 20; (c) nėra lygus 15; (d) didesnis už 0 ir mažesnis už 100; (e) lygus 5, 10 arba 15.</div>
+<div class="task"><b>3 užduotis.</b> Jei B2 yra balai, o C2 – lankomumas procentais, parašyk <code>IF</code> ir <code>AND</code> formulę: pagyrimas, kai balai ≥80 ir lankomumas ≥90 %. Rezultatai: „Pagyrimas“ / „Neskiriama“.</div></section>
+<section><h2>2 dalis. Mokinių rezultatų analizė</h2>
+<table><tr><th>Mokinys</th><th>I darbas</th><th>II darbas</th><th>III darbas</th></tr>
+<tr><td>Jonas</td><td>8</td><td>9</td><td>10</td></tr><tr><td>Ona</td><td>7</td><td>9</td><td>8</td></tr><tr><td>Mantas</td><td>4</td><td>6</td><td>5</td></tr><tr><td>Ieva</td><td>10</td><td>10</td><td>9</td></tr><tr><td>Lukas</td><td>8</td><td>8</td><td>8</td></tr><tr><td>Rugilė</td><td>9</td><td>6</td><td>10</td></tr><tr><td>Nojus</td><td>3</td><td>8</td><td>9</td></tr><tr><td>Gabija</td><td>7</td><td>7</td><td>7</td></tr><tr><td>Arnas</td><td>9</td><td>8</td><td>9</td></tr></table>
+<div class="task"><b>4 užduotis – AND.</b> Išvesk „Pateko“, jei <b>visi trys pažymiai ≥8</b>, kitaip „Nepateko“.</div>
+<div class="task"><b>5 užduotis – OR.</b> Išvesk „Reikia“, jei <b>bent vienas pažymys <7</b>, kitaip „Nereikia“.</div>
+<div class="task"><b>6 užduotis – NOT + OR.</b> Išvesk „Nėra neigiamų“, jei <b>nė vienas pažymys <4</b>, kitaip „Yra neigiamas“. Privaloma naudoti NOT ir OR.</div>
+<div class="task"><b>7 užduotis – IF + AND + OR.</b> Išvesk „Apdovanojimas“, jei visi trys pažymiai ≥8 <b>ir</b> bent vienas yra 10. Kitaip „Neskiriama“.</div>
+<div class="task"><b>8 užduotis – trys sprendimai.</b> Tą pačią sąlygą „Reikia konsultacijų, jei bent vienas pažymys <8“ užrašyk trimis skirtingomis formulėmis: su OR; su NOT + AND; su kitu teisingu deriniu.</div></section>
+<section><h2>3 dalis. Savarankiškos situacijos</h2>
+<div class="task"><b>9 užduotis – užsakymas.</b> Prekės kaina B2, likutis C2. Užsakymą galima vykdyti, jeigu kaina ≤50 € <b>ir</b> likutis ≥3. Rezultatas: „Vykdyti“ / „Nevykdyti“.</div>
+<div class="task"><b>10 užduotis – sportas.</b> B2 yra bėgimo laikas sekundėmis, C2 – šuolio metrais rezultatas. Mokinys atrenkamas, jei 100 m nubėga <13 s <b>arba</b> nušoka ≥4,5 m. Rezultatas: „Atrinktas“ / „Neatrinktas“.</div>
+<div class="task"><b>11 užduotis – premija.</b> B2 – išdirbtos valandos, C2 – įvertinimas, D2 – pažeidimų skaičius. Premija skiriama, jei valandos ≥160 <b>ir</b> įvertinimas ≥8 <b>ir</b> pažeidimų nėra.</div>
+<div class="task"><b>12 užduotis – paneigimas.</b> Su <code>NOT</code> ir <code>OR</code> sudaryk formulę, grąžinančią TRUE, jeigu A2 yra <b>nuo 20 iki 50 imtinai</b>.</div>
+</section>
+<section><h2>Vertinimo gairės</h2><table><tr><th>Kriterijus</th><th>Taškai</th></tr><tr><td>AND / OR / NOT logikos supratimas</td><td>4</td></tr><tr><td>Taisyklingos IF jungtinės formulės ir jų kopijavimas</td><td>8</td></tr><tr><td>Sudėtinės, įdėtinės loginės sąlygos</td><td>5</td></tr><tr><td>Formulių patikrinimas ir tvarkinga lentelė</td><td>3</td></tr><tr><th>Iš viso</th><th>20</th></tr></table>
+<div class="toolbar"><a class="btn alt" href="and-or-not-teorija.html">Teorija</a><a class="btn" href="and-or-not-duomenys.csv" download>Atsisiųsti duomenis CSV</a><button class="noprint" onclick="window.print()">Spausdinti užduotis</button></div><p class="muted">CSV rinkmeną galima atidaryti Excel programoje. Jei stulpeliai nesuskirstomi automatiškai, importuok pasirenkant kabliataškį kaip skirtuką.</p></section></main></body></html>
