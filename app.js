@@ -2690,7 +2690,15 @@ async function renderStudent(){
  </section>
 
  <div class="sectionHead"><span class="kicker">TEMOS</span><h2>Mokymosi turinys</h2></div>
- <div class="studentTopics topicDeck">${activeClassTopics.length?activeClassTopics.map(t=>{const a=(access||[]).find(x=>x.topic_id===t.id)||{};return `<article class="topicStudentCard modernTopicCard ${a.is_open?'':'locked'}"><div class="topicCardTop"><span class="topicCardIcon" aria-hidden="true">${esc(t.icon||'💻')}</span><div class="topicCardTitle"><h3>${esc(t.title)}</h3></div><button class="topicCardAction ${a.is_open?'':'isDisabled'}" data-stopic="${t.id}" ${a.is_open?'':'disabled'} aria-label="${a.is_open?'Atidaryti temą':'Tema užrakinta'}: ${esc(t.title)}">${a.is_open?'→':'🔒'}</button></div></article>`}).join(''):'<div class="panel emptyState"><b>Mokytojas šiai klasei temų dar nesukūrė.</b></div>'}</div>`;
+ <div class="studentTopics topicDeck">${activeClassTopics.length?activeClassTopics.map(t=>{const a=(access||[]).find(x=>x.topic_id===t.id)||{};return `<article class="topicStudentCard modernTopicCard ${a.is_open?'':'locked'}"><div class="topicCardTop"><span class="topicCardIcon" aria-hidden="true">${esc(t.icon||'💻')}</span><div class="topicCardTitle"><h3>${esc(t.title)}</h3></div><button class="topicCardAction ${a.is_open?'':'isDisabled'}" data-stopic="${t.id}" ${a.is_open?'':'disabled'} aria-label="${a.is_open?'Atidaryti temą':'Tema užrakinta'}: ${esc(t.title)}">${a.is_open?'→':'🔒'}</button></div></article>`}).join(''):'<div class="panel emptyState"><b>Mokytojas šiai klasei temų dar nesukūrė.</b></div>'}</div>
+ <section class="panel" id="theoryExamEntry" style="margin-top:32px;padding:26px">
+  <span class="kicker">PASIRUOŠIMAS INFORMATIKOS VBE</span>
+  <h2>I dalies teorijos egzamino treniruoklis</h2>
+  <p class="muted">30 mokomųjų klausimų iš informatikos temų. Klausimų ir struktūrinių užduočių stiliaus simuliacija su schemomis, lentelėmis ir diagramomis; ne oficialus NŠA egzaminas ir ne pažodinis jo atkartojimas.</p>
+  <button class="primary" id="startTheoryExamSim">Pradėti 30 klausimų testą</button>
+ </section>`;
+
+ if($('startTheoryExamSim'))$('startTheoryExamSim').onclick=()=>startTheoryExamSimulation();
 
  if($('openAchievements'))$('openAchievements').onclick=()=>navigateTo(()=>renderAchievements());
  if($('personalFileUploadBtn'))$('personalFileUploadBtn').onclick=openPersonalFileUploadModal;
@@ -3549,3 +3557,49 @@ async function boot(){
  }
 }
 boot();
+
+
+/* Informatikos VBE I dalies mokomoji, nepriklausoma 30 klausimų simuliacija. */
+let theoryExamSim=null;
+function startTheoryExamSimulation(){
+ const bank=window.VBE_THEORY_SIM_QUESTIONS||[];
+ if(bank.length!==30)return toast('Neįkelta visa teorijos treniruotės klausimų bazė.');
+ theoryExamSim={questions:[...bank],answers:Array(bank.length).fill(null),index:0,started:Date.now()};
+ drawTheoryExamSimulation();
+}
+function drawTheoryExamSimulation(){
+ const run=theoryExamSim;if(!run)return;
+ const q=run.questions[run.index],i=run.index;
+ const current=run.answers[i];
+ modal(`<span class="kicker">INFORMATIKOS VBE I DALIS · MOKOMOJI SIMULIACIJA</span>
+ <h2>Teorijos egzamino treniruotė</h2>
+ <p class="muted">Klausimas ${i+1} iš 30 · ${esc(q.section)}. Atsakymai bus įvertinti pabaigoje.</p>
+ <div style="height:8px;background:#e7ebf4;border-radius:8px;overflow:hidden;margin:16px 0"><div style="height:100%;width:${(i+1)/30*100}%;background:#3154eb"></div></div>
+ <div style="font-size:1.05rem;font-weight:700;margin:18px 0">${esc(q.question).replace(/\`/g,'')}</div>
+ ${q.visual||''}
+ <fieldset style="border:none;padding:0;margin:15px 0">
+ ${q.options.map((opt,j)=>`<label style="display:flex;gap:12px;align-items:center;border:1px solid #dbe1ec;padding:11px;margin:8px 0;border-radius:10px;cursor:pointer"><input type="radio" name="theorySimAnswer" value="${j}" ${current===j?'checked':''}><span>${esc(opt)}</span></label>`).join('')}
+ </fieldset>
+ <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap">
+ <button class="ghost" id="theorySimPrev" ${i===0?'disabled':''}>← Ankstesnis</button>
+ <button class="primary" id="theorySimNext">${i===29?'Pateikti ir įvertinti':'Kitas →'}</button>
+ </div>`);
+ document.querySelectorAll('input[name="theorySimAnswer"]').forEach(x=>x.onchange=()=>{run.answers[i]=Number(x.value)});
+ $('theorySimPrev').onclick=()=>{if(run.index>0){run.index--;drawTheoryExamSimulation()}};
+ $('theorySimNext').onclick=()=>{
+  if(run.answers[i]===null)return toast('Pasirink atsakymą.');
+  if(i===29)return finishTheoryExamSimulation();
+  run.index++;drawTheoryExamSimulation();
+ };
+}
+function finishTheoryExamSimulation(){
+ const run=theoryExamSim;if(!run)return;
+ const correct=run.questions.reduce((n,q,i)=>n+(run.answers[i]===q.correct?1:0),0);
+ const errors=run.questions.map((q,i)=>({q,a:run.answers[i],i})).filter(x=>x.a!==x.q.correct);
+ modal(`<span class="kicker">MOKOMOJO TESTO REZULTATAS</span><h2>${correct} / 30 · ${Math.round(correct/30*100)} %</h2>
+ <p class="muted">Tai mokomosios simuliacijos įvertinimas, ne oficialus VBE balas.</p>
+ <details open><summary>Peržiūrėti klaidas (${errors.length})</summary>
+ ${errors.length?errors.map(x=>`<div style="padding:12px 0;border-bottom:1px solid #ddd"><b>${x.i+1}. ${esc(x.q.question)}</b><p>Teisingas: ${esc(x.q.options[x.q.correct])}</p><p class="muted">${esc(x.q.explanation)}</p></div>`).join(''):'<p>Visi atsakymai teisingi!</p>'}
+ </details><button class="primary" id="theorySimAgain" style="margin-top:16px">Spręsti iš naujo</button>`);
+ $('theorySimAgain').onclick=startTheoryExamSimulation;
+}
