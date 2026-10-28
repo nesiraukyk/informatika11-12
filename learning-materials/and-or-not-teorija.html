@@ -1,56 +1,277 @@
-<!doctype html><html lang="lt"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Teorija | Excel AND OR NOT · 11 kl.</title><style>
-:root{font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:#17243e}*{box-sizing:border-box}
-body{margin:0;background:#f4f6fa;line-height:1.62}main{max-width:950px;margin:32px auto 70px;padding:0 22px}
-.hero{background:linear-gradient(125deg,#14345b,#3655a6);padding:34px 40px;color:white;border-radius:24px}
-.hero h1{margin:6px 0;font-size:35px;line-height:1.2}.hero p{margin:8px 0}.kicker{letter-spacing:1.6px;text-transform:uppercase;font-weight:800;font-size:12px;color:#b7d4ff}
-section{margin-top:18px;background:#fff;padding:28px 34px;border:1px solid #e4e9f1;border-radius:18px;box-shadow:0 5px 18px #19345e0a}
-h2{font-size:21px;margin:0 0 12px;color:#173455}h3{font-size:17px;margin:24px 0 6px}p{margin:9px 0}
-table{width:100%;border-collapse:collapse;margin:14px 0}td,th{border:1px solid #d6deea;padding:9px 12px;text-align:left}th{background:#eaf0fa;color:#173455}
-code,pre{font-family:Consolas,monospace;font-size:14px}code{background:#edf3fc;padding:2px 5px;border-radius:5px;overflow-wrap:anywhere}
-pre{background:#edf3fc;padding:14px 18px;border-radius:10px;overflow:auto;color:#193458}
-.note{padding:14px 18px;background:#eef5ff;border-left:4px solid #4670d4;border-radius:8px}
-.warning{padding:14px 18px;background:#fffaec;border-left:4px solid #d89b33;border-radius:8px}
-.tag{display:inline-block;background:#e5edff;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:800;color:#2947a1}
-.cols{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.tile{padding:15px;border-radius:12px;background:#f0f4fb}.tile b{display:block;font-size:20px;color:#234e93}
-a.btn,button{display:inline-block;background:#3155ce;border:0;color:#fff;border-radius:9px;font:inherit;font-weight:700;padding:11px 20px;text-decoration:none;cursor:pointer}
-a.btn.alt{background:#eaf0fa;color:#294f96}.pill{display:inline-block;font-size:12px;font-weight:700;border-radius:16px;background:#dcf6e6;color:#207847;padding:3px 9px}
-small,.muted{color:#657288}li{margin:9px 0}.task{padding:14px 0;border-bottom:1px solid #e1e6ee}.blank{height:26px;border-bottom:1px dotted #98a6ba}
-.toolbar{display:flex;justify-content:space-between;flex-wrap:wrap;gap:9px;align-items:center;margin-top:16px}
-@media(max-width:680px){main{padding:0 12px}.hero{padding:25px}section{padding:21px}.cols{grid-template-columns:1fr}table{font-size:12px}td,th{padding:6px}}
-@media print{body{background:#fff}main{margin:0;max-width:none}.hero{background:#203f78!important;print-color-adjust:exact}.toolbar,.noprint{display:none!important}section{break-inside:avoid;box-shadow:none;border-color:#ddd;margin-top:12px;padding:16px}a{color:inherit;text-decoration:none}}
-</style></head><body><main>
-<header class="hero"><div class="kicker">11 KLASĖ · EXCEL · TEORIJA</div><h1>Loginės funkcijos<br>AND · OR · NOT</h1><p>Kaip tikrinti kelias sąlygas ir sudaryti formules su IF</p><div class="toolbar"><span>2 × 45 min. · teorinė medžiaga</span><span>2026–2027 m. mokomoji medžiaga</span></div></header>
-<section><h2>1. Ką jau moki ir ko išmoksi?</h2><p>Tu jau žinai funkciją <code>IF</code>. Iki šiol dažniausiai tikrinai vieną sąlygą. Dabar mokysiesi tikrinti kelias sąlygas vienu metu.</p>
-<div class="cols"><div class="tile"><b>AND</b>Visos sąlygos turi būti teisingos.</div><div class="tile"><b>OR</b>Užtenka bent vienos teisingos sąlygos.</div><div class="tile"><b>NOT</b>Apverčia loginės išraiškos rezultatą.</div></div>
-<p class="note"><b>TRUE</b> reiškia „teisinga“, <b>FALSE</b> – „klaidinga“. Kai naudojame IF, TRUE ir FALSE galima pakeisti norimais žodžiais, pvz., „Pateko“ / „Nepateko“.</p></section>
-<section><h2>2. AND – loginė IR</h2><p><b>AND grąžina TRUE tik jei VISOS sąlygos teisingos.</b></p><pre>=AND(A2>=8;B2>=8;C2>=8)</pre><p>Pavyzdys: mokinys patenka į kitą etapą, jei visų trijų darbų pažymiai bent 8.</p>
-<table><tr><th>A2</th><th>B2</th><th>C2</th><th>AND rezultatas</th></tr><tr><td>9</td><td>8</td><td>10</td><td>TRUE</td></tr><tr><td>9</td><td>7</td><td>10</td><td>FALSE</td></tr></table>
-<p>Jei norime rodyti tekstą, jungiam su IF:</p><pre>=IF(AND(B2>=8;C2>=8;D2>=8);"Pateko";"Nepateko")</pre></section>
-<section><h2>3. OR – loginė ARBA</h2><p><b>OR grąžina TRUE, kai bent viena sąlyga teisinga.</b></p>
-<pre>=OR(B2<7;C2<7;D2<7)</pre><p>Pavyzdys: konsultacijos reikalingos, jei bent viename iš trijų darbų gauta mažiau nei 7.</p>
-<pre>=IF(OR(B2<7;C2<7;D2<7);"Reikia";"Nereikia")</pre>
-<table><tr><th>B2</th><th>C2</th><th>D2</th><th>OR rezultatas</th></tr><tr><td>8</td><td>9</td><td>10</td><td>FALSE</td></tr><tr><td>6</td><td>9</td><td>10</td><td>TRUE</td></tr></table></section>
-<section><h2>4. NOT – loginė NE</h2><p><b>NOT pakeičia TRUE į FALSE, o FALSE į TRUE.</b> Ji turi vieną loginį argumentą.</p><pre>=NOT(8>10)  → TRUE
-=NOT(8=8)   → FALSE</pre>
-<p>Sudėtingesnis pavyzdys: pažymių sąraše nėra nė vieno neigiamo (čia neigiamu laikomas pažymys mažesnis nei 4).</p>
-<pre>=NOT(OR(B2<4;C2<4;D2<4))</pre>
-<p>Jei bent vienas pažymys mažesnis nei 4, OR grąžina TRUE. NOT jį pakeičia į FALSE.</p>
-<pre>=IF(NOT(OR(B2<4;C2<4;D2<4));"Nėra neigiamų";"Yra neigiamas")</pre></section>
-<section><h2>5. AND ir OR palyginimas</h2><table><tr><th>1 sąlyga</th><th>2 sąlyga</th><th>AND</th><th>OR</th></tr><tr><td>TRUE</td><td>TRUE</td><td>TRUE</td><td>TRUE</td></tr><tr><td>TRUE</td><td>FALSE</td><td>FALSE</td><td>TRUE</td></tr><tr><td>FALSE</td><td>TRUE</td><td>FALSE</td><td>TRUE</td></tr><tr><td>FALSE</td><td>FALSE</td><td>FALSE</td><td>FALSE</td></tr></table>
-<p class="note"><b>Greita atmintinė:</b> AND = „viskas“; OR = „bent vienas“; NOT = „ne“.</p></section>
-<section><h2>6. Sudėtinės sąlygos – VBE tipo mąstymas</h2><p>Apdovanojimas skiriamas tik jei <b>visi trys pažymiai ne mažesni nei 8</b> ir <b>bent vienas iš jų yra 10</b>.</p>
-<pre>=IF(AND(B2>=8;C2>=8;D2>=8;
-       OR(B2=10;C2=10;D2=10));
-    "Apdovanojimas";"Neskiriama")</pre>
-<p>Formulę patogu kurti nuo vidaus į išorę: pirma OR (ar yra 10?), tada AND (ar viskas atitinka?), galiausiai IF (ką parodyti?).</p></section>
-<section><h2>7. Dažniausios klaidos</h2><ol>
-<li><b>Netinkama funkcija:</b> užduotyje „bent vienas“ naudok OR, ne AND.</li>
-<li><b>Painiojama riba:</b> „bent 8“ = <code>>=8</code>, o „daugiau už 8“ = <code>>8</code>.</li>
-<li><b>Trūksta skliaustų:</b> kiekviena atidaryta funkcija turi užsidaryti.</li>
-<li><b>Neteisingas argumentų skirtukas:</b> šiame pavyzdyje naudojamas kabliataškis <code>;</code>. Kai kuriuose „Excel“ nustatymuose naudojamas kablelis.</li>
-<li><b>Netaisyklingos citatos:</b> tekstą visada rašyk kabutėse: <code>"Pateko"</code>.</li>
-<li><b>NOT(OR(...))</b> nereiškia to paties kaip OR – rezultatas apverčiamas.</li></ol>
-<div class="warning">Mokomoji medžiaga skirta 11 klasei. Pirmiausia suprask loginę sąlygą, tada įrašyk formulę „Excel“ ir patikrink bent du skirtingus atvejus.</div></section>
-<section><h2>8. Pasitikrink</h2><ol><li>Ar AND(8>5;2=3) grąžina TRUE?</li><li>Ar OR(8>5;2=3) grąžina TRUE?</li><li>Ar NOT(5<2) grąžina TRUE?</li><li>Kokią funkciją pasirinksi, jei būtina įvykdyti visas tris sąlygas?</li><li>Kurią funkciją naudosi, jei pakanka vieno tinkamo rezultato?</li></ol>
-<div class="toolbar"><a class="btn" href="and-or-not-uzduotys.html">Pereiti prie užduočių</a><button class="noprint" onclick="window.print()">Spausdinti teoriją</button></div>
-</section></main></body></html>
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Loginės funkcijos AND, OR, NOT | NGG Informatika</title>
+<style>
+:root{--bg:#f8f9fb;--surface:#fff;--ink:#182334;--muted:#677489;--line:#e5e9f0;--soft:#f3f6fa;--accent:#3159c9;--accent-soft:#edf2ff;--ok:#256c53;--ok-soft:#e9f6ef;--bad:#a84a53;--bad-soft:#fff1f1;--radius:14px;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);font-synthesis:none}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:26px}
+body{margin:0;background:var(--bg);line-height:1.7;font-size:15px;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:3px solid #819cf2;outline-offset:3px}
+.skip{position:absolute;left:-9999px;top:8px;z-index:100;background:#fff;padding:12px}
+.skip:focus{left:8px}
+.progress{position:fixed;inset:0 auto auto 0;height:3px;width:0;background:var(--accent);z-index:30;transition:width .1s linear}
+.layout{max-width:1220px;padding:0 30px;margin:0 auto;display:grid;grid-template-columns:215px minmax(0,1fr);gap:68px}
+.sidebar{position:sticky;top:0;align-self:start;height:100vh;padding:32px 0 24px;display:flex;flex-direction:column;gap:32px}
+.brand{font-size:13px;font-weight:800;letter-spacing:.035em;display:flex;align-items:center;gap:10px}
+.mark{display:grid;place-items:center;background:#202e48;color:#fff;border-radius:9px;width:34px;height:34px;font-weight:850;letter-spacing:-.05em}
+.side-caption{font-size:11px;letter-spacing:.12em;font-weight:750;color:#8b96a6;text-transform:uppercase;margin:0 0 12px}
+.nav{display:grid;gap:2px}
+.nav a{font-size:13px;color:#647185;padding:9px 12px;border-radius:9px;display:flex;gap:10px;align-items:center;line-height:1.4;transition:background .15s,color .15s}
+.nav a:hover,.nav a.active{background:#edf1f8;color:#274c9e}
+.nav .number{color:#9ba7ba;font-size:11px;font-variant-numeric:tabular-nums}
+.side-end{margin-top:auto;font-size:12px;line-height:1.6;color:#8993a2;border-top:1px solid var(--line);padding-top:18px}
+.main{min-width:0;padding:45px 0 100px}
+.breadcrumb{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12px;color:#8290a3;margin-bottom:25px}
+.crumb-dot{color:#c5ced8}
+.hero{padding:42px 0 42px;border-bottom:1px solid var(--line)}
+.eyebrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.pill{display:inline-flex;align-items:center;font-size:11px;padding:5px 10px;border-radius:6px;font-weight:750;letter-spacing:.02em;background:var(--accent-soft);color:#3156ad}
+.pill.neutral{background:#eef0f3;color:#667385}
+.hero h1{font-size:clamp(36px,5.3vw,61px);line-height:1.1;letter-spacing:-.052em;max-width:750px;margin:0;font-weight:780}
+.hero h1 .highlight{color:var(--accent)}
+.subtitle{font-size:18px;color:#58677d;margin:20px 0 0;max-width:620px;line-height:1.6}
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:34px}
+.fact{border:1px solid var(--line);border-radius:12px;padding:15px 17px;background:var(--surface)}
+.fact strong{font-size:15px;display:block;letter-spacing:-.015em;font-weight:760}
+.fact small{color:#788599;font-size:12px;display:block;margin-top:2px}
+.lesson-section{padding:40px 0;border-bottom:1px solid var(--line);scroll-margin-top:12px}
+.section-label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:var(--accent);margin-bottom:9px}
+h2{font-size:clamp(23px,3vw,29px);letter-spacing:-.035em;line-height:1.25;margin:0 0 16px;font-weight:760}
+h3{font-size:15px;margin:28px 0 8px;font-weight:730;letter-spacing:-.01em}
+p{color:#556378;margin:12px 0;max-width:790px}
+strong{color:#233047;font-weight:730}
+code,pre{font-family:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+p code,li code{background:#eef1f6;padding:2px 5px;border-radius:4px;color:#304b84;font-size:.91em}
+.lead{font-size:16px;color:#40516a}
+.soft-panel{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:18px 21px;margin:22px 0}
+.soft-panel p:first-child{margin-top:0}.soft-panel p:last-child{margin-bottom:0}
+.teach-label{font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:#6b778c;font-weight:780}
+.codebox{border:1px solid #dde4f0;border-radius:11px;overflow:hidden;background:#f3f6fb;margin:17px 0}
+.code-head{padding:9px 14px;border-bottom:1px solid #e1e6ee;display:flex;justify-content:space-between;align-items:center;gap:10px;color:#708098;font-size:11px;font-weight:750;letter-spacing:.035em;text-transform:uppercase}
+.copy{background:#fff;border:1px solid #d9e0eb;color:#3d557e;border-radius:6px;font-size:11px;letter-spacing:0;text-transform:none;font-weight:680;padding:4px 9px;white-space:nowrap}
+.copy:hover{background:#e9effb}
+pre{font-size:13.5px;color:#263e66;line-height:1.75;margin:0;padding:16px 17px;overflow-x:auto;white-space:pre}
+.table-wrap{border:1px solid var(--line);border-radius:11px;overflow-x:auto;margin:20px 0;background:#fff}
+table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:420px}
+th,td{padding:12px 17px;text-align:left;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+th{background:#f7f9fc;font-size:12px;color:#5f6b7d;font-weight:740}
+tr:last-child td{border-bottom:0}
+td code{background:transparent}
+.true,.false{display:inline-block;border-radius:5px;font-weight:750;font-size:11px;letter-spacing:.02em;padding:3px 8px}
+.true{color:var(--ok);background:var(--ok-soft)}
+.false{color:var(--bad);background:var(--bad-soft)}
+.note{display:flex;gap:13px;align-items:flex-start;background:#f0f4fb;border:1px solid #e2e9f7;border-radius:11px;margin-top:22px;padding:15px 18px}
+.note .symbol{font-size:14px;color:var(--accent);font-weight:900;line-height:1.6}
+.note p{margin:0;color:#465a79}
+.steps{display:grid;gap:12px;margin:18px 0}
+.step{display:flex;gap:13px;align-items:flex-start}
+.step b{display:grid;place-items:center;flex:0 0 27px;height:27px;background:#edf1f7;color:#536a92;border-radius:8px;font-size:12px}
+.step span{padding-top:1px;color:#56657a}
+.caution{background:#fcfaf4;border:1px solid #efe8d7;border-radius:12px;padding:18px 22px;margin-top:22px;color:#605b4e}
+.caution strong{color:#68522a}
+ul,ol{padding-left:21px;color:#556378}
+li{margin:9px 0;padding-left:4px}
+.questions{margin-top:18px;counter-reset:q}
+.questions li{padding:5px 0}
+details{border:1px solid var(--line);border-radius:10px;padding:13px 17px;background:#fff;margin-top:18px}
+summary{font-weight:700;cursor:pointer;color:#445a7d}
+details ol{margin-bottom:2px}
+.footer{padding-top:34px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.footer .muted{font-size:12px;color:#7d899b}
+.button{display:inline-flex;align-items:center;gap:8px;justify-content:center;padding:12px 18px;font-size:13px;font-weight:750;border-radius:9px;background:var(--accent);color:white;border:1px solid var(--accent)}
+.button:hover{background:#2648a8}
+.button-secondary{background:#fff;color:#526278;border-color:#dbe1eb}
+.button-secondary:hover{background:#f0f3f9}
+@media(max-width:960px){.layout{gap:28px;grid-template-columns:175px minmax(0,1fr);padding:0 22px}.main{padding-top:30px}.sidebar{padding-top:26px}.nav a{padding:8px 6px}}
+@media(max-width:700px){.layout{display:block;padding:0 18px}.sidebar{height:auto;position:relative;gap:15px;padding:17px 0 10px;border-bottom:1px solid var(--line)}.side-caption,.side-end{display:none}.nav{display:flex;overflow-x:auto;gap:4px;scrollbar-width:thin;padding-bottom:5px}.nav a{white-space:nowrap;padding:9px 11px;border:1px solid var(--line);background:#fff}.main{padding-top:22px}.hero{padding:18px 0 30px}.facts{grid-template-columns:1fr;gap:8px;margin-top:24px}.fact{padding:12px 15px}.lesson-section{padding:32px 0}.subtitle{font-size:16px}.footer{align-items:stretch}.button{width:100%}}
+@media print{body{background:#fff}.layout{max-width:none;display:block;padding:0 10mm}.sidebar,.progress,.skip,.copy,.footer button{display:none!important}.main{padding:0}.hero{padding:12px 0 20px}.hero h1{font-size:34px}.lesson-section{padding:16px 0;break-inside:avoid}.codebox,.soft-panel,.note,.fact,.table-wrap{break-inside:avoid}.facts{grid-template-columns:repeat(3,1fr)}.footer{padding-top:10px}.button{color:#000;background:transparent;border:0;padding:0}.breadcrumb{margin:0}}
+</style>
+</head>
+<body>
+<div class="progress" id="progress" aria-hidden="true"></div>
+<a class="skip" href="#turinys">Pereiti prie turinio</a>
+<div class="layout">
+<aside class="sidebar" aria-label="Pamokos navigacija">
+  <div class="brand"><span class="mark">N</span><span>NGG INFORMATIKA</span></div>
+  <div>
+    <div class="side-caption">Šios pamokos turinys</div>
+    <nav class="nav" aria-label="Skyriai">
+      <a href="#ivadas"><span class="number">01</span> Pagrindai</a>
+      <a href="#and"><span class="number">02</span> AND funkcija</a>
+      <a href="#or"><span class="number">03</span> OR funkcija</a>
+      <a href="#not"><span class="number">04</span> NOT funkcija</a>
+      <a href="#palyginimas"><span class="number">05</span> Palyginimas</a>
+      <a href="#deriniai"><span class="number">06</span> Sudėtinės sąlygos</a>
+      <a href="#klaidos"><span class="number">07</span> Dažnos klaidos</a>
+      <a href="#pasitikrink"><span class="number">08</span> Pasitikrink</a>
+    </nav>
+  </div>
+  <div class="side-end">11 klasė · Skaičiuoklės<br>Teorinė medžiaga savarankiškam mokymuisi</div>
+</aside>
+<main class="main" id="turinys">
+  <div class="breadcrumb"><span>Informatika</span><span class="crumb-dot">/</span><span>Duomenų vizualizavimas</span><span class="crumb-dot">/</span><strong>Teorija</strong></div>
+  <header class="hero">
+    <div class="eyebrow"><span class="pill">TEORIJA</span><span class="pill neutral">11 KLASĖ</span><span class="pill neutral">2 PAMOKOS</span></div>
+    <h1>Loginės funkcijos<br><span class="highlight">AND, OR, NOT</span></h1>
+    <p class="subtitle">Išmok tikrinti kelias sąlygas vienoje formulėje ir pritaikyk logines funkcijas kartu su IF.</p>
+    <div class="facts" aria-label="Funkcijų santrauka">
+      <div class="fact"><strong>AND</strong><small>Teisingos visos sąlygos</small></div>
+      <div class="fact"><strong>OR</strong><small>Teisinga bent viena sąlyga</small></div>
+      <div class="fact"><strong>NOT</strong><small>Priešingas rezultatas</small></div>
+    </div>
+  </header>
+
+  <section class="lesson-section" id="ivadas">
+    <div class="section-label">01 / Pagrindai</div>
+    <h2>Kas yra loginės funkcijos?</h2>
+    <p class="lead">Iki šiol naudodamas <code>IF</code> tikrinai vieną sąlygą. Funkcijos AND, OR ir NOT leidžia kelias sąlygas sujungti į vieną loginę išraišką.</p>
+    <div class="soft-panel">
+      <div class="teach-label">Du galimi loginiai rezultatai</div>
+      <p><span class="true">TRUE</span> – sąlyga teisinga.</p>
+      <p><span class="false">FALSE</span> – sąlyga klaidinga.</p>
+      <p>Naudodami <code>IF</code>, vietoje TRUE ir FALSE galime pateikti mokiniui suprantamus tekstus: „Pateko“, „Nepateko“ ir pan.</p>
+    </div>
+    <div class="note"><span class="symbol">i</span><p><strong>Prisimink:</strong> „bent 8“ reiškia <code>&gt;=8</code>, o „daugiau už 8“ – <code>&gt;8</code>. Skirtumas svarbus rašant sąlygas.</p></div>
+  </section>
+
+  <section class="lesson-section" id="and">
+    <div class="section-label">02 / Loginė IR</div>
+    <h2>AND – turi būti teisingos visos sąlygos</h2>
+    <p>Funkcija <strong>AND</strong> grąžina TRUE tik tada, kai <strong>visos</strong> tikrinamos sąlygos yra teisingos. Jei bent viena sąlyga klaidinga, rezultatas FALSE.</p>
+    <div class="codebox"><div class="code-head"><span>Funkcijos sintaksė</span><button class="copy" type="button">Kopijuoti</button></div><pre><code>=AND(sąlyga1;sąlyga2;...)</code></pre></div>
+    <h3>Pavyzdys: patekimas į kitą etapą</h3>
+    <p>Mokinys patenka į kitą etapą, jei <strong>visi trys pažymiai yra ne mažesni nei 8</strong>. Pažymiai surašyti į B2, C2 ir D2.</p>
+    <div class="codebox"><div class="code-head"><span>AND su IF</span><button class="copy" type="button">Kopijuoti</button></div><pre><code>=IF(AND(B2&gt;=8;C2&gt;=8;D2&gt;=8);"Pateko";"Nepateko")</code></pre></div>
+    <div class="table-wrap"><table><thead><tr><th>B2</th><th>C2</th><th>D2</th><th>AND rezultatas</th></tr></thead><tbody>
+      <tr><td>9</td><td>8</td><td>10</td><td><span class="true">TRUE</span></td></tr>
+      <tr><td>9</td><td>7</td><td>10</td><td><span class="false">FALSE</span></td></tr>
+    </tbody></table></div>
+    <p class="muted">Antrame pavyzdyje viena sąlyga neteisinga (7 nėra ≥ 8), todėl galutinis rezultatas FALSE.</p>
+  </section>
+
+  <section class="lesson-section" id="or">
+    <div class="section-label">03 / Loginė ARBA</div>
+    <h2>OR – pakanka vienos teisingos sąlygos</h2>
+    <p>Funkcija <strong>OR</strong> grąžina TRUE, jeigu <strong>bent viena</strong> sąlyga yra teisinga. FALSE gaunama tik tada, kai klaidingos visos sąlygos.</p>
+    <div class="codebox"><div class="code-head"><span>Funkcijos sintaksė</span><button class="copy" type="button">Kopijuoti</button></div><pre><code>=OR(sąlyga1;sąlyga2;...)</code></pre></div>
+    <h3>Pavyzdys: konsultacijų poreikis</h3>
+    <p>Konsultacijos reikalingos, jei <strong>bent vienas iš trijų pažymių mažesnis už 7</strong>.</p>
+    <div class="codebox"><div class="code-head"><span>OR su IF</span><button class="copy" type="button">Kopijuoti</button></div><pre><code>=IF(OR(B2&lt;7;C2&lt;7;D2&lt;7);"Reikia";"Nereikia")</code></pre></div>
+    <div class="table-wrap"><table><thead><tr><th>B2</th><th>C2</th><th>D2</th><th>OR rezultatas</th></tr></thead><tbody>
+      <tr><td>8</td><td>9</td><td>10</td><td><span class="false">FALSE</span></td></tr>
+      <tr><td>6</td><td>9</td><td>10</td><td><span class="true">TRUE</span></td></tr>
+    </tbody></table></div>
+  </section>
+
+  <section class="lesson-section" id="not">
+    <div class="section-label">04 / Loginė NE</div>
+    <h2>NOT – pakeičia rezultatą priešingu</h2>
+    <p>Funkcija <strong>NOT</strong> grąžina FALSE, jei jos argumentas TRUE, ir TRUE, jei argumentas FALSE. Ji tikrina <strong>vieną loginę išraišką</strong>.</p>
+    <div class="codebox"><div class="code-head"><span>Funkcijos sintaksė</span><button class="copy" type="button">Kopijuoti</button></div><pre><code>=NOT(sąlyga)</code></pre></div>
+    <div class="table-wrap"><table><thead><tr><th>Formulė</th><th>Pradinė sąlyga</th><th>NOT rezultatas</th></tr></thead><tbody>
+      <tr><td><code>=NOT(8&gt;10)</code></td><td><span class="false">FALSE</span></td><td><span class="true">TRUE</span></td></tr>
+      <tr><td><code>=NOT(8=8)</code></td><td><span class="true">TRUE</span></td><td><span class="false">FALSE</span></td></tr>
+    </tbody></table></div>
+    <h3>Pavyzdys: nėra neigiamų pažymių</h3>
+    <p>Šioje užduotyje neigiamas pažymys laikomas mažesniu nei 4. Norime nustatyti, ar <strong>nė vienas</strong> iš trijų pažymių nėra neigiamas.</p>
+    <div class="codebox"><div class="code-head"><span>NOT, OR ir IF</span><button class="copy" type="button">Kopijuoti</button></div><pre><code>=IF(NOT(OR(B2&lt;4;C2&lt;4;D2&lt;4));"Nėra neigiamų";"Yra neigiamas")</code></pre></div>
+    <p>Pirmiausia OR patikrina, ar bent vienas pažymys mažesnis už 4, o NOT apverčia gautą rezultatą.</p>
+  </section>
+
+  <section class="lesson-section" id="palyginimas">
+    <div class="section-label">05 / Palyginimas</div>
+    <h2>AND ir OR tiesos lentelė</h2>
+    <p>Tas pačias dvi sąlygas AND ir OR įvertina skirtingai. Palygink visus galimus atvejus.</p>
+    <div class="table-wrap"><table><thead><tr><th>1 sąlyga</th><th>2 sąlyga</th><th>AND</th><th>OR</th></tr></thead><tbody>
+      <tr><td><span class="true">TRUE</span></td><td><span class="true">TRUE</span></td><td><span class="true">TRUE</span></td><td><span class="true">TRUE</span></td></tr>
+      <tr><td><span class="true">TRUE</span></td><td><span class="false">FALSE</span></td><td><span class="false">FALSE</span></td><td><span class="true">TRUE</span></td></tr>
+      <tr><td><span class="false">FALSE</span></td><td><span class="true">TRUE</span></td><td><span class="false">FALSE</span></td><td><span class="true">TRUE</span></td></tr>
+      <tr><td><span class="false">FALSE</span></td><td><span class="false">FALSE</span></td><td><span class="false">FALSE</span></td><td><span class="false">FALSE</span></td></tr>
+    </tbody></table></div>
+    <div class="note"><span class="symbol">✓</span><p><strong>Atmintinė:</strong> AND – „visos sąlygos“; OR – „bent viena“; NOT – „priešingai“.</p></div>
+  </section>
+
+  <section class="lesson-section" id="deriniai">
+    <div class="section-label">06 / Sudėtinės sąlygos</div>
+    <h2>Kaip jungti kelias funkcijas?</h2>
+    <p>Apdovanojimas skiriamas tik tada, jei <strong>visi trys pažymiai ne mažesni nei 8</strong> ir <strong>bent vienas pažymys lygus 10</strong>.</p>
+    <div class="codebox"><div class="code-head"><span>IF + AND + OR</span><button class="copy" type="button">Kopijuoti</button></div><pre><code>=IF(AND(B2&gt;=8;C2&gt;=8;D2&gt;=8;OR(B2=10;C2=10;D2=10));"Apdovanojimas";"Neskiriama")</code></pre></div>
+    <div class="steps">
+      <div class="step"><b>1</b><span><strong>OR</strong> patikrina, ar yra bent vienas pažymys 10.</span></div>
+      <div class="step"><b>2</b><span><strong>AND</strong> įvertina visų trijų pažymių ribas ir OR rezultatą.</span></div>
+      <div class="step"><b>3</b><span><strong>IF</strong> pagal gautą TRUE/FALSE išveda reikiamą tekstą.</span></div>
+    </div>
+    <div class="note"><span class="symbol">i</span><p>Patikrink su pavyzdžiais: <strong>9, 8, 10</strong> → „Apdovanojimas“, o <strong>9, 7, 10</strong> → „Neskiriama“.</p></div>
+  </section>
+
+  <section class="lesson-section" id="klaidos">
+    <div class="section-label">07 / Atkreipk dėmesį</div>
+    <h2>Dažniausios klaidos</h2>
+    <ol>
+      <li>Parenkama <strong>AND vietoje OR</strong>, nors sąlygoje parašyta „bent vienas“.</li>
+      <li>Painiojami ženklai: <code>&gt;=8</code> reiškia „bent 8“, o <code>&gt;8</code> – „daugiau nei 8“.</li>
+      <li>Pamirštami uždaromieji skliaustai jungiant kelias funkcijas.</li>
+      <li>Naudojamas netinkamas argumentų skirtukas. Pavyzdžiuose naudojamas <code>;</code>; pagal kompiuterio nustatymus gali reikėti <code>,</code>.</li>
+      <li>Tekstas rašomas be kabučių: teisinga <code>"Pateko"</code>, ne <code>Pateko</code>.</li>
+      <li>Pamirštama, kad <code>NOT(OR(...))</code> pakeičia OR rezultatą priešingu.</li>
+    </ol>
+    <div class="caution"><strong>Praktinis patarimas.</strong> Pirma aiškiai užrašyk sąlygą žodžiais, tada sukurk formulę ir būtinai patikrink bent du skirtingus duomenų atvejus.</div>
+  </section>
+
+  <section class="lesson-section" id="pasitikrink">
+    <div class="section-label">08 / Savikontrolė</div>
+    <h2>Pasitikrink, ar supratai</h2>
+    <ol class="questions">
+      <li>Ar <code>=AND(8&gt;5;2=3)</code> grąžina TRUE?</li>
+      <li>Ar <code>=OR(8&gt;5;2=3)</code> grąžina TRUE?</li>
+      <li>Ar <code>=NOT(5&lt;2)</code> grąžina TRUE?</li>
+      <li>Kurią funkciją rinktumeisi, jeigu reikia įvykdyti visas tris sąlygas?</li>
+      <li>Kurią funkciją rinktumeisi, jeigu pakanka vienos tinkamos sąlygos?</li>
+    </ol>
+    <details><summary>Rodyti teisingus atsakymus</summary><ol><li>FALSE</li><li>TRUE</li><li>TRUE</li><li>AND</li><li>OR</li></ol></details>
+  </section>
+
+  <footer class="footer">
+    <span class="muted">11 klasė · NGG Informatika · AND, OR, NOT</span>
+    <div style="display:flex;gap:9px;flex-wrap:wrap">
+      <button type="button" class="button button-secondary" onclick="window.print()">Spausdinti</button>
+      <a href="and-or-not-uzduotys.html" class="button">Praktinės užduotys <span aria-hidden="true">→</span></a>
+    </div>
+  </footer>
+</main>
+</div>
+<script>
+(function(){
+ const nav=Array.from(document.querySelectorAll('.nav a'));
+ const sections=nav.map(a=>document.querySelector(a.getAttribute('href'))).filter(Boolean);
+ const progress=document.getElementById('progress');
+ let ticking=false;
+ const update=()=>{
+  const max=document.documentElement.scrollHeight-window.innerHeight;
+  progress.style.width=(max>0?Math.min(100,Math.max(0,window.scrollY/max*100)):0)+'%';
+  const threshold=window.innerHeight*.22;
+  let active=sections[0];
+  for(const section of sections)if(section.getBoundingClientRect().top<=threshold)active=section;
+  nav.forEach(link=>{const on=link.getAttribute('href')==='#'+active.id;link.classList.toggle('active',on);if(on)link.setAttribute('aria-current','location');else link.removeAttribute('aria-current')});
+  ticking=false;
+ };
+ window.addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(update)}},{passive:true});
+ window.addEventListener('resize',update);
+ update();
+ document.querySelectorAll('.copy').forEach(button=>{
+  button.addEventListener('click',async()=>{
+   const code=button.closest('.codebox').querySelector('pre code').textContent;
+   try{await navigator.clipboard.writeText(code);button.textContent='Nukopijuota';setTimeout(()=>button.textContent='Kopijuoti',1400)}
+   catch(err){button.textContent='Pažymėk formulę';setTimeout(()=>button.textContent='Kopijuoti',1800)}
+  });
+ });
+})();
+</script>
+</body>
+</html>
