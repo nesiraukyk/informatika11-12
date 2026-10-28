@@ -2032,14 +2032,58 @@ function resourceUploadModal(c,presetTopicId=null){
  <label>Failas<input class="fileInput" type="file" id="resourceFile" required></label>
  <button class="primary" type="submit" style="margin-top:14px">Įkelti</button></form>`);
  $('resourceForm').onsubmit=async e=>{
-  e.preventDefault();const f=$('resourceFile').files[0];if(!f)return;
-  const topic=$('resourceTopic').value,path=`${c.id}/${topic}/${storageFileName(f.name)}`;
-  toast('Įkeliamas failas...');
-  const {error:upErr}=await sb.storage.from('teacher-resources').upload(path,f,storageUploadOptions(f));
-  if(upErr)return toast(upErr.message);
-  const {error}=await sb.from('learning_resources').insert({class_id:c.id,topic_id:topic,title:$('resourceTitle').value.trim(),storage_path:path,original_name:f.name,mime_type:uploadContentType(f),size_bytes:f.size,uploaded_by:me.id});
-  if(error){await sb.storage.from('teacher-resources').remove([path]);return toast(error.message)}
-  closeModal();toast('Failas įkeltas.');renderTeacherResources(c);
+  e.preventDefault();
+  const form=$('resourceForm'),button=form?.querySelector('button[type="submit"]');
+  if(!form||form.dataset.uploading==='true')return;
+  const file=$('resourceFile').files[0];if(!file)return toast('Pasirink failą.');
+  const topic=$('resourceTopic').value,title=$('resourceTitle').value.trim();
+  form.dataset.uploading='true';
+  if(button){button.disabled=true;button.textContent='Tikrinama...';}
+  const setStatus=(message,isError=false)=>{
+   let line=$('resourceUploadStatus');
+   if(!line){line=document.createElement('p');line.id='resourceUploadStatus';line.setAttribute('role','status');form.appendChild(line);}
+   line.textContent=message;line.style.color=isError?'#b91c1c':'#475569';
+  };
+  let path='',uploaded=false;
+  try{
+   const {data:duplicates,error:checkError}=await sb.from('learning_resources')
+    .select('id,storage_path').eq('class_id',c.id).eq('topic_id',topic)
+    .eq('original_name',file.name).eq('size_bytes',file.size).limit(1);
+   if(checkError)throw checkError;
+   if(duplicates?.length){
+    setStatus('Šis failas jau įkeltas į pasirinktą temą. Patikrink mokymosi failų sąrašą.',true);
+    toast('Failas jau įkeltas – papildomos kopijos nekuriu.');
+    return;
+   }
+   path=`${c.id}/${topic}/${storageFileName(file.name)}`;
+   if(button)button.textContent='Įkeliamas...';
+   setStatus('Failas siunčiamas į saugyklą. Mygtuko daugiau nespausk.');
+   const {error:upErr}=await sb.storage.from('teacher-resources').upload(path,file,storageUploadOptions(file));
+   if(upErr)throw upErr;
+   uploaded=true;
+   setStatus('Failas nusiųstas. Išsaugomas įrašas mokiniams...');
+   const {error:saveErr}=await sb.from('learning_resources').insert({
+    class_id:c.id,topic_id:topic,title,storage_path:path,original_name:file.name,
+    mime_type:uploadContentType(file),size_bytes:file.size,uploaded_by:me.id
+   });
+   if(saveErr){
+    const {error:cleanupErr}=await sb.storage.from('teacher-resources').remove([path]);
+    if(cleanupErr)console.warn('Nepavyko išvalyti nepavykusio įkėlimo:',cleanupErr);
+    uploaded=false;
+    throw saveErr;
+   }
+   closeModal();
+   toast('Failas sėkmingai įkeltas mokiniams.');
+   await renderTeacherResources(c);
+  }catch(err){
+   const message=err?.message||'Nežinoma įkėlimo klaida.';
+   setStatus('Nepavyko įkelti: '+message,true);
+   toast('Įkėlimo klaida: '+message);
+   console.error('Mokymosi failo įkėlimo klaida:',err);
+  }finally{
+   form.dataset.uploading='false';
+   if(button){button.disabled=false;button.textContent='Įkelti';}
+  }
  };
 }
 async function downloadResource(id){
