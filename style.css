@@ -1215,3 +1215,15 @@ main.wrap.authWide{max-width:none;width:100%;padding-inline:0}
 .cl-launch-card .cl-launch-cta:focus-visible{outline:3px solid var(--p);outline-offset:3px}
 .cl-launch-card .cl-launch-cta span{font-size:17px;line-height:1}
 @media(max-width:560px){.cl-launch-card{padding:17px;border-radius:16px}.cl-launch-card .cl-launch-cta{width:100%;justify-content:space-between}}
+
+
+/* VBE teorijos mokomosios simuliacijos vaizdinės užduotys */
+.examMiniDiagram{display:grid;justify-items:center;gap:9px;margin:16px auto;padding:15px;background:#f7f9fe;border:1px solid #dce4f5;border-radius:12px;max-width:380px}
+.examMiniDiagram>span,.examMiniDiagram>div span{display:inline-block;border:1.5px solid #5872bd;background:#fff;border-radius:8px;padding:8px 15px}
+.examMiniDiagram>div{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.examMiniDiagram>b{color:#4c64a0}
+.examVisualTable{border-collapse:collapse;max-width:300px;margin:16px auto;width:100%}
+.examVisualTable th,.examVisualTable td{border:1px solid #aebbd3;padding:7px 20px;text-align:center}
+.examVisualTable th{background:#eef2fa}
+.examMiniChart{height:160px;max-width:360px;margin:16px auto 6px;display:flex;align-items:end;justify-content:space-around;gap:12px;padding:15px;border-left:2px solid #6d7892;border-bottom:2px solid #6d7892;background:repeating-linear-gradient(to top,#e3e8f3 0 1px,transparent 1px 38px)}
+.examMiniChart>div{background:#5677ce;flex:1;max-width:58px;border-radius:4px 4px 0 0}
