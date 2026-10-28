@@ -1242,3 +1242,5 @@ main.wrap.authWide{max-width:none;width:100%;padding-inline:0}
 .resourceDraggable .learningFileRow{flex:1;min-width:0;margin:0}
 .resourceDraggable>.smallBtn{white-space:nowrap;flex-shrink:0}
 @media(max-width:600px){.resourceFolderGrid{grid-template-columns:1fr}.resourceDraggable{flex-wrap:wrap}}
+
+.studentResourceFolders{display:grid;gap:12px}.studentResourceFolder{width:100%}.studentUngroupedFiles>h4{margin:12px 0 8px}
