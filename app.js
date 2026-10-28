@@ -2170,7 +2170,7 @@ async function downloadResource(id,kind='task'){
  const theory=r.resource_kind==='theory';
  try{
   if(r.site_file_path){
-   if(!/^learning-materials\\/[A-Za-z0-9_./-]+$/.test(r.site_file_path))throw new Error('Netinkama failo nuoroda');
+   if(!r.site_file_path.startsWith('learning-materials/')||r.site_file_path.includes('..')||!r.site_file_path.split('/').every(p=>/^[A-Za-z0-9_.-]+$/.test(p)))throw new Error('Netinkama failo nuoroda');
    const url=new URL(r.site_file_path,location.origin);
    if(theory){
     if(tab)tab.location.replace(url.href);else window.open(url.href,'_blank','noopener');
