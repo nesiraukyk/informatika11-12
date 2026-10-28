@@ -1974,13 +1974,14 @@ function learningFileRow(r,mode='student'){
  const key=mode==='teacher'?'data-download-resource':mode==='preview'?'data-preview-resource':'data-sresource';
  const isTheory=r.resource_kind==='theory';
  const typeLabel=isTheory?'Teorija':'Užduotys';
- const fileActionLabel=isTheory?'Atidaryti naujame skirtuke':'Atsisiųsti';
+ const browserPreview=isTheory||String(r.site_file_path||'').endsWith('.html');
+ const fileActionLabel=browserPreview?'Atidaryti naujame skirtuke':'Atsisiųsti';
  const actionIcon=isTheory?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M13 5h6v6m0-6-9 9"/><path d="M19 13v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h6"/></svg>':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12m-4-4 4 4 4-4M4 19.5h16"/></svg>';
  const removeIcon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5h6v2m-9 0 .7 12h10.6L18 7M10 10.5v5M14 10.5v5"/></svg>';
  return `<div class="resourceRow resourceDownloadCard learningFileRow ${isTheory?'learningTheoryFile':'learningTaskFile'}">
   <span class="resourceFileGlyph" aria-hidden="true">${isTheory?'📖':'📄'}</span>
   <div class="grow"><b title="${name}">${name}</b> <span class="learningFileKind ${isTheory?'kindTheory':'kindTask'}">${typeLabel}</span><div class="subtle" title="${original}">${original}</div></div>
-  <div class="learningFileActions"><button type="button" class="smallBtn resourceDownloadAction" ${key}="${id}" data-resource-kind="${isTheory?'theory':'task'}" aria-label="${fileActionLabel}: ${name}" title="${fileActionLabel}">${actionIcon}</button>
+  <div class="learningFileActions"><button type="button" class="smallBtn resourceDownloadAction" ${key}="${id}" data-resource-kind="${browserPreview?'preview':'task'}" aria-label="${fileActionLabel}: ${name}" title="${fileActionLabel}">${actionIcon}</button>
   ${mode==='teacher'?`<button type="button" class="smallBtn learningFileDelete" data-delete-resource="${id}" aria-label="Ištrinti failą: ${name}" title="Ištrinti">${removeIcon}</button>`:''}</div>
  </div>`;
 }
@@ -2163,7 +2164,7 @@ async function resourceUploadModal(c,presetTopicId=null,presetFolderId=null){
 
 async function downloadResource(id,kind='task'){
  // Atidarome skirtuką sinchroniškai, kad naršyklė jo neužblokuotų po asinchroninio kreipinio.
- const tab=kind==='theory'?window.open('about:blank','_blank'):null;
+ const tab=(kind==='theory'||kind==='preview')?window.open('about:blank','_blank'):null;
  if(tab)tab.opener=null;
  const {data:r,error}=await sb.from('learning_resources').select('*').eq('id',id).single();
  if(error||!r){if(tab)tab.close();return toast('Failo nepavyko atidaryti: '+(error?.message||'Nerastas'));}
@@ -2172,7 +2173,7 @@ async function downloadResource(id,kind='task'){
   if(r.site_file_path){
    if(!r.site_file_path.startsWith('learning-materials/')||r.site_file_path.includes('..')||!r.site_file_path.split('/').every(p=>/^[A-Za-z0-9_.-]+$/.test(p)))throw new Error('Netinkama failo nuoroda');
    const url=new URL(r.site_file_path,location.origin);
-   if(theory){
+   if(theory||r.site_file_path.endsWith('.html')){
     if(tab)tab.location.replace(url.href);else window.open(url.href,'_blank','noopener');
    }else{
     const res=await fetch(url.href);
