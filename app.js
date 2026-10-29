@@ -1977,12 +1977,11 @@ function learningFileRow(r,mode='student'){
  const browserPreview=isTheory||String(r.site_file_path||'').endsWith('.html');
  const fileActionLabel=browserPreview?'Atidaryti naujame skirtuke':'Atsisiųsti';
  const actionIcon=isTheory?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M13 5h6v6m0-6-9 9"/><path d="M19 13v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h6"/></svg>':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12m-4-4 4 4 4-4M4 19.5h16"/></svg>';
- const removeIcon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5h6v2m-9 0 .7 12h10.6L18 7M10 10.5v5M14 10.5v5"/></svg>';
  return `<div class="resourceRow resourceDownloadCard learningFileRow ${isTheory?'learningTheoryFile':'learningTaskFile'}">
   <span class="resourceFileGlyph" aria-hidden="true">${isTheory?'📖':'📄'}</span>
   <div class="grow"><b title="${name}">${name}</b> <span class="learningFileKind ${isTheory?'kindTheory':'kindTask'}">${typeLabel}</span><div class="subtle" title="${original}">${original}</div></div>
   <div class="learningFileActions"><button type="button" class="smallBtn resourceDownloadAction" ${key}="${id}" data-resource-kind="${browserPreview?'preview':'task'}" aria-label="${fileActionLabel}: ${name}" title="${fileActionLabel}">${actionIcon}</button>
-  ${mode==='teacher'?`<button type="button" class="smallBtn learningFileDelete" data-delete-resource="${id}" aria-label="Ištrinti failą: ${name}" title="Ištrinti">${removeIcon}</button>`:''}</div>
+  </div>
  </div>`;
 }
 
@@ -2049,9 +2048,18 @@ async function renderTeacherResources(c){
 
 function teacherFolderFileRow(r){
  const html=learningFileRow(r,'teacher');
+ const id=esc(r.id);
  const nextKind=r.resource_kind==='theory'?'task':'theory';
  const nextTitle=nextKind==='theory'?'Pažymėti kaip teoriją':'Pažymėti kaip užduotis';
- return '<div draggable="true" data-resource-drag="'+esc(r.id)+'" class="resourceDraggable">'+html+'<button type="button" class="smallBtn" data-change-resource-kind="'+esc(r.id)+'" data-new-kind="'+nextKind+'" title="'+nextTitle+'">Tipas</button><button type="button" class="smallBtn" data-move-resource="'+esc(r.id)+'">Perkelti</button></div>';
+ return `<div class="resourceDraggable">
+  ${html}
+  <div class="resourceManageBar">
+   <button type="button" class="smallBtn resourceDragHandle" draggable="true" data-resource-drag="${id}" title="Nutempti į kitą aplanką" aria-label="Nutempti failą">↕</button>
+   <button type="button" class="smallBtn" data-change-resource-kind="${id}" data-new-kind="${nextKind}" title="${nextTitle}">Tipas</button>
+   <button type="button" class="smallBtn" data-move-resource="${id}">Perkelti</button>
+   <button type="button" class="smallBtn resourceRemoveButton" data-delete-resource="${id}" aria-label="Ištrinti failą" title="Visam laikui pašalinti šį mokymosi failą">Ištrinti</button>
+  </div>
+ </div>`;
 }
 async function changeResourceKind(c,id,kind){
  if(!['theory','task'].includes(kind))return;
@@ -2197,18 +2205,32 @@ async function downloadResource(id,kind='task'){
  }
 }
 async function deleteResource(id,c){
- if(!confirm('Ištrinti failą?'))return;
- const {data:r,error}=await sb.from('learning_resources').select('*').eq('id',id).single();
- if(error||!r)return toast(error?.message||'Failas nerastas');
- if(!r.site_file_path){
-  const {error:storageErr}=await sb.storage.from('teacher-resources').remove([r.storage_path]);
-  if(storageErr)return toast('Saugyklos klaida: '+storageErr.message);
+ if(!confirm('Ar tikrai ištrinti šį mokymosi failą? Jis nebebus pasiekiamas mokiniams.'))return;
+ const {data:r,error}=await sb.from('learning_resources')
+  .select('id,class_id,topic_id,title,storage_path,site_file_path')
+  .eq('id',id).eq('class_id',c.id).maybeSingle();
+ if(error||!r)return toast('Nepavyko rasti failo: '+(error?.message||'Failas neberastas'));
+ const buttons=[...document.querySelectorAll('[data-delete-resource]')].filter(b=>b.dataset.deleteResource===id);
+ buttons.forEach(b=>{b.disabled=true;b.textContent='Trinama...';});
+ try{
+  // Vietinių failų saugyklą pašaliname prieš ištrinant DB įrašą, kad
+  // nesėkmingo ištrynimo atveju mokytojas galėtų veiksmą pakartoti.
+  // GitHub svetainės nuorodos ištrinamos tik iš šios klasės mokomosios medžiagos.
+  if(!r.site_file_path&&r.storage_path){
+   const {error:storageErr}=await sb.storage.from('teacher-resources').remove([r.storage_path]);
+   if(storageErr)return toast('Failo pašalinti iš saugyklos nepavyko: '+storageErr.message);
+  }
+  const {data:deleted,error:dbErr}=await sb.from('learning_resources')
+   .delete().eq('id',id).eq('class_id',c.id).select('id');
+  if(dbErr)return toast('Failo įrašo ištrinti nepavyko: '+dbErr.message);
+  if(!deleted?.length)return toast('Failas neištrintas. Patikrink mokytojo teises arba bandyk dar kartą.');
+  teacherExpandedTopics.resources.add(r.topic_id);
+  await renderTeacherResources(c);
+  toast('Mokymosi failas ištrintas.');
+ }finally{
+  buttons.forEach(b=>{if(b.isConnected){b.disabled=false;b.textContent='Ištrinti';}});
  }
- const {error:dbErr}=await sb.from('learning_resources').delete().eq('id',id);
- if(dbErr)return toast(dbErr.message);
- await renderTeacherResources(c);
 }
-
 // Mokytojo aplankai – tai tik DB susiejimai. Originalūs mokinių failai neliečiami.
 const teacherWorkFolderFilter={};
 async function renderTeacherAssignments(c){
