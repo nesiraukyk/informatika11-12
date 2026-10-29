@@ -1,67 +1,243 @@
-<!doctype html><html lang="lt"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Užduotys | Excel AND OR NOT · 11 kl.</title><style>
-:root{font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:#17243e}*{box-sizing:border-box}
-body{margin:0;background:#f4f6fa;line-height:1.62}main{max-width:950px;margin:32px auto 70px;padding:0 22px}
-.hero{background:linear-gradient(125deg,#14345b,#3655a6);padding:34px 40px;color:white;border-radius:24px}
-.hero h1{margin:6px 0;font-size:35px;line-height:1.2}.hero p{margin:8px 0}.kicker{letter-spacing:1.6px;text-transform:uppercase;font-weight:800;font-size:12px;color:#b7d4ff}
-section{margin-top:18px;background:#fff;padding:28px 34px;border:1px solid #e4e9f1;border-radius:18px;box-shadow:0 5px 18px #19345e0a}
-h2{font-size:21px;margin:0 0 12px;color:#173455}h3{font-size:17px;margin:24px 0 6px}p{margin:9px 0}
-table{width:100%;border-collapse:collapse;margin:14px 0}td,th{border:1px solid #d6deea;padding:9px 12px;text-align:left}th{background:#eaf0fa;color:#173455}
-code,pre{font-family:Consolas,monospace;font-size:14px}code{background:#edf3fc;padding:2px 5px;border-radius:5px;overflow-wrap:anywhere}
-pre{background:#edf3fc;padding:14px 18px;border-radius:10px;overflow:auto;color:#193458}
-.note{padding:14px 18px;background:#eef5ff;border-left:4px solid #4670d4;border-radius:8px}
-.warning{padding:14px 18px;background:#fffaec;border-left:4px solid #d89b33;border-radius:8px}
-.tag{display:inline-block;background:#e5edff;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:800;color:#2947a1}
-.cols{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.tile{padding:15px;border-radius:12px;background:#f0f4fb}.tile b{display:block;font-size:20px;color:#234e93}
-a.btn,button{display:inline-block;background:#3155ce;border:0;color:#fff;border-radius:9px;font:inherit;font-weight:700;padding:11px 20px;text-decoration:none;cursor:pointer}
-a.btn.alt{background:#eaf0fa;color:#294f96}.pill{display:inline-block;font-size:12px;font-weight:700;border-radius:16px;background:#dcf6e6;color:#207847;padding:3px 9px}
-small,.muted{color:#657288}li{margin:9px 0}.task{padding:14px 0;border-bottom:1px solid #e1e6ee}.blank{height:26px;border-bottom:1px dotted #98a6ba}
-.toolbar{display:flex;justify-content:space-between;flex-wrap:wrap;gap:9px;align-items:center;margin-top:16px}
-@media(max-width:680px){main{padding:0 12px}.hero{padding:25px}section{padding:21px}.cols{grid-template-columns:1fr}table{font-size:12px}td,th{padding:6px}}
-@media print{body{background:#fff}main{margin:0;max-width:none}.hero{background:#203f78!important;print-color-adjust:exact}.toolbar,.noprint{display:none!important}section{break-inside:avoid;box-shadow:none;border-color:#ddd;margin-top:12px;padding:16px}a{color:inherit;text-decoration:none}}
-</style></head><body><main>
-<header class="hero"><div class="kicker">11 KLASĖ · EXCEL · PRAKTIKOS UŽDUOTYS</div><h1>AND · OR · NOT</h1><p>2 pamokų ir savarankiško darbo rinkinys: 36 užduotys · IF, AND, OR, NOT, SUM, AVERAGE, MIN, MAX, COUNT</p><div class="toolbar"><span>Mokinio vardas, pavardė: ____________________</span><span>Klasė: __________</span></div></header>
-<section><h2>Kaip atlikti?</h2><p>Atidaryk priskirtą „Excel“ šabloną arba sukurk duomenų lentelę pagal žemiau pateiktus pavyzdžius. Šablone formulėms palikti tušti stulpeliai. Kiekvienoje užduotyje formulę rašyk pirmame duomenų eilutės langelyje ir nukopijuok žemyn.</p>
-<div class="note">Naudok <code>IF</code>, <code>AND</code>, <code>OR</code> ir <code>NOT</code>. 5–20 užduotys remiasi mokinių lentele, vėlesnės – papildomais duomenų lapais. Užduočių šablone pateiktų duomenų nekeisk.</div></section>
-<section><h2>1 dalis. Loginės išraiškos ir paprasta IF</h2><p class="muted">Pirma išmok atpažinti sąlygas ir parašyti trumpą formulę.</p><div class="task"><b>1 užduotis – Loginės reikšmės.</b> Įvesk atskirai <code>=AND(8&gt;5;10=10)</code>, <code>=AND(7&gt;10;5&lt;9)</code>, <code>=OR(3&gt;8;12&gt;5)</code>, <code>=OR(4=7;9&lt;3)</code> ir <code>=NOT(6&gt;10)</code>. Prie kiekvienos užrašyk, kodėl gaunama TRUE arba FALSE.</div>
-<div class="task"><b>2 užduotis – Skaičių ribos.</b> Kai A2 yra skaičius, sudaryk sąlygas: nuo 10 iki 20 <b>imtinai</b>; mažiau nei 10 <b>arba</b> daugiau nei 20; nėra 15. Pabandyk tas pačias ribas užrašyti su <code>AND</code>, <code>OR</code> ir <code>NOT</code>.</div>
-<div class="task"><b>3 užduotis – Paprasta IF.</b> Kai A2 yra įvertinimas, parašyk <code>IF</code>: jei A2 yra <b>ne mažiau kaip 5</b> → „Išlaikė“, kitu atveju → „Neišlaikė“. Patikrink įrašydamas 4, 5 ir 8.</div>
-<div class="task"><b>4 užduotis – IF + AND.</b> Kai B2 yra taškai, o C2 – lankomumas procentais, skirk „Pagyrimą“ tik jei taškai yra <b>bent 80</b> ir lankomumas <b>bent 90 %</b>. Kitu atveju išvesk „Neskiriama“.</div></section>
-<section><h2>2 dalis. Mokinių rezultatų lentelė</h2><p class="muted">Atverk lapą MOKINIAI arba pirmąjį CSV. Pradinius duomenis A:D palik, formules rašyk E:P ir kopijuok žemyn.</p><div class="task"><b>5 užduotis – SUM.</b> Stulpelyje <b>I2</b> suskaičiuok trijų darbų pažymių sumą, naudodamas <code>SUM</code>.</div>
-<div class="task"><b>6 užduotis – AVERAGE.</b> Stulpelyje <b>J2</b> apskaičiuok pažymių vidurkį (<code>AVERAGE</code>), parodyk du skaitmenis po kablelio.</div>
-<div class="task"><b>7 užduotis – MIN.</b> Stulpelyje <b>K2</b> rask mažiausią pažymį (<code>MIN</code>).</div>
-<div class="task"><b>8 užduotis – MAX.</b> Stulpelyje <b>L2</b> rask didžiausią pažymį (<code>MAX</code>).</div>
-<div class="task"><b>9 užduotis – COUNT.</b> Stulpelyje <b>M2</b> nustatyk, kiek pažymių įrašyta (<code>COUNT</code>).</div>
-<div class="task"><b>10 užduotis – Paprasta IF.</b> Stulpelyje <b>N2</b> įrašyk „Išlaikė“, jeigu vidurkis J2 <b>ne mažesnis kaip 5</b>; kitu atveju „Neišlaikė“.</div>
-<div class="task"><b>11 užduotis – Įdėtinė IF.</b> Stulpelyje <b>O2</b> išvesk „Puikiai“, kai J2 <b>bent 8</b>; „Patenkinamai“, kai J2 <b>bent 5</b>; priešingu atveju „Reikia pagalbos“.</div>
-<div class="task"><b>12 užduotis – COUNTIF.</b> Stulpelyje <b>P2</b> suskaičiuok, kiek pažymių iš B2:D2 yra <b>ne mažesni kaip 9</b> (<code>COUNTIF</code>).</div>
-<div class="task"><b>13 užduotis – AND + IF.</b> Stulpelyje <b>E2</b> išvesk „Pateko“, jei <b>visi trys pažymiai bent 8</b>, kitaip „Nepateko“.</div>
-<div class="task"><b>14 užduotis – OR + IF.</b> Stulpelyje <b>F2</b> išvesk „Reikia“, jei <b>bent vienas pažymys mažesnis už 7</b>, kitu atveju „Nereikia“.</div>
-<div class="task"><b>15 užduotis – NOT + OR + IF.</b> Stulpelyje <b>G2</b> išvesk „Nėra neigiamų“, jeigu <b>nė vienas pažymys mažesnis už 4</b>, kitu atveju „Yra neigiamas“. Naudok <code>NOT(OR(...))</code>.</div>
-<div class="task"><b>16 užduotis – AND + OR + IF.</b> Stulpelyje <b>H2</b> išvesk „Apdovanojimas“, jeigu <b>visi pažymiai bent 8</b> ir <b>bent vienas lygus 10</b>; kitu atveju „Neskiriama“.</div></section>
-<section><h2>3 dalis. Analizė ir duomenų tikrinimas</h2><p class="muted">Naudok jau užpildytą MOKINIAI lentelę (2–21 eilutės).</p><div class="task"><b>17 užduotis – COUNTIF – klasės rodiklis.</b> Laisvame langelyje suskaičiuok, kiek mokinių turi vidurkį <b>bent 8</b>. Naudok <code>COUNTIF</code> ir J2:J21.</div>
-<div class="task"><b>18 užduotis – AVERAGE ir MAX.</b> Apskaičiuok <b>visos klasės vidutinį pažymių vidurkį</b> ir <b>didžiausią</b> mokinio vidurkį naudodamas J2:J21.</div>
-<div class="task"><b>19 užduotis – Filtravimas ir rikiavimas.</b> Surikiuok mokinius pagal J stulpelį mažėjančiai, tada filtruok tik tuos, kurių J ≥ 8. Užrašyk jų skaičių.</div>
-<div class="task"><b>20 užduotis – Paaiškink logiką.</b> Rask mokinį, kuris turi <b>vidurkį ≥8</b>, tačiau <b>nepatenka</b> pagal 13 užduoties sąlygą. Paaiškink, kodėl vidurkio ir AND rezultatai skiriasi.</div></section>
-<section><h2>4 dalis. Kelionės – pagal metodinės priemonės užduoties idėją</h2><p class="muted">Lapas KELIONES. Patikrink metus, transportą ir biudžetą.</p><div class="task"><b>21 užduotis – IF + NOT + OR.</b> Langelyje <b>E2</b> grąžink „Tinka“, jeigu kelionė vyksta <b>ne žiemą</b> ir <b>ne lėktuvu</b>; kitaip „Netinka“. Privaloma panaudoti <code>IF</code>, <code>NOT</code> ir <code>OR</code>.</div>
-<div class="task"><b>22 užduotis – Kita loginė išraiška.</b> Tą pačią 21 užduoties taisyklę užrašyk su <code>IF</code> ir <code>AND</code>, be <code>NOT</code>; palygink abiejų formulių rezultatus.</div>
-<div class="task"><b>23 užduotis – COUNTIF.</b> Suskaičiuok, kiek kelionių yra „Tinka“, naudodamas <code>COUNTIF</code> ir E2:E13.</div>
-<div class="task"><b>24 užduotis – IF + AND + kaina.</b> Stulpelyje <b>F2</b> išvesk „Į biudžetą“, jeigu kelionė E2 yra „Tinka“ ir kaina D2 yra <b>ne didesnė kaip 250 €</b>; kitu atveju „Neį biudžetą“.</div></section>
-<section><h2>5 dalis. Prekybos centro nuolaidos</h2><p class="muted">Lapas NUOLAIDOS. Vadovėlio situacija pritaikyta eurams, ribos nurodytos užduotyje.</p><div class="task"><b>25 užduotis – SUM.</b> Lapo NUOLAIDOS stulpelyje <b>E2</b> suskaičiuok pirkėjo dviejų mėnesių išlaidų sumą.</div>
-<div class="task"><b>26 užduotis – IF + AND + OR.</b> Stulpelyje <b>D2</b> skirk <b>5 %</b> nuolaidą, jei B2 ir C2 <b>abu bent 60 €</b>; <b>3 %</b>, jei <b>bent vienas bent 60 €</b>; kitu atveju <b>0 %</b>. Naudok įdėtinę <code>IF</code>, <code>AND</code>, <code>OR</code>.</div>
-<div class="task"><b>27 užduotis – Daugyba + ROUND.</b> Stulpelyje <b>F2</b> apskaičiuok <b>gruodžio išlaidas po nuolaidos</b>: C2 × (1 − D2). Naudok <code>ROUND</code> iki 2 skaitmenų po kablelio.</div>
-<div class="task"><b>28 užduotis – COUNTIF – nuolaidų suvestinė.</b> Susumuok, kiek pirkėjų gavo <b>5 %</b> nuolaidą (pagal D2:D13). Papildomai rask <b>visų pirkėjų</b> išlaidų sumą.</div></section>
-<section><h2>6 dalis. Prekės ir užsakymų vykdymas</h2><p class="muted">Lapas PREKES. Tikrink užsakytą kiekį, likutį ir prekės kainą.</p><div class="task"><b>29 užduotis – Daugyba.</b> Stulpelyje <b>E2</b> apskaičiuok užsakymo sumą: vieneto kaina × užsakomas kiekis.</div>
-<div class="task"><b>30 užduotis – IF + AND.</b> Stulpelyje <b>F2</b> išvesk „Vykdyti“, jei <b>likučių užtenka</b> (C2 ≥ D2) ir vieneto kaina B2 <b>ne didesnė kaip 60 €</b>; kitaip „Nevykdyti“.</div>
-<div class="task"><b>31 užduotis – IF + OR.</b> Stulpelyje <b>G2</b> skirk <b>10 %</b> nuolaidą, jei vieneto kaina yra <b>bent 40 €</b> <b>arba</b> atsargų likutis yra <b>bent 15 vienetų</b>; kitu atveju 0 %.</div>
-<div class="task"><b>32 užduotis – IF + ROUND + SUM.</b> Stulpelyje <b>H2</b> apskaičiuok mokėtiną užsakymo sumą, pritaikęs G2 nuolaidą, tik jei F2 = „Vykdyti“. Kitu atveju rašyk 0. Suskaičiuok visą mokėtiną sumą.</div></section>
-<section><h2>7 dalis. Sporto atranka – papildoma praktika</h2><p class="muted">Lapas SPORTAS. Rezultatai pagal bėgimo laiką ir šuolį.</p><div class="task"><b>33 užduotis – IF + OR.</b> Stulpelyje <b>E2</b> išvesk „Atrinktas“, jeigu 100 m laikas B2 <b>mažesnis nei 13 s</b> arba šuolis C2 <b>ne mažesnis kaip 4,5 m</b>. Kitaip „Neatrinktas“.</div>
-<div class="task"><b>34 užduotis – IF + AND + NOT.</b> Stulpelyje <b>F2</b> išvesk „Gali startuoti“, jeigu E2 = „Atrinktas“ ir D2 <b>nėra „Taip“</b>. Privaloma naudoti <code>AND</code> ir <code>NOT</code>.</div>
-<div class="task"><b>35 užduotis – Įdėtinė IF.</b> Stulpelyje <b>G2</b> išvesk 10 balų, kai laikas <b>mažesnis nei 12,5 s</b>; 8, kai mažesnis nei 13,5 s; kitu atveju 6.</div>
-<div class="task"><b>36 užduotis – Suvestinė.</b> Naudodamas <code>COUNTIF</code> suskaičiuok „Gali startuoti“ įrašų skaičių, o <code>AVERAGE</code> apskaičiuok visų dalyvių balų vidurkį G2:G13.</div></section>
-<section><h2>Kaip dirbti su duomenų failais?</h2><p>Per dvi pamokas pasirink po kelias užduotis iš kiekvienos dalies; <b>visos 36 užduotys skirtos ir papildomam savarankiškam darbui</b>. Duomenis A–D (kituose lapuose pradines įvesties skiltis) palik nepakeistus. Formules įrašyk antroje eilutėje ir kopijuok žemyn. Naudok anglų funkcijų pavadinimus. Formulių argumentų skirtukas gali būti <code>;</code> arba <code>,</code> pagal „Excel“ nustatymus.</p>
-<div class="note"><b>Svarbu:</b> „ne mažiau kaip 8“ = <code>&gt;=8</code>; „daugiau kaip 8“ = <code>&gt;8</code>; „ne daugiau kaip 8“ = <code>&lt;=8</code>; „mažiau kaip 8“ = <code>&lt;8</code>.</div>
-<div class="toolbar"><a class="btn alt" href="and-or-not-teorija.html">Teorija</a><a class="btn" href="Logines_funkcijos_36_uzduotys_11kl.xlsx" download>Atsisiųsti visą Excel failą (.xlsx)</a><button type="button" class="noprint" onclick="window.print()">Spausdinti užduotis</button></div>
-<p><b>CSV šablonai:</b> <a href="and-or-not-duomenys.csv" download>Mokiniai</a> · <a href="and-or-not-keliones.csv" download>Kelionės</a> · <a href="and-or-not-nuolaidos.csv" download>Nuolaidos</a> · <a href="and-or-not-prekes.csv" download>Prekės</a> · <a href="and-or-not-sportas.csv" download>Sportas</a>. Jei duomenys susilieja į vieną stulpelį, pasirink CSV importą ir skirtuką „kabliataškis“.</p>
-<p class="muted">Kelionių ir prekybos nuolaidų užduočių idėjos adaptuotos pagal D. Jančauskienės 11–12 kl. metodinę priemonę „Užduotys savarankiškam darbui“ (2014, p. 69–70), nauji skaičiai ir duomenys sukurti šiam darbui. <a href="https://emokykla.lt/upload/EMOKYKLA/Failai/NSA_priemones/Uzduotys_savarankiskam_darbui_IT_11-12_kl.pdf" target="_blank" rel="noopener noreferrer">Šaltinis</a>.</p></section>
-</main>
-</body></html>
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Loginės funkcijos · praktinės užduotys | NGG Informatika</title>
+<style>
+:root{--bg:#f8f9fb;--surface:#fff;--ink:#182334;--muted:#677489;--line:#e5e9f0;--soft:#f3f6fa;--accent:#3159c9;--accent-soft:#edf2ff;--ok:#256c53;--ok-soft:#e9f6ef;--bad:#a84a53;--bad-soft:#fff1f1;--radius:14px;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);font-synthesis:none}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:26px}
+body{margin:0;background:var(--bg);line-height:1.7;font-size:15px;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:3px solid #819cf2;outline-offset:3px}
+.skip{position:absolute;left:-9999px;top:8px;z-index:100;background:#fff;padding:12px}
+.skip:focus{left:8px}
+.progress{position:fixed;inset:0 auto auto 0;height:3px;width:0;background:var(--accent);z-index:30;transition:width .1s linear}
+.layout{max-width:1220px;padding:0 30px;margin:0 auto;display:grid;grid-template-columns:215px minmax(0,1fr);gap:68px}
+.sidebar{position:sticky;top:0;align-self:start;height:100vh;padding:32px 0 24px;display:flex;flex-direction:column;gap:32px}
+.brand{font-size:13px;font-weight:800;letter-spacing:.035em;display:flex;align-items:center;gap:10px}
+.mark{display:grid;place-items:center;background:#202e48;color:#fff;border-radius:9px;width:34px;height:34px;font-weight:850;letter-spacing:-.05em}
+.side-caption{font-size:11px;letter-spacing:.12em;font-weight:750;color:#8b96a6;text-transform:uppercase;margin:0 0 12px}
+.nav{display:grid;gap:2px}
+.nav a{font-size:13px;color:#647185;padding:9px 12px;border-radius:9px;display:flex;gap:10px;align-items:center;line-height:1.4;transition:background .15s,color .15s}
+.nav a:hover,.nav a.active{background:#edf1f8;color:#274c9e}
+.nav .number{color:#9ba7ba;font-size:11px;font-variant-numeric:tabular-nums}
+.side-end{margin-top:auto;font-size:12px;line-height:1.6;color:#8993a2;border-top:1px solid var(--line);padding-top:18px}
+.main{min-width:0;padding:45px 0 100px}
+.breadcrumb{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12px;color:#8290a3;margin-bottom:25px}
+.crumb-dot{color:#c5ced8}
+.hero{padding:42px 0 42px;border-bottom:1px solid var(--line)}
+.eyebrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.pill{display:inline-flex;align-items:center;font-size:11px;padding:5px 10px;border-radius:6px;font-weight:750;letter-spacing:.02em;background:var(--accent-soft);color:#3156ad}
+.pill.neutral{background:#eef0f3;color:#667385}
+.hero h1{font-size:clamp(36px,5.3vw,61px);line-height:1.1;letter-spacing:-.052em;max-width:750px;margin:0;font-weight:780}
+.hero h1 .highlight{color:var(--accent)}
+.subtitle{font-size:18px;color:#58677d;margin:20px 0 0;max-width:620px;line-height:1.6}
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:34px}
+.fact{border:1px solid var(--line);border-radius:12px;padding:15px 17px;background:var(--surface)}
+.fact strong{font-size:15px;display:block;letter-spacing:-.015em;font-weight:760}
+.fact small{color:#788599;font-size:12px;display:block;margin-top:2px}
+.lesson-section{padding:40px 0;border-bottom:1px solid var(--line);scroll-margin-top:12px}
+.section-label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:var(--accent);margin-bottom:9px}
+h2{font-size:clamp(23px,3vw,29px);letter-spacing:-.035em;line-height:1.25;margin:0 0 16px;font-weight:760}
+h3{font-size:15px;margin:28px 0 8px;font-weight:730;letter-spacing:-.01em}
+p{color:#556378;margin:12px 0;max-width:790px}
+strong{color:#233047;font-weight:730}
+code,pre{font-family:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+p code,li code{background:#eef1f6;padding:2px 5px;border-radius:4px;color:#304b84;font-size:.91em}
+.lead{font-size:16px;color:#40516a}
+.soft-panel{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:18px 21px;margin:22px 0}
+.soft-panel p:first-child{margin-top:0}.soft-panel p:last-child{margin-bottom:0}
+.teach-label{font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:#6b778c;font-weight:780}
+.codebox{border:1px solid #dde4f0;border-radius:11px;overflow:hidden;background:#f3f6fb;margin:17px 0}
+.code-head{padding:9px 14px;border-bottom:1px solid #e1e6ee;display:flex;justify-content:space-between;align-items:center;gap:10px;color:#708098;font-size:11px;font-weight:750;letter-spacing:.035em;text-transform:uppercase}
+.copy{background:#fff;border:1px solid #d9e0eb;color:#3d557e;border-radius:6px;font-size:11px;letter-spacing:0;text-transform:none;font-weight:680;padding:4px 9px;white-space:nowrap}
+.copy:hover{background:#e9effb}
+pre{font-size:13.5px;color:#263e66;line-height:1.75;margin:0;padding:16px 17px;overflow-x:auto;white-space:pre}
+.table-wrap{border:1px solid var(--line);border-radius:11px;overflow-x:auto;margin:20px 0;background:#fff}
+table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:420px}
+th,td{padding:12px 17px;text-align:left;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+th{background:#f7f9fc;font-size:12px;color:#5f6b7d;font-weight:740}
+tr:last-child td{border-bottom:0}
+td code{background:transparent}
+.true,.false{display:inline-block;border-radius:5px;font-weight:750;font-size:11px;letter-spacing:.02em;padding:3px 8px}
+.true{color:var(--ok);background:var(--ok-soft)}
+.false{color:var(--bad);background:var(--bad-soft)}
+.note{display:flex;gap:13px;align-items:flex-start;background:#f0f4fb;border:1px solid #e2e9f7;border-radius:11px;margin-top:22px;padding:15px 18px}
+.note .symbol{font-size:14px;color:var(--accent);font-weight:900;line-height:1.6}
+.note p{margin:0;color:#465a79}
+.steps{display:grid;gap:12px;margin:18px 0}
+.step{display:flex;gap:13px;align-items:flex-start}
+.step b{display:grid;place-items:center;flex:0 0 27px;height:27px;background:#edf1f7;color:#536a92;border-radius:8px;font-size:12px}
+.step span{padding-top:1px;color:#56657a}
+.caution{background:#fcfaf4;border:1px solid #efe8d7;border-radius:12px;padding:18px 22px;margin-top:22px;color:#605b4e}
+.caution strong{color:#68522a}
+ul,ol{padding-left:21px;color:#556378}
+li{margin:9px 0;padding-left:4px}
+.questions{margin-top:18px;counter-reset:q}
+.questions li{padding:5px 0}
+details{border:1px solid var(--line);border-radius:10px;padding:13px 17px;background:#fff;margin-top:18px}
+summary{font-weight:700;cursor:pointer;color:#445a7d}
+details ol{margin-bottom:2px}
+.footer{padding-top:34px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.footer .muted{font-size:12px;color:#7d899b}
+.button{display:inline-flex;align-items:center;gap:8px;justify-content:center;padding:12px 18px;font-size:13px;font-weight:750;border-radius:9px;background:var(--accent);color:white;border:1px solid var(--accent)}
+.button:hover{background:#2648a8}
+.button-secondary{background:#fff;color:#526278;border-color:#dbe1eb}
+.button-secondary:hover{background:#f0f3f9}
+@media(max-width:960px){.layout{gap:28px;grid-template-columns:175px minmax(0,1fr);padding:0 22px}.main{padding-top:30px}.sidebar{padding-top:26px}.nav a{padding:8px 6px}}
+@media(max-width:700px){.layout{display:block;padding:0 18px}.sidebar{height:auto;position:relative;gap:15px;padding:17px 0 10px;border-bottom:1px solid var(--line)}.side-caption,.side-end{display:none}.nav{display:flex;overflow-x:auto;gap:4px;scrollbar-width:thin;padding-bottom:5px}.nav a{white-space:nowrap;padding:9px 11px;border:1px solid var(--line);background:#fff}.main{padding-top:22px}.hero{padding:18px 0 30px}.facts{grid-template-columns:1fr;gap:8px;margin-top:24px}.fact{padding:12px 15px}.lesson-section{padding:32px 0}.subtitle{font-size:16px}.footer{align-items:stretch}.button{width:100%}}
+@media print{body{background:#fff}.layout{max-width:none;display:block;padding:0 10mm}.sidebar,.progress,.skip,.copy,.footer button{display:none!important}.main{padding:0}.hero{padding:12px 0 20px}.hero h1{font-size:34px}.lesson-section{padding:16px 0;break-inside:avoid}.codebox,.soft-panel,.note,.fact,.table-wrap{break-inside:avoid}.facts{grid-template-columns:repeat(3,1fr)}.footer{padding-top:10px}.button{color:#000;background:transparent;border:0;padding:0}.breadcrumb{margin:0}}
+
+
+/* Pagrindinės teorijos svetainės dizaino detalės panaudotos ir praktikai */
+.exercise-list{display:grid;gap:10px;margin:24px 0 0}
+.exercise{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px 20px;display:flex;align-items:flex-start;gap:16px;transition:border-color .15s,box-shadow .15s}
+.exercise:hover{border-color:#c8d5ef;box-shadow:0 4px 15px rgba(30,59,107,.05)}
+.exercise-index{flex:0 0 37px;height:37px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);border-radius:9px;font-size:13px;font-weight:800;font-variant-numeric:tabular-nums}
+.exercise-body{min-width:0;flex:1}
+.exercise-body h3{margin:1px 0 6px;font-size:15px;line-height:1.45;color:#253851}
+.exercise-body p{margin:0;font-size:14px;line-height:1.7}
+.exercise-body b{color:var(--ink)}
+.exercise code{background:#eef1f6;padding:2px 5px;border-radius:4px;color:#304b84;font-size:.91em;overflow-wrap:anywhere}
+.info-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:24px}
+.info-row .fact strong{font-size:17px}
+.note .symbol{flex:0 0 20px}
+.footer .button{color:#fff}
+.footer .button-secondary{color:#526278}
+@media(max-width:700px){.info-row{grid-template-columns:1fr}.exercise{padding:15px;gap:12px}.exercise-index{flex-basis:32px;height:32px}.exercise-body p{font-size:13.5px}}
+@media print{.exercise{break-inside:avoid;box-shadow:none}.lesson-section{break-inside:auto}.exercise-list{gap:6px}}
+</style>
+</head>
+<body>
+<div class="progress" id="progress" aria-hidden="true"></div>
+<a class="skip" href="#turinys">Pereiti prie turinio</a>
+<div class="layout">
+<aside class="sidebar" aria-label="Užduočių navigacija">
+<div class="brand"><span class="mark">N</span><span>NGG INFORMATIKA</span></div>
+<div><div class="side-caption">Praktinės užduotys</div>
+<nav class="nav" aria-label="Skyriai">
+<a href="#pradzia"><span class="number">00</span> Kaip atlikti?</a>
+<a href="#pagrindai"><span class="number">01</span> Pagrindai ir IF</a>
+<a href="#mokiniai"><span class="number">02</span> Mokinių rezultatai</a>
+<a href="#analize"><span class="number">03</span> Duomenų analizė</a>
+<a href="#keliones"><span class="number">04</span> Kelionės</a>
+<a href="#nuolaidos"><span class="number">05</span> Prekybos nuolaidos</a>
+<a href="#prekes"><span class="number">06</span> Prekės ir užsakymai</a>
+<a href="#sportas"><span class="number">07</span> Sporto atranka</a>
+<a href="#pabaiga"><span class="number">08</span> Prieš pateikiant</a>
+</nav></div>
+<div class="side-end">11 klasė · Skaičiuoklės<br>Loginės funkcijos ir IF</div>
+</aside>
+<main class="main" id="turinys">
+<div class="breadcrumb"><span>Informatika</span><span class="crumb-dot">/</span><span>Skaičiuoklės</span><span class="crumb-dot">/</span><strong>Praktinės užduotys</strong></div>
+<header class="hero">
+<div class="eyebrow"><span class="pill">PRAKTIKA</span><span class="pill neutral">11 KLASĖ</span><span class="pill neutral">2 PAMOKOS + SAVARANKIŠKAS DARBAS</span></div>
+<h1>Loginės funkcijos<br><span class="highlight">praktinės užduotys</span></h1>
+<p class="subtitle">Išmok derinti <strong>IF, AND, OR, NOT</strong> su paprastomis skaičiuoklės formulėmis. Užduotys nuo pirmųjų sąlygų iki realių duomenų analizės.</p>
+<div class="facts" aria-label="Užduočių santrauka">
+<div class="fact"><strong>36 užduotys</strong><small>Pasirink pagal mokymosi tempą</small></div>
+<div class="fact"><strong>7 skyriai</strong><small>Nuo pagrindų iki taikymo</small></div>
+<div class="fact"><strong>IF + loginės</strong><small>SUM · AVERAGE · MIN · MAX</small></div>
+</div>
+</header>
+<section class="lesson-section" id="pradzia">
+<div class="section-label">00 / INSTRUKCIJA</div>
+<h2>Kaip atlikti užduotis?</h2>
+<p class="lead">Visas 36 užduotis gali atlikti per kelias pamokas arba savarankiškai. Pradėk nuo pagrindų, tada pereik prie sudėtingesnių užduočių.</p>
+<div class="steps">
+<div class="step"><b>1</b><span>Užduočių duomenis ir darbaknygę pateikia mokytojas. Jei dirbi su darbaknyge, pasirink nurodytą lapą.</span></div>
+<div class="step"><b>2</b><span>Pradinių duomenų nekeisk. Formules rašyk geltonai pažymėtuose langeliuose, pradėdamas nuo 2 eilutės.</span></div>
+<div class="step"><b>3</b><span>Nukopijuok formulę žemyn ir patikrink bent kelis skirtingus rezultatus.</span></div>
+<div class="step"><b>4</b><span>Naudok angliškus funkcijų pavadinimus. Argumentų skirtukas pagal programos nustatymus gali būti <code>;</code> arba <code>,</code>.</span></div>
+</div>
+<div class="note"><span class="symbol">i</span><p><strong>Prisimink:</strong> „ne mažiau kaip 8“ reiškia <code>&gt;=8</code>, o „ne daugiau kaip 8“ – <code>&lt;=8</code>. „Daugiau kaip 8“ – <code>&gt;8</code>, „mažiau kaip 8“ – <code>&lt;8</code>.</p></div>
+</section>
+<section class="lesson-section" id="pagrindai">
+<div class="section-label">01 / LOGINĖS IŠRAIŠKOS</div><h2>Pagrindai ir IF</h2><p class="lead">Išbandyk logines sąlygas, suprask TRUE / FALSE reikšmes ir paprastą IF funkciją.</p>
+<div class="exercise-list"><article class="exercise"><div class="exercise-index">01</div><div class="exercise-body"><h3>Loginės reikšmės</h3><p>Įvesk atskirai <code>=AND(8&gt;5;10=10)</code>, <code>=AND(7&gt;10;5&lt;9)</code>, <code>=OR(3&gt;8;12&gt;5)</code>, <code>=OR(4=7;9&lt;3)</code> ir <code>=NOT(6&gt;10)</code>. Prie kiekvienos užrašyk, kodėl gaunama TRUE arba FALSE.</p></div></article>
+<article class="exercise"><div class="exercise-index">02</div><div class="exercise-body"><h3>Skaičių ribos</h3><p>Kai A2 yra skaičius, sudaryk sąlygas: nuo 10 iki 20 <b>imtinai</b>; mažiau nei 10 <b>arba</b> daugiau nei 20; nėra 15. Pabandyk tas pačias ribas užrašyti su <code>AND</code>, <code>OR</code> ir <code>NOT</code>.</p></div></article>
+<article class="exercise"><div class="exercise-index">03</div><div class="exercise-body"><h3>Paprasta IF</h3><p>Kai A2 yra įvertinimas, parašyk <code>IF</code>: jei A2 yra <b>ne mažiau kaip 5</b> → „Išlaikė“, kitu atveju → „Neišlaikė“. Patikrink įrašydamas 4, 5 ir 8.</p></div></article>
+<article class="exercise"><div class="exercise-index">04</div><div class="exercise-body"><h3>IF + AND</h3><p>Kai B2 yra taškai, o C2 – lankomumas procentais, skirk „Pagyrimą“ tik jei taškai yra <b>bent 80</b> ir lankomumas <b>bent 90 %</b>. Kitu atveju išvesk „Neskiriama“.</p></div></article></div></section>
+<section class="lesson-section" id="mokiniai">
+<div class="section-label">02 / FORMULĖS IR SĄLYGOS</div><h2>Mokinių rezultatai</h2><p class="lead">Naudok pažymių duomenis ir derink SUM, AVERAGE, MIN, MAX, COUNT, COUNTIF su IF, AND, OR, NOT.</p>
+<div class="exercise-list"><article class="exercise"><div class="exercise-index">05</div><div class="exercise-body"><h3>SUM</h3><p>Stulpelyje <b>I2</b> suskaičiuok trijų darbų pažymių sumą, naudodamas <code>SUM</code>.</p></div></article>
+<article class="exercise"><div class="exercise-index">06</div><div class="exercise-body"><h3>AVERAGE</h3><p>Stulpelyje <b>J2</b> apskaičiuok pažymių vidurkį (<code>AVERAGE</code>), parodyk du skaitmenis po kablelio.</p></div></article>
+<article class="exercise"><div class="exercise-index">07</div><div class="exercise-body"><h3>MIN</h3><p>Stulpelyje <b>K2</b> rask mažiausią pažymį (<code>MIN</code>).</p></div></article>
+<article class="exercise"><div class="exercise-index">08</div><div class="exercise-body"><h3>MAX</h3><p>Stulpelyje <b>L2</b> rask didžiausią pažymį (<code>MAX</code>).</p></div></article>
+<article class="exercise"><div class="exercise-index">09</div><div class="exercise-body"><h3>COUNT</h3><p>Stulpelyje <b>M2</b> nustatyk, kiek pažymių įrašyta (<code>COUNT</code>).</p></div></article>
+<article class="exercise"><div class="exercise-index">10</div><div class="exercise-body"><h3>Paprasta IF</h3><p>Stulpelyje <b>N2</b> įrašyk „Išlaikė“, jeigu vidurkis J2 <b>ne mažesnis kaip 5</b>; kitu atveju „Neišlaikė“.</p></div></article>
+<article class="exercise"><div class="exercise-index">11</div><div class="exercise-body"><h3>Įdėtinė IF</h3><p>Stulpelyje <b>O2</b> išvesk „Puikiai“, kai J2 <b>bent 8</b>; „Patenkinamai“, kai J2 <b>bent 5</b>; priešingu atveju „Reikia pagalbos“.</p></div></article>
+<article class="exercise"><div class="exercise-index">12</div><div class="exercise-body"><h3>COUNTIF</h3><p>Stulpelyje <b>P2</b> suskaičiuok, kiek pažymių iš B2:D2 yra <b>ne mažesni kaip 9</b> (<code>COUNTIF</code>).</p></div></article>
+<article class="exercise"><div class="exercise-index">13</div><div class="exercise-body"><h3>AND + IF</h3><p>Stulpelyje <b>E2</b> išvesk „Pateko“, jei <b>visi trys pažymiai bent 8</b>, kitaip „Nepateko“.</p></div></article>
+<article class="exercise"><div class="exercise-index">14</div><div class="exercise-body"><h3>OR + IF</h3><p>Stulpelyje <b>F2</b> išvesk „Reikia“, jei <b>bent vienas pažymys mažesnis už 7</b>, kitu atveju „Nereikia“.</p></div></article>
+<article class="exercise"><div class="exercise-index">15</div><div class="exercise-body"><h3>NOT + OR + IF</h3><p>Stulpelyje <b>G2</b> išvesk „Nėra neigiamų“, jeigu <b>nė vienas pažymys mažesnis už 4</b>, kitu atveju „Yra neigiamas“. Naudok <code>NOT(OR(...))</code>.</p></div></article>
+<article class="exercise"><div class="exercise-index">16</div><div class="exercise-body"><h3>AND + OR + IF</h3><p>Stulpelyje <b>H2</b> išvesk „Apdovanojimas“, jeigu <b>visi pažymiai bent 8</b> ir <b>bent vienas lygus 10</b>; kitu atveju „Neskiriama“.</p></div></article></div></section>
+<section class="lesson-section" id="analize">
+<div class="section-label">03 / REZULTATŲ VERTINIMAS</div><h2>Duomenų analizė</h2><p class="lead">Suskaičiuok apibendrintus rodiklius, rikiuok ir palygink skirtingų loginių sąlygų rezultatus.</p>
+<div class="exercise-list"><article class="exercise"><div class="exercise-index">17</div><div class="exercise-body"><h3>COUNTIF – klasės rodiklis</h3><p>Laisvame langelyje suskaičiuok, kiek mokinių turi vidurkį <b>bent 8</b>. Naudok <code>COUNTIF</code> ir J2:J21.</p></div></article>
+<article class="exercise"><div class="exercise-index">18</div><div class="exercise-body"><h3>AVERAGE ir MAX</h3><p>Apskaičiuok <b>visos klasės vidutinį pažymių vidurkį</b> ir <b>didžiausią</b> mokinio vidurkį naudodamas J2:J21.</p></div></article>
+<article class="exercise"><div class="exercise-index">19</div><div class="exercise-body"><h3>Filtravimas ir rikiavimas</h3><p>Surikiuok mokinius pagal J stulpelį mažėjančiai, tada filtruok tik tuos, kurių J ≥ 8. Užrašyk jų skaičių.</p></div></article>
+<article class="exercise"><div class="exercise-index">20</div><div class="exercise-body"><h3>Paaiškink logiką</h3><p>Rask mokinį, kuris turi <b>vidurkį ≥8</b>, tačiau <b>nepatenka</b> pagal 13 užduoties sąlygą. Paaiškink, kodėl vidurkio ir AND rezultatai skiriasi.</p></div></article></div></section>
+<section class="lesson-section" id="keliones">
+<div class="section-label">04 / PRAKTINĖ SITUACIJA</div><h2>Kelionės</h2><p class="lead">Atrink keliones pagal sezono, transporto ir kainos kriterijus. Idėja adaptuota pagal metodines 11–12 klasių užduotis.</p>
+<div class="exercise-list"><article class="exercise"><div class="exercise-index">21</div><div class="exercise-body"><h3>IF + NOT + OR</h3><p>Langelyje <b>E2</b> grąžink „Tinka“, jeigu kelionė vyksta <b>ne žiemą</b> ir <b>ne lėktuvu</b>; kitaip „Netinka“. Privaloma panaudoti <code>IF</code>, <code>NOT</code> ir <code>OR</code>.</p></div></article>
+<article class="exercise"><div class="exercise-index">22</div><div class="exercise-body"><h3>Kita loginė išraiška</h3><p>Tą pačią 21 užduoties taisyklę užrašyk su <code>IF</code> ir <code>AND</code>, be <code>NOT</code>; palygink abiejų formulių rezultatus.</p></div></article>
+<article class="exercise"><div class="exercise-index">23</div><div class="exercise-body"><h3>COUNTIF</h3><p>Suskaičiuok, kiek kelionių yra „Tinka“, naudodamas <code>COUNTIF</code> ir E2:E13.</p></div></article>
+<article class="exercise"><div class="exercise-index">24</div><div class="exercise-body"><h3>IF + AND + kaina</h3><p>Stulpelyje <b>F2</b> išvesk „Į biudžetą“, jeigu kelionė E2 yra „Tinka“ ir kaina D2 yra <b>ne didesnė kaip 250 €</b>; kitu atveju „Neį biudžetą“.</p></div></article></div></section>
+<section class="lesson-section" id="nuolaidos">
+<div class="section-label">05 / PRAKTINĖ SITUACIJA</div><h2>Prekybos nuolaidos</h2><p class="lead">Pritaikyk skirtingas nuolaidas pagal pirkimo sumas, apskaičiuok kainą su nuolaida ir palygink rezultatus.</p>
+<div class="exercise-list"><article class="exercise"><div class="exercise-index">25</div><div class="exercise-body"><h3>SUM</h3><p>Lapo NUOLAIDOS stulpelyje <b>E2</b> suskaičiuok pirkėjo dviejų mėnesių išlaidų sumą.</p></div></article>
+<article class="exercise"><div class="exercise-index">26</div><div class="exercise-body"><h3>IF + AND + OR</h3><p>Stulpelyje <b>D2</b> skirk <b>5 %</b> nuolaidą, jei B2 ir C2 <b>abu bent 60 €</b>; <b>3 %</b>, jei <b>bent vienas bent 60 €</b>; kitu atveju <b>0 %</b>. Naudok įdėtinę <code>IF</code>, <code>AND</code>, <code>OR</code>.</p></div></article>
+<article class="exercise"><div class="exercise-index">27</div><div class="exercise-body"><h3>Daugyba + ROUND</h3><p>Stulpelyje <b>F2</b> apskaičiuok <b>gruodžio išlaidas po nuolaidos</b>: C2 × (1 − D2). Naudok <code>ROUND</code> iki 2 skaitmenų po kablelio.</p></div></article>
+<article class="exercise"><div class="exercise-index">28</div><div class="exercise-body"><h3>COUNTIF – nuolaidų suvestinė</h3><p>Susumuok, kiek pirkėjų gavo <b>5 %</b> nuolaidą (pagal D2:D13). Papildomai rask <b>visų pirkėjų</b> išlaidų sumą.</p></div></article></div></section>
+<section class="lesson-section" id="prekes">
+<div class="section-label">06 / PRAKTINĖ SITUACIJA</div><h2>Prekės ir užsakymai</h2><p class="lead">Pagal kainą, sandėlio likutį ir užsakomą kiekį apskaičiuok mokėtiną sumą bei patikrink užsakymo sąlygas.</p>
+<div class="exercise-list"><article class="exercise"><div class="exercise-index">29</div><div class="exercise-body"><h3>Daugyba</h3><p>Stulpelyje <b>E2</b> apskaičiuok užsakymo sumą: vieneto kaina × užsakomas kiekis.</p></div></article>
+<article class="exercise"><div class="exercise-index">30</div><div class="exercise-body"><h3>IF + AND</h3><p>Stulpelyje <b>F2</b> išvesk „Vykdyti“, jei <b>likučių užtenka</b> (C2 ≥ D2) ir vieneto kaina B2 <b>ne didesnė kaip 60 €</b>; kitaip „Nevykdyti“.</p></div></article>
+<article class="exercise"><div class="exercise-index">31</div><div class="exercise-body"><h3>IF + OR</h3><p>Stulpelyje <b>G2</b> skirk <b>10 %</b> nuolaidą, jei vieneto kaina yra <b>bent 40 €</b> <b>arba</b> atsargų likutis yra <b>bent 15 vienetų</b>; kitu atveju 0 %.</p></div></article>
+<article class="exercise"><div class="exercise-index">32</div><div class="exercise-body"><h3>IF + ROUND + SUM</h3><p>Stulpelyje <b>H2</b> apskaičiuok mokėtiną užsakymo sumą, pritaikęs G2 nuolaidą, tik jei F2 = „Vykdyti“. Kitu atveju rašyk 0. Suskaičiuok visą mokėtiną sumą.</p></div></article></div></section>
+<section class="lesson-section" id="sportas">
+<div class="section-label">07 / PRAKTINĖ SITUACIJA</div><h2>Sporto atranka</h2><p class="lead">Išanalizuok bėgimo ir šuolio rezultatus, pritaikyk OR ir NOT sąlygas bei apskaičiuok balus.</p>
+<div class="exercise-list"><article class="exercise"><div class="exercise-index">33</div><div class="exercise-body"><h3>IF + OR</h3><p>Stulpelyje <b>E2</b> išvesk „Atrinktas“, jeigu 100 m laikas B2 <b>mažesnis nei 13 s</b> arba šuolis C2 <b>ne mažesnis kaip 4,5 m</b>. Kitaip „Neatrinktas“.</p></div></article>
+<article class="exercise"><div class="exercise-index">34</div><div class="exercise-body"><h3>IF + AND + NOT</h3><p>Stulpelyje <b>F2</b> išvesk „Gali startuoti“, jeigu E2 = „Atrinktas“ ir D2 <b>nėra „Taip“</b>. Privaloma naudoti <code>AND</code> ir <code>NOT</code>.</p></div></article>
+<article class="exercise"><div class="exercise-index">35</div><div class="exercise-body"><h3>Įdėtinė IF</h3><p>Stulpelyje <b>G2</b> išvesk 10 balų, kai laikas <b>mažesnis nei 12,5 s</b>; 8, kai mažesnis nei 13,5 s; kitu atveju 6.</p></div></article>
+<article class="exercise"><div class="exercise-index">36</div><div class="exercise-body"><h3>Suvestinė</h3><p>Naudodamas <code>COUNTIF</code> suskaičiuok „Gali startuoti“ įrašų skaičių, o <code>AVERAGE</code> apskaičiuok visų dalyvių balų vidurkį G2:G13.</p></div></article></div></section>
+<section class="lesson-section" id="pabaiga">
+<div class="section-label">08 / PASITIKRINK</div>
+<h2>Prieš pateikdamas darbą</h2>
+<div class="soft-panel"><p>Ar formulės teisingai veikia visose eilutėse? Ar patikrinai ribines reikšmes (pvz., tiksliai 5, 8 arba 60)? Ar nepalikai klaidų <code>#VALUE!</code>, <code>#NAME?</code>, <code>#DIV/0!</code>?</p><p>Mokytojui pateik atliktą darbaknygę pagal jo nurodytą atsiskaitymo būdą.</p></div>
+<p class="muted">Kelionių ir nuolaidų situacijos adaptuotos pagal 11–12 kl. metodines užduotis; pateikti skaičiai nauji.</p>
+</section>
+<footer class="footer">
+<span class="muted">11 klasė · NGG Informatika · Loginės funkcijos</span>
+<div style="display:flex;gap:9px;flex-wrap:wrap">
+<button type="button" class="button button-secondary" onclick="window.print()">Spausdinti</button>
+<a class="button" href="and-or-not-teorija.html">Grįžti į teoriją <span aria-hidden="true">→</span></a>
+</div></footer>
+</main></div>
+<script>
+(function(){
+ const nav=Array.from(document.querySelectorAll('.nav a'));
+ const sections=nav.map(a=>document.querySelector(a.getAttribute('href'))).filter(Boolean);
+ const progress=document.getElementById('progress');
+ let ticking=false;
+ const update=()=>{
+  const max=document.documentElement.scrollHeight-window.innerHeight;
+  progress.style.width=(max>0?Math.min(100,Math.max(0,window.scrollY/max*100)):0)+'%';
+  const threshold=window.innerHeight*.22;
+  let active=sections[0];
+  for(const section of sections)if(section.getBoundingClientRect().top<=threshold)active=section;
+  nav.forEach(link=>{const on=link.getAttribute('href')==='#'+active.id;link.classList.toggle('active',on);if(on)link.setAttribute('aria-current','location');else link.removeAttribute('aria-current')});
+  ticking=false;
+ };
+ window.addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(update)}},{passive:true});
+ window.addEventListener('resize',update);
+ update();
+})();
+</script>
+</body>
+</html>
