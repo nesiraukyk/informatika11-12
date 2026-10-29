@@ -1,0 +1,13 @@
+﻿Kryptis;Metų laikas;Transportas;Kaina (EUR);Kelionė tinka? (IF+NOT+OR);Į biudžetą? (IF+AND)
+Vilnius;Ruduo;Traukinys;58;;
+Roma;Vasara;Lėktuvas;220;;
+Kaunas;Žiema;Autobusas;22;;
+Ryga;Pavasaris;Autobusas;86;;
+Talinas;Vasara;Autobusas;175;;
+Oslo;Žiema;Lėktuvas;250;;
+Klaipėda;Ruduo;Traukinys;69;;
+Varšuva;Pavasaris;Traukinys;120;;
+Praha;Vasara;Autobusas;310;;
+Helsinkis;Ruduo;Laivas;195;;
+Druskininkai;Žiema;Automobilis;40;;
+Berlynas;Pavasaris;Lėktuvas;135;;
