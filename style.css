@@ -1260,6 +1260,7 @@ main.wrap.authWide{max-width:none;width:100%;padding-inline:0}
 /* v5.59: Mokytojo mokymosi failai — stabilaus pločio kortelės ir matomas trynimas.
    Atskirta failo informacija nuo valdymo mygtukų, kad net ilgi vardai neardytų vaizdo. */
 .topicContentBody,.resourceFolder,.resourceFolderLoose,.learningFileList{min-width:0}
+.learningFileList{grid-template-columns:minmax(0,1fr)}
 .resourceFolderGrid{grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr))}
 .resourceDraggable{
  display:flex;
