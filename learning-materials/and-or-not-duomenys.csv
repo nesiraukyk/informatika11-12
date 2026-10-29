@@ -1,13 +1,21 @@
-﻿Mokinys;I darbas;II darbas;III darbas;Pateko? (AND);Konsultacijos? (OR);Nėra neigiamų? (NOT);Apdovanojimas? (AND+OR)
-Jonas;8;9;10;;;;
-Ona;7;9;8;;;;
-Mantas;4;6;5;;;;
-Ieva;10;10;9;;;;
-Lukas;8;8;8;;;;
-Rugilė;9;6;10;;;;
-Nojus;3;8;9;;;;
-Gabija;7;7;7;;;;
-Arnas;9;8;9;;;;
-Laura;10;7;10;;;;
-Emilis;5;4;7;;;;
-Smiltė;8;10;10;;;;
+﻿Mokinys;I darbas;II darbas;III darbas;Pateko? (AND);Konsultacijos? (OR);Nėra neigiamų? (NOT);Apdovanojimas? (AND+OR);Suma (SUM);Vidurkis (AVERAGE);Mažiausias (MIN);Didžiausias (MAX);Pažymių sk. (COUNT);Išlaikė? (IF);Rezultato lygis (IF);Pažymiai ≥9 (COUNTIF)
+Jonas;8;9;10;;;;;;;;;;;;
+Ona;7;9;8;;;;;;;;;;;;
+Mantas;4;6;5;;;;;;;;;;;;
+Ieva;10;10;9;;;;;;;;;;;;
+Lukas;8;8;8;;;;;;;;;;;;
+Rugilė;9;6;10;;;;;;;;;;;;
+Nojus;3;8;9;;;;;;;;;;;;
+Gabija;7;7;7;;;;;;;;;;;;
+Arnas;9;8;9;;;;;;;;;;;;
+Laura;10;7;10;;;;;;;;;;;;
+Emilis;5;4;7;;;;;;;;;;;;
+Smiltė;8;10;10;;;;;;;;;;;;
+Tadas;6;6;6;;;;;;;;;;;;
+Viltė;4;8;9;;;;;;;;;;;;
+Simas;10;10;10;;;;;;;;;;;;
+Eglė;9;9;9;;;;;;;;;;;;
+Kajus;8;3;8;;;;;;;;;;;;
+Austė;5;8;5;;;;;;;;;;;;
+Miglė;7;8;8;;;;;;;;;;;;
+Domas;4;4;4;;;;;;;;;;;;
