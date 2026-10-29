@@ -1255,3 +1255,92 @@ main.wrap.authWide{max-width:none;width:100%;padding-inline:0}
 .resourceDraggable .learningFileKind{margin-left:4px}
 .resourceDraggable .smallBtn{font-size:12px}
 @media(max-width:690px){.learningFileKind{display:table;margin:4px 0 0}.resourceDraggable .resourceDownloadCard{flex:1 1 100%}}
+
+
+/* v5.59: Mokytojo mokymosi failai — stabilaus pločio kortelės ir matomas trynimas.
+   Atskirta failo informacija nuo valdymo mygtukų, kad net ilgi vardai neardytų vaizdo. */
+.topicContentBody,.resourceFolder,.resourceFolderLoose,.learningFileList{min-width:0}
+.resourceFolderGrid{grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr))}
+.resourceDraggable{
+ display:flex;
+ flex-direction:column;
+ gap:6px;
+ width:100%;
+ max-width:100%;
+ min-width:0;
+ margin:8px 0;
+ align-items:stretch;
+ cursor:default;
+}
+.resourceDraggable:active{cursor:default}
+.resourceDraggable .learningFileRow{
+ display:flex;
+ flex:0 0 auto;
+ width:100%;
+ max-width:100%;
+ min-width:0;
+ margin:0;
+}
+.learningFileRow.resourceDownloadCard{min-width:0;max-width:100%}
+.learningFileRow .grow{flex:1 1 0;min-width:0;overflow:hidden}
+.learningFileRow .grow>b{
+ display:-webkit-box;
+ -webkit-line-clamp:2;
+ -webkit-box-orient:vertical;
+ max-width:100%;
+ overflow:hidden;
+ overflow-wrap:anywhere;
+ word-break:normal;
+ line-height:1.4;
+}
+.learningFileRow .grow>.subtle{
+ display:block;
+ min-width:0;
+ overflow:hidden;
+ white-space:nowrap;
+ text-overflow:ellipsis;
+}
+.learningFileRow .learningFileActions{flex:0 0 auto}
+.resourceManageBar{
+ display:flex;
+ justify-content:flex-end;
+ align-items:center;
+ flex-wrap:wrap;
+ gap:6px;
+ min-width:0;
+ padding:0 2px 3px;
+}
+.resourceManageBar .smallBtn{
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ flex:0 0 auto;
+ min-height:31px;
+ padding:6px 10px;
+ font-size:11.5px;
+ line-height:1.2;
+ white-space:nowrap;
+ border-radius:8px;
+}
+.resourceManageBar .resourceDragHandle{
+ width:31px;
+ padding:0;
+ cursor:grab;
+ color:var(--muted);
+}
+.resourceManageBar .resourceDragHandle:active{cursor:grabbing}
+.resourceManageBar .resourceRemoveButton{
+ color:var(--bad);
+ border-color:color-mix(in srgb,var(--bad) 30%,var(--line));
+ background:color-mix(in srgb,var(--bad) 5%,var(--surface));
+}
+.resourceManageBar .resourceRemoveButton:hover{
+ color:var(--bad);
+ background:color-mix(in srgb,var(--bad) 11%,var(--surface));
+}
+.resourceManageBar .resourceRemoveButton:disabled{opacity:.58;cursor:wait}
+@media(max-width:600px){
+ .resourceDraggable{flex-wrap:nowrap}
+ .resourceManageBar{justify-content:flex-start}
+ .resourceManageBar .smallBtn{padding:6px 8px}
+}
