@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="description" content="11 klasės kompiuterių tinklų mokomoji medžiaga pagal informatikos bendrąją programą: LAN, WAN, TCP/IP, IP, DNS, protokolai, sauga ir diagnostika.">
+<title>Kompiuterių tinklai · 11 klasės teorija | NGG Informatika</title>
+<style>
+:root{--bg:#f8f9fb;--surface:#fff;--ink:#182334;--muted:#677489;--line:#e5e9f0;--soft:#f3f6fa;--accent:#3159c9;--accent-soft:#edf2ff;--ok:#256c53;--ok-soft:#e9f6ef;--bad:#a84a53;--bad-soft:#fff1f1;--radius:14px;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);font-synthesis:none}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:26px}
+body{margin:0;background:var(--bg);line-height:1.7;font-size:15px;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:3px solid #819cf2;outline-offset:3px}
+.skip{position:absolute;left:-9999px;top:8px;z-index:100;background:#fff;padding:12px}
+.skip:focus{left:8px}
+.progress{position:fixed;inset:0 auto auto 0;height:3px;width:0;background:var(--accent);z-index:30;transition:width .1s linear}
+.layout{max-width:1220px;padding:0 30px;margin:0 auto;display:grid;grid-template-columns:215px minmax(0,1fr);gap:68px}
+.sidebar{position:sticky;top:0;align-self:start;height:100vh;padding:32px 0 24px;display:flex;flex-direction:column;gap:32px}
+.brand{font-size:13px;font-weight:800;letter-spacing:.035em;display:flex;align-items:center;gap:10px}
+.mark{display:grid;place-items:center;background:#202e48;color:#fff;border-radius:9px;width:34px;height:34px;font-weight:850;letter-spacing:-.05em}
+.side-caption{font-size:11px;letter-spacing:.12em;font-weight:750;color:#8b96a6;text-transform:uppercase;margin:0 0 12px}
+.nav{display:grid;gap:2px}
+.nav a{font-size:13px;color:#647185;padding:9px 12px;border-radius:9px;display:flex;gap:10px;align-items:center;line-height:1.4;transition:background .15s,color .15s}
+.nav a:hover,.nav a.active{background:#edf1f8;color:#274c9e}
+.nav .number{color:#9ba7ba;font-size:11px;font-variant-numeric:tabular-nums}
+.side-end{margin-top:auto;font-size:12px;line-height:1.6;color:#8993a2;border-top:1px solid var(--line);padding-top:18px}
+.main{min-width:0;padding:45px 0 100px}
+.breadcrumb{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12px;color:#8290a3;margin-bottom:25px}
+.crumb-dot{color:#c5ced8}
+.hero{padding:42px 0 42px;border-bottom:1px solid var(--line)}
+.eyebrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.pill{display:inline-flex;align-items:center;font-size:11px;padding:5px 10px;border-radius:6px;font-weight:750;letter-spacing:.02em;background:var(--accent-soft);color:#3156ad}
+.pill.neutral{background:#eef0f3;color:#667385}
+.hero h1{font-size:clamp(36px,5.3vw,61px);line-height:1.1;letter-spacing:-.052em;max-width:750px;margin:0;font-weight:780}
+.hero h1 .highlight{color:var(--accent)}
+.subtitle{font-size:18px;color:#58677d;margin:20px 0 0;max-width:620px;line-height:1.6}
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:34px}
+.fact{border:1px solid var(--line);border-radius:12px;padding:15px 17px;background:var(--surface)}
+.fact strong{font-size:15px;display:block;letter-spacing:-.015em;font-weight:760}
+.fact small{color:#788599;font-size:12px;display:block;margin-top:2px}
+.lesson-section{padding:40px 0;border-bottom:1px solid var(--line);scroll-margin-top:12px}
+.section-label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:var(--accent);margin-bottom:9px}
+h2{font-size:clamp(23px,3vw,29px);letter-spacing:-.035em;line-height:1.25;margin:0 0 16px;font-weight:760}
+h3{font-size:15px;margin:28px 0 8px;font-weight:730;letter-spacing:-.01em}
+p{color:#556378;margin:12px 0;max-width:790px}
+strong{color:#233047;font-weight:730}
+code,pre{font-family:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+p code,li code{background:#eef1f6;padding:2px 5px;border-radius:4px;color:#304b84;font-size:.91em}
+.lead{font-size:16px;color:#40516a}
+.soft-panel{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:18px 21px;margin:22px 0}
+.soft-panel p:first-child{margin-top:0}.soft-panel p:last-child{margin-bottom:0}
+.teach-label{font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:#6b778c;font-weight:780}
+.codebox{border:1px solid #dde4f0;border-radius:11px;overflow:hidden;background:#f3f6fb;margin:17px 0}
+.code-head{padding:9px 14px;border-bottom:1px solid #e1e6ee;display:flex;justify-content:space-between;align-items:center;gap:10px;color:#708098;font-size:11px;font-weight:750;letter-spacing:.035em;text-transform:uppercase}
+.copy{background:#fff;border:1px solid #d9e0eb;color:#3d557e;border-radius:6px;font-size:11px;letter-spacing:0;text-transform:none;font-weight:680;padding:4px 9px;white-space:nowrap}
+.copy:hover{background:#e9effb}
+pre{font-size:13.5px;color:#263e66;line-height:1.75;margin:0;padding:16px 17px;overflow-x:auto;white-space:pre}
+.table-wrap{border:1px solid var(--line);border-radius:11px;overflow-x:auto;margin:20px 0;background:#fff}
+table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:420px}
+th,td{padding:12px 17px;text-align:left;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+th{background:#f7f9fc;font-size:12px;color:#5f6b7d;font-weight:740}
+tr:last-child td{border-bottom:0}
+td code{background:transparent}
+.true,.false{display:inline-block;border-radius:5px;font-weight:750;font-size:11px;letter-spacing:.02em;padding:3px 8px}
+.true{color:var(--ok);background:var(--ok-soft)}
+.false{color:var(--bad);background:var(--bad-soft)}
+.note{display:flex;gap:13px;align-items:flex-start;background:#f0f4fb;border:1px solid #e2e9f7;border-radius:11px;margin-top:22px;padding:15px 18px}
+.note .symbol{font-size:14px;color:var(--accent);font-weight:900;line-height:1.6}
+.note p{margin:0;color:#465a79}
+.steps{display:grid;gap:12px;margin:18px 0}
+.step{display:flex;gap:13px;align-items:flex-start}
+.step b{display:grid;place-items:center;flex:0 0 27px;height:27px;background:#edf1f7;color:#536a92;border-radius:8px;font-size:12px}
+.step span{padding-top:1px;color:#56657a}
+.caution{background:#fcfaf4;border:1px solid #efe8d7;border-radius:12px;padding:18px 22px;margin-top:22px;color:#605b4e}
+.caution strong{color:#68522a}
+ul,ol{padding-left:21px;color:#556378}
+li{margin:9px 0;padding-left:4px}
+.questions{margin-top:18px;counter-reset:q}
+.questions li{padding:5px 0}
+details{border:1px solid var(--line);border-radius:10px;padding:13px 17px;background:#fff;margin-top:18px}
+summary{font-weight:700;cursor:pointer;color:#445a7d}
+details ol{margin-bottom:2px}
+.footer{padding-top:34px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.footer .muted{font-size:12px;color:#7d899b}
+.button{display:inline-flex;align-items:center;gap:8px;justify-content:center;padding:12px 18px;font-size:13px;font-weight:750;border-radius:9px;background:var(--accent);color:white;border:1px solid var(--accent)}
+.button:hover{background:#2648a8}
+.button-secondary{background:#fff;color:#526278;border-color:#dbe1eb}
+.button-secondary:hover{background:#f0f3f9}
+@media(max-width:960px){.layout{gap:28px;grid-template-columns:175px minmax(0,1fr);padding:0 22px}.main{padding-top:30px}.sidebar{padding-top:26px}.nav a{padding:8px 6px}}
+@media(max-width:700px){.layout{display:block;padding:0 18px}.sidebar{height:auto;position:relative;gap:15px;padding:17px 0 10px;border-bottom:1px solid var(--line)}.side-caption,.side-end{display:none}.nav{display:flex;overflow-x:auto;gap:4px;scrollbar-width:thin;padding-bottom:5px}.nav a{white-space:nowrap;padding:9px 11px;border:1px solid var(--line);background:#fff}.main{padding-top:22px}.hero{padding:18px 0 30px}.facts{grid-template-columns:1fr;gap:8px;margin-top:24px}.fact{padding:12px 15px}.lesson-section{padding:32px 0}.subtitle{font-size:16px}.footer{align-items:stretch}.button{width:100%}}
+@media print{body{background:#fff}.layout{max-width:none;display:block;padding:0 10mm}.sidebar,.progress,.skip,.copy,.footer button{display:none!important}.main{padding:0}.hero{padding:12px 0 20px}.hero h1{font-size:34px}.lesson-section{padding:16px 0;break-inside:avoid}.codebox,.soft-panel,.note,.fact,.table-wrap{break-inside:avoid}.facts{grid-template-columns:repeat(3,1fr)}.footer{padding-top:10px}.button{color:#000;background:transparent;border:0;padding:0}.breadcrumb{margin:0}}
+
+
+/* Kompiuterių tinklai – pritaikymas naudojant tą patį NGG teorijos dizainą */
+.diagram-wrap{overflow:auto;background:#fff;border:1px solid var(--line);border-radius:13px;padding:15px;margin:22px 0}
+.network-diagram{width:100%;min-width:590px;max-width:900px;height:auto;display:block;margin:auto}
+.network-diagram text{font-family:Inter,Arial,sans-serif;fill:#283c5d;font-size:15px;font-weight:650}
+.network-diagram .label{font-size:12px;fill:#65758c;font-weight:500}
+.network-diagram .line{stroke:#a5b7d3;stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.network-diagram .wireless{stroke:#5274bd;stroke-dasharray:6 7}
+.network-diagram .device{fill:#f3f7fd;stroke:#b9cbe5;stroke-width:2}
+.device-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin:19px 0}
+.device-card{border:1px solid var(--line);background:#fff;padding:17px 18px;border-radius:12px}
+.device-card h3{margin:0 0 6px;font-size:15px}.device-card p{margin:0;font-size:13.5px}
+.device-card small{display:block;margin-top:8px;color:var(--muted)}
+.steps-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:19px 0}
+.steps-grid>div{background:#fff;border:1px solid var(--line);border-radius:11px;padding:14px}
+.steps-grid strong{display:block;font-size:14px;margin:6px 0;color:#203a62}
+.steps-grid p{margin:0;font-size:12.5px}
+.step-number{display:inline-flex;background:#eaf0fc;color:#3159c9;font-weight:850;border-radius:7px;width:27px;height:27px;align-items:center;justify-content:center}
+.limited{max-width:860px}
+.url-example{font-family:ui-monospace,Consolas,monospace;font-size:14px;overflow:auto;white-space:nowrap;background:#fff;border:1px solid var(--line);padding:17px;border-radius:11px}
+.url-example .protocol{color:#215ab2}.url-example .domain{color:#146c54}.url-example .path{color:#8a531f}
+.legend{display:flex;gap:18px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:10px}
+.legend span::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;background:#527ac4}.legend span:nth-child(2)::before{background:#21846a}.legend span:nth-child(3)::before{background:#b68443}
+.mini-label{display:inline-flex;background:#eff2f7;color:#5b6d85;font-weight:750;font-size:11px;padding:4px 8px;border-radius:6px}
+.practice-card{display:flex;gap:14px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:11px;padding:16px 18px;margin-top:10px}
+.practice-num{display:grid;place-items:center;flex:0 0 31px;height:31px;background:var(--accent-soft);color:var(--accent);border-radius:8px;font-size:12px;font-weight:800}
+.practice-card h3{margin:0 0 6px;font-size:15px}.practice-card p{margin:0;font-size:13.5px}
+.practice-card .subtle{font-size:12px;margin-top:6px}
+.check-question{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 17px;margin-top:11px}
+.check-question summary{border:0;margin:0;padding:0;background:transparent;font-size:14px;font-weight:700;line-height:1.6}
+.check-question summary::marker{color:var(--accent)}
+.check-answer{border-top:1px solid var(--line);margin-top:12px;padding-top:11px;font-size:13px}
+.check-answer p{margin:0}
+.lesson-route{background:#f4f7fc;border:1px solid #e3eaf5;border-radius:11px;padding:15px 19px;margin:18px 0}
+.lesson-route b{display:inline-block;font-size:13px;margin-bottom:6px}.lesson-route p{font-size:13px;margin:0}
+.codebox pre{white-space:pre-wrap;overflow-wrap:anywhere}
+.codebox code{font-size:13px}
+.table-wrap table{min-width:590px}
+@media(max-width:850px){.steps-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:620px){.device-grid{grid-template-columns:1fr}.steps-grid{grid-template-columns:1fr 1fr}.device-card{padding:14px}.practice-card{padding:13px;gap:10px}}
+@media print{.check-question{break-inside:avoid}.check-question .check-answer{display:block!important}.device-grid{grid-template-columns:repeat(2,1fr)}.network-diagram{min-width:0}.diagram-wrap{overflow:visible}.lesson-route{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="progress" id="progress" aria-hidden="true"></div>
+<a class="skip" href="#turinys">Pereiti prie turinio</a>
+<div class="layout">
+<aside class="sidebar" aria-label="Mokomosios medžiagos navigacija">
+<div class="brand"><span class="mark">N</span><span>NGG INFORMATIKA</span></div>
+<div><div class="side-caption">Mokomosios medžiagos turinys</div>
+<nav class="nav" aria-label="Skyriai"><a href="#tinklo-esme"><span class="number">01</span> LAN, WAN ir internetas</a><a href="#iranga"><span class="number">02</span> Tinklo įranga</a><a href="#paketai"><span class="number">03</span> TCP/IP ir paketai</a><a href="#ip"><span class="number">04</span> IP adresai</a><a href="#dns"><span class="number">05</span> DNS ir URL</a><a href="#protokolai"><span class="number">06</span> Tinklo protokolai</a><a href="#sauga"><span class="number">07</span> Saugus ryšys</a><a href="#diagnostika"><span class="number">08</span> Tinklo diagnostika</a><a href="#veiklos"><span class="number">09</span> Praktinės užduotys</a><a href="#savikontrole"><span class="number">10</span> Pasitikrink</a><a href="#atmintine"><span class="number">11</span> Atmintinė</a></nav></div>
+<div class="side-end">11 klasė · Kompiuterių tinklai<br>30.4.1 · Teorija, praktika ir savikontrolė</div>
+</aside>
+<main class="main" id="turinys">
+<div class="breadcrumb"><span>Informatika</span><span class="crumb-dot">/</span><span>Technologinių problemų sprendimas</span><span class="crumb-dot">/</span><strong>Kompiuterių tinklai</strong></div>
+<header class="hero">
+<div class="eyebrow"><span class="pill">MOKOMOJI MEDŽIAGA</span><span class="pill neutral">11 KLASĖ</span><span class="pill neutral">6 PAMOKOS · SIŪLOMA</span></div>
+<h1>Kompiuterių <span class="highlight">tinklai</span></h1>
+<p class="subtitle">Kaip įrenginiai susijungia, kaip keliauja duomenys ir kodėl svarbu suprasti IP adresus, DNS, tinklo protokolus bei saugų ryšį?</p>
+<div class="facts">
+<div class="fact"><strong>LAN ir WAN</strong><small>Tinklų paskirtis ir įranga</small></div>
+<div class="fact"><strong>TCP/IP ir DNS</strong><small>Duomenų kelias internete</small></div>
+<div class="fact"><strong>Praktika</strong><small>15 užduočių · 15 savikontrolės klausimų</small></div>
+</div></header>
+<section class="lesson-section" id="ivadas"><div class="section-label">MOKYMOSI TIKSLAI</div>
+<h2>Ką išmoksi?</h2>
+<p class="lead">Pabaigęs temą gebėsi atpažinti pagrindinę tinklo įrangą, paaiškinti duomenų perdavimo kelią, suprasti IP adresus ir patikrinti tinklo veikimą.</p>
+<div class="soft-panel">
+<ul><li>Atskirsi <strong>LAN, WAN, internetą ir Wi-Fi</strong>.</li>
+<li>Paaiškinsi <strong>modemo, komutatoriaus, šakotuvo ir maršrutizatoriaus</strong> funkcijas.</li>
+<li>Palyginsi <strong>IP, TCP, DHCP, DNS, HTTP(S)</strong> ir el. pašto protokolus.</li>
+<li>Išmoksi pagrindines <strong>Windows tinklo diagnostikos komandas</strong> ir atsakingą elgesį tinkle.</li></ul></div></section>
+<section class="lesson-section" id="tinklo-esme"><div class="section-label">01 / TINKLO PAGRINDAI</div><h2>Kas yra kompiuterių tinklas?</h2><p class="lead">Kompiuterių tinklas – tarpusavyje sujungti įrenginiai, galintys perduoti duomenis ir naudotis bendrais ištekliais.</p><p>Kompiuteriai, telefonai, spausdintuvai ir kiti įrenginiai gali dalytis failais, naudotis vienu interneto ryšiu, bendru spausdintuvu ir paslaugomis. Įrenginiai jungiami <strong>laidiniu Ethernet</strong> ryšiu arba <strong>belaidžiu Wi-Fi</strong> ryšiu.</p>
+<div class="table-wrap"><table><thead><tr><th>Sąvoka</th><th>Reikšmė</th><th>Pavyzdys</th></tr></thead><tbody>
+<tr><td><strong>LAN</strong> (lokalusis tinklas)</td><td>Vienos nedidelės teritorijos ar įstaigos tinklas.</td><td>Mokyklos kompiuterių klasė.</td></tr>
+<tr><td><strong>WAN</strong> (platusis / išorinis tinklas)</td><td>Sujungia tolimus vietinius tinklus.</td><td>Įmonės biurai skirtinguose miestuose.</td></tr>
+<tr><td><strong>Internetas</strong></td><td>Pasaulinis tarpusavyje sujungtų tinklų tinklas.</td><td>Prieiga prie svetainių, el. pašto, debesijos paslaugų.</td></tr>
+<tr><td><strong>WWW</strong> (žiniatinklis)</td><td>Internete teikiama interneto svetainių paslauga.</td><td>Naujienų portalas naršyklėje.</td></tr>
+</tbody></table></div>
+<div class="note"><span class="symbol">i</span><p><strong>Prisimink:</strong> Wi-Fi dar nereiškia, kad yra internetas. Gali būti prisijungęs prie vietinio tinklo, tačiau interneto ryšys tuo metu neveikti. Internetas ir žiniatinklis nėra sinonimai.</p></div>
+<div class="lesson-route"><b>Klausimas pamokoje</b><p>Ar du nešiojamieji kompiuteriai, sujungti tiesioginiu kabeliu, jau sudaro tinklą? O ar tokiam tinklui būtinas internetas? Paaiškink.</p></div></section>
+<section class="lesson-section" id="iranga"><div class="section-label">02 / TINKLO ĮRANGA</div><h2>Kaip įrenginiai sujungiami?</h2><p class="lead">Skirtingi tinklo įrenginiai atlieka skirtingus darbus: vieni jungia įrenginius, kiti – tinklus, dar kiti užtikrina belaidį ryšį.</p><div class="diagram-wrap"><svg class="network-diagram" viewBox="0 0 860 360" role="img" aria-label="Tinklo schema. Internetas sujungtas su modemu, maršrutizatoriumi. Prie maršrutizatoriaus prijungtas komutatorius, kompiuteris, spausdintuvas ir Wi-Fi įrenginiai.">
+<path class="line" d="M425 56V88"/><path class="line" d="M425 134V170"/><path class="line" d="M425 216V242H217V270"/><path class="line" d="M217 310V326H110"/><path class="line" d="M217 310V326H320"/>
+<path class="line wireless" d="M472 193H625V270"/>
+<rect class="device" x="345" y="12" width="160" height="44" rx="22"/><text x="425" y="40" text-anchor="middle">Internetas</text>
+<rect class="device" x="343" y="88" width="164" height="46" rx="10"/><text x="425" y="107" text-anchor="middle">Modemas / ONT</text><text class="label" x="425" y="122" text-anchor="middle">ryšys su tiekėju</text>
+<rect class="device" x="343" y="170" width="164" height="46" rx="10"/><text x="425" y="189" text-anchor="middle">Maršrutizatorius</text><text class="label" x="425" y="205" text-anchor="middle">vietinis tinklas ir WAN</text>
+<rect class="device" x="146" y="270" width="142" height="40" rx="9"/><text x="217" y="295" text-anchor="middle">Komutatorius</text>
+<rect class="device" x="38" y="326" width="145" height="30" rx="7"/><text x="110" y="346" text-anchor="middle">Kompiuteris</text>
+<rect class="device" x="249" y="326" width="145" height="30" rx="7"/><text x="320" y="346" text-anchor="middle">Spausdintuvas</text>
+<rect class="device" x="550" y="270" width="150" height="40" rx="9"/><text x="625" y="288" text-anchor="middle">Wi-Fi klientai</text><text class="label" x="625" y="303" text-anchor="middle">telefonas, nešiojamasis</text>
+<text class="label" x="532" y="180">Wi-Fi ryšys</text><text class="label" x="243" y="254">Ethernet</text>
+</svg></div><p class="muted">Supaprastinta schema. Namų įrangoje modemas, maršrutizatorius, komutatorius ir belaidės prieigos taškas kartais būna viename įrenginyje.</p>
+<div class="device-grid">
+<div class="device-card"><h3>Modemas / ONT</h3><p>Sujungia namų tinklą su ryšio tiekėjo tinklu. Įrenginio tipas priklauso nuo prieigos technologijos (pvz., šviesolaidžio ar kabelinio ryšio).</p><small>Užduotis: kuris įrenginys jungiasi prie tiekėjo linijos?</small></div>
+<div class="device-card"><h3>Maršrutizatorius (router)</h3><p>Nukreipia duomenis tarp skirtingų tinklų. Namų maršrutizatorius dažnai atlieka DHCP, NAT ir užkardos funkcijas.</p><small>Pavyzdys: namų LAN ↔ internetas.</small></div>
+<div class="device-card"><h3>Komutatorius (switch)</h3><p>Sujungia laidinius įrenginius tame pačiame LAN ir persiunčia Ethernet kadrus į tinkamą prievadą.</p><small>Pavyzdys: klasės kompiuteriai ir tinklo spausdintuvas.</small></div>
+<div class="device-card"><h3>Šakotuvas (hub)</h3><p>Senesnės technologijos įrenginys: gautą signalą pakartoja į kitus prievadus, nesirinkdamas gavėjo.</p><small>Palygink: komutatorius veikia tikslingiau nei šakotuvas.</small></div>
+<div class="device-card"><h3>Belaidės prieigos taškas (access point)</h3><p>Leidžia Wi-Fi įrenginiams prisijungti prie vietinio tinklo. Dažnai integruotas į maršrutizatorių.</p><small>Wi-Fi – vietinio belaidžio ryšio technologija.</small></div>
+<div class="device-card"><h3>Tinklo plokštė / adapteris</h3><p>Kompiuterio dalis, leidžianti prisijungti prie laidinio ar belaidžio tinklo. Tinklo sąsaja paprastai turi MAC adresą.</p><small>Pavyzdys: Ethernet arba Wi-Fi adapteris.</small></div>
+</div>
+<div class="note"><span class="symbol">i</span><p><strong>Žvaigždės topologija:</strong> kiekvienas įrenginys prijungiamas prie centrinio komutatoriaus. Sugedus vienam kompiuterio kabeliui, kiti tinklo įrenginiai paprastai gali toliau veikti.</p></div></section>
+<section class="lesson-section" id="paketai"><div class="section-label">03 / DUOMENŲ KELIONĖ</div><h2>TCP/IP ir duomenų paketai</h2><p class="lead">Internete duomenys perduodami mažesnėmis dalimis – paketais. Jų kelią ir perdavimo taisykles apibrėžia įvairūs protokolai.</p><div class="steps-grid">
+<div><span class="step-number">1</span><strong>Užklausa</strong><p>Naršyklėje atveri svetainę ir išsiunčiama užklausa.</p></div>
+<div><span class="step-number">2</span><strong>Adresavimas</strong><p>IP protokolas leidžia paketams keliauti tarp tinklų.</p></div>
+<div><span class="step-number">3</span><strong>Perdavimas</strong><p>Maršrutizatoriai nukreipia paketus link gavėjo.</p></div>
+<div><span class="step-number">4</span><strong>Gavimas</strong><p>Gavėjas apdoroja duomenis; TCP ryšys užtikrina patikimą perdavimą.</p></div>
+</div>
+<div class="table-wrap"><table><thead><tr><th>Protokolas</th><th>Ką atlieka?</th><th>Kaip įsiminti?</th></tr></thead><tbody>
+<tr><td><strong>IP</strong></td><td>Adresuoja paketus ir leidžia juos persiųsti tarp tinklų.</td><td>Kur keliauti?</td></tr>
+<tr><td><strong>TCP</strong></td><td>Užtikrina patikimą baitų srautą: seka, pakartotinis siuntimas, klaidų tikrinimas.</td><td>Ar duomenys pristatyti tinkama tvarka?</td></tr>
+<tr><td><strong>UDP</strong> <span class="mini-label">Papildomai</span></td><td>Perduoda datagramas be TCP patikimo pristatymo mechanizmo.</td><td>Mažiau perdavimo papildomų veiksmų.</td></tr>
+</tbody></table></div>
+<div class="soft-panel"><div class="teach-label">Palyginimas su paštu</div><p><strong>IP</strong> tarsi adresas ant siuntos, o <strong>TCP</strong> – pristatymo kontrolė, padedanti pastebėti dingusias dalis ir jas gauti iš naujo. Tai supaprastintas palyginimas – realiai protokolai veikia kompiuteriuose.</p></div>
+<div class="note"><span class="symbol">i</span><p>TCP/IP – <strong>protokolų šeima</strong>, o ne vienas atskiras protokolas. Ne visos interneto paslaugos naudoja TCP – kai kurios naudoja UDP ir kitus mechanizmus.</p></div></section>
+<section class="lesson-section" id="ip"><div class="section-label">04 / IP ADRESAVIMAS</div><h2>IP adresai: vidinis, išorinis, statinis, dinaminis</h2><p class="lead">IP adresas padeda tinkluose atpažinti ryšio sąsają ir nukreipti duomenis tinkamu keliu.</p><p><strong>IPv4</strong> adresas dažniausiai rašomas keturiais skaičiais nuo 0 iki 255, atskirtais taškais, pavyzdžiui, <code>192.168.1.25</code>. Įrenginys gali turėti ir <strong>IPv6</strong> adresą, kuris yra ilgesnio formato.</p>
+<div class="table-wrap"><table><thead><tr><th>Tipas</th><th>Reikšmė</th><th>Pavyzdys</th></tr></thead><tbody>
+<tr><td><strong>Vidinis (privatus)</strong></td><td>Naudojamas vietiniame tinkle; tiesiogiai nemaršrutizuojamas viešajame internete.</td><td><code>192.168.1.25</code></td></tr>
+<tr><td><strong>Išorinis (viešasis)</strong></td><td>Internete maršrutizuojamas adresas; namų tinkle jį gali bendrinti keli įrenginiai.</td><td>Ryšio tiekėjo suteikiamas adresas.</td></tr>
+<tr><td><strong>Statinis</strong></td><td>Nustatytas taip, kad įprastai nesikeistų.</td><td>Įmonės serverio adresas.</td></tr>
+<tr><td><strong>Dinaminis</strong></td><td>Automatiškai suteikiamas ir gali pasikeisti.</td><td>Kompiuterio IP iš DHCP serverio.</td></tr>
+</tbody></table></div>
+<div class="soft-panel"><div class="teach-label">Kaip veikia DHCP ir NAT?</div><p><strong>DHCP</strong> dažnai automatiškai parenka įrenginio vietinio tinklo IP adresą ir kitus nustatymus. <strong>NAT</strong> dažnai leidžia keliems namų tinklo įrenginiams naudotis vienu išoriniu IPv4 adresu.</p>
+<p>Pavyzdys: nešiojamasis <code>192.168.1.25</code> ir telefonas <code>192.168.1.26</code> jungiasi prie to paties maršrutizatoriaus, o į internetą gali išeiti per tą patį viešąjį IPv4 adresą.</p></div>
+<div class="note"><span class="symbol">i</span><p><strong>Privačių IPv4 adresų sritys:</strong> <code>10.0.0.0/8</code>, <code>172.16.0.0/12</code>, <code>192.168.0.0/16</code>. Vien iš adreso nepavyks patikimai nustatyti žmogaus tikslios fizinės vietos.</p></div>
+<div class="lesson-route"><b>Pagalvok</b><p>Ar „vidinis“ visada reiškia „dinaminis“? <strong>Ne.</strong> Tai skirtingos savybės: vidinis adresas gali būti ir statinis, ir dinaminis.</p></div></section>
+<section class="lesson-section" id="dns"><div class="section-label">05 / DOMENAI IR SVETAINĖS</div><h2>DNS, domenai ir URL adresai</h2><p class="lead">Žmonėms patogiau prisiminti svetainės pavadinimą, o ne serverio IP adresą.</p><p><strong>Domenas</strong> – vardas, pavyzdžiui, <code>ngg-informatika.lt</code>. <strong>DNS</strong> padeda surasti domenui reikalingus tinklo įrašus, įskaitant IP adresą. <strong>URL</strong> nurodo konkretų išteklių ir būdą, kaip jį pasiekti.</p>
+<div class="url-example"><span class="protocol">https://</span><span class="domain">ngg-informatika.lt</span><span class="path">/learning-materials/kompiuteriu-tinklai-teorija.html</span></div>
+<div class="legend"><span>Protokolas</span><span>Domenas</span><span>Kelias iki ištekliaus</span></div>
+<div class="steps-grid"><div><span class="step-number">1</span><strong>Įrašai adresą</strong><p>Naršyklė gauna URL.</p></div><div><span class="step-number">2</span><strong>DNS paieška</strong><p>Prireikus suranda domeno IP.</p></div><div><span class="step-number">3</span><strong>Ryšys</strong><p>Užmezgamas ryšys su serveriu.</p></div><div><span class="step-number">4</span><strong>Turinys</strong><p>Gaunamas ir parodomas puslapis.</p></div></div>
+<div class="table-wrap"><table><thead><tr><th>Sąvoka</th><th>Ką reiškia?</th></tr></thead><tbody>
+<tr><td><code>https://</code></td><td>Saugus tinklalapio ryšio protokolas.</td></tr>
+<tr><td><code>ngg-informatika.lt</code></td><td>Serverio vardas (domenas).</td></tr>
+<tr><td><code>/learning-materials/...</code></td><td>Kelias iki konkretaus puslapio.</td></tr>
+<tr><td><code>?id=12</code></td><td>Papildomi URL užklausos parametrai (jei naudojami).</td></tr>
+</tbody></table></div>
+<div class="note"><span class="symbol">i</span><p><strong>Svarbu:</strong> DNS paprastai išsprendžia vardą į adresą, tačiau <strong>vien DNS neapsaugo duomenų</strong> nuo perėmimo. Šifruotas HTTPS ryšys yra atskira saugumo priemonė.</p></div></section>
+<section class="lesson-section" id="protokolai"><div class="section-label">06 / INTERNETO PASLAUGOS</div><h2>Protokolai: HTTP(S), FTP(S), SMTP, POP3, IMAP</h2><p class="lead">Skirtingoms interneto paslaugoms naudojami skirtingi informacijos perdavimo protokolai.</p><div class="table-wrap"><table><thead><tr><th>Protokolas</th><th>Kam skirtas?</th><th>Praktinis pavyzdys</th></tr></thead><tbody>
+<tr><td><strong>HTTP</strong></td><td>Žiniatinklio išteklių perdavimui.</td><td>Naršyklė gauna puslapį.</td></tr>
+<tr><td><strong>HTTPS</strong></td><td>HTTP per šifruotą TLS ryšį.</td><td>Saugus prisijungimas prie svetainės.</td></tr>
+<tr><td><strong>FTP</strong></td><td>Failams perduoti.</td><td>Failo siuntimas į serverį be numatyto šifravimo.</td></tr>
+<tr><td><strong>FTPS</strong></td><td>FTP su TLS apsauga.</td><td>Šifruotas failų perdavimas.</td></tr>
+<tr><td><strong>SMTP</strong></td><td>El. laiškams išsiųsti ir perduoti tarp pašto serverių.</td><td>Spaudi „Siųsti“ el. pašto programoje.</td></tr>
+<tr><td><strong>POP3</strong></td><td>El. laiškams gauti iš pašto serverio.</td><td>Laiškų atsisiuntimas į įrenginį.</td></tr>
+<tr><td><strong>IMAP</strong></td><td>El. paštui pasiekti ir sinchronizuoti keliuose įrenginiuose.</td><td>Tą patį paštą skaitai telefone ir kompiuteryje.</td></tr>
+</tbody></table></div>
+<div class="note"><span class="symbol">i</span><p><strong>Nepainiok:</strong> FTPS ir SFTP nėra tas pats. <strong>SFTP</strong> – failų perdavimas per SSH, o <strong>FTPS</strong> – FTP su TLS.</p></div>
+<div class="soft-panel"><div class="teach-label">Pavyzdinė situacija</div><p>Įkeli dokumentą per HTTPS svetainę, o apie įkėlimą gauni el. laišką. Naršyklė naudoja <strong>HTTPS</strong>, laiško išsiuntimui paprastai naudojamas <strong>SMTP</strong>, o laiško perskaitymui programoje – <strong>IMAP</strong> arba <strong>POP3</strong>.</p></div></section>
+<section class="lesson-section" id="sauga"><div class="section-label">07 / RYŠIO SAUGUMAS</div><h2>Saugus duomenų perdavimas ir belaidžiai tinklai</h2><p class="lead">Prisijungimo būdas ir pasirinktas protokolas gali turėti didelę įtaką tavo duomenų apsaugai.</p><div class="device-grid">
+<div class="device-card"><h3>HTTPS ir TLS</h3><p>Šifruoja ryšį tarp naršyklės ir serverio ir leidžia patikrinti serverio tapatybę pagal sertifikatą. Tai nereiškia, kad svetainės turinys būtinai teisingas.</p></div>
+<div class="device-card"><h3>Wi-Fi sauga</h3><p>Naudok WPA2 arba WPA3 apsaugą, sudėtingą slaptažodį ir venk jungtis prie nepažįstamų belaidžių tinklų.</p></div>
+<div class="device-card"><h3>Bluetooth</h3><p>Tinka netoli esantiems įrenginiams susieti, pavyzdžiui, ausinėms su kompiuteriu. Poruok tik patikimus įrenginius ir išjunk aptinkamumą, kai jo nereikia.</p></div>
+<div class="device-card"><h3>Privatumas</h3><p>Neskelbk kitų asmenų tinklo duomenų, įrenginio vardų, konfigūracijos nuotraukų ar prisijungimo informacijos.</p></div>
+</div>
+<div class="caution"><strong>HTTPS nėra svetainės patikimumo garantija.</strong> Apgaulinga svetainė taip pat gali naudoti HTTPS. Visada patikrink <strong>domeną</strong>, ypač prieš įvesdamas slaptažodį.</div>
+<div class="lesson-route"><b>Klausimas</b><p>Kodėl „užrakto“ piktograma naršyklėje dar nereiškia, kad internetinė parduotuvė sąžininga? Aptark skirtumą tarp <strong>šifruoto ryšio</strong> ir <strong>turinio patikimumo</strong>.</p></div></section>
+<section class="lesson-section" id="diagnostika"><div class="section-label">08 / PRAKTINĖ DIAGNOSTIKA</div><h2>Kaip patikrinti tinklą kompiuteryje?</h2><p class="lead">Naudodamas paprastas diagnostikos komandas gali nustatyti tinklo nustatymus ir ieškoti ryšio sutrikimo priežasčių.</p><div class="soft-panel"><div class="teach-label">Saugus darbas</div><p>Šias komandas vykdyk tik savo ar mokyklos tam skirtame kompiuteryje ir laikykis mokytojo nurodymų. Komandos skirtos stebėti, o ne keisti tinklo nustatymus. Neskelbk viešai gautų IP adresų ir kitų asmenų įrenginių duomenų.</p></div>
+<h3>1. Peržiūrėk IP konfigūraciją</h3><div class="codebox"><div class="code-head"><span>Komanda „Windows“ aplinkoje</span><button class="copy" type="button">Kopijuoti</button></div><pre><code>ipconfig</code></pre></div><p>Komanda parodo tinklo adapterio IPv4 adresą, potinklio kaukę ir numatytąjį tinklo šliuzą (jei jie priskirti).</p>
+<h3>2. Patikrink ryšį</h3><div class="codebox"><div class="code-head"><span>Komanda „Windows“ aplinkoje</span><button class="copy" type="button">Kopijuoti</button></div><pre><code>ping 1.1.1.1</code></pre></div><p>Siunčiamos bandomosios ICMP užklausos. Gaunami atsakymai leidžia įvertinti pasiekiamumą ir vėlinimą. <strong>Negautas atsakymas nebūtinai reiškia ryšio gedimą</strong> – įrenginys ar tinklas gali blokuoti ICMP.</p>
+<h3>3. Patikrink domeno vertimą į IP</h3><div class="codebox"><div class="code-head"><span>Komanda „Windows“ aplinkoje</span><button class="copy" type="button">Kopijuoti</button></div><pre><code>nslookup example.org</code></pre></div><p>Komanda kreipiasi į DNS ir parodo gautą atsakymą. <code>example.org</code> – dokumentacijai skirtas demonstracinis domenas.</p>
+<h3>4. Patyrinėk duomenų kelią</h3><div class="codebox"><div class="code-head"><span>Komanda „Windows“ aplinkoje</span><button class="copy" type="button">Kopijuoti</button></div><pre><code>tracert example.org</code></pre></div><p>Komanda gali parodyti maršrutizatorius (šokus) pakeliui iki paskirties. Kai kurie šuoliai gali neatsakyti ir tai nebūtinai reiškia gedimą.</p>
+<div class="table-wrap"><table><thead><tr><th>Požymis</th><th>Ką pirmiausia patikrinti?</th></tr></thead><tbody>
+<tr><td>Wi-Fi prijungtas, bet puslapiai neatsidaro.</td><td>Ar yra interneto ryšys? Ar veikia DNS? Ar problema ne tik vienoje svetainėje?</td></tr>
+<tr><td>Nėra IPv4 adreso arba jis prasideda <code>169.254.</code>.</td><td>Gali būti nepavykę gauti DHCP nustatymų; tikrink ryšį su tinklu.</td></tr>
+<tr><td>IP adresas pasiekiamas, domenas – ne.</td><td>Galimas DNS vardų sprendimo sutrikimas.</td></tr>
+</tbody></table></div></section>
+<section class="lesson-section" id="veiklos"><div class="section-label">09 / PAMOKŲ PRAKTIKA</div><h2>Praktinės užduotys šešioms pamokoms</h2><p class="lead">Atlik užduotis po atitinkamos teorijos dalies. Kai kurioms užduotims pakanka sąsiuvinio, kitoms – Windows kompiuterio.</p><div class="lesson-route"><b>1 pamoka · Tinklų paskirtis, LAN / WAN ir topologijos</b><p>Atskirti internetą nuo vietinio tinklo.</p></div><div class="practice-card"><div class="practice-num">01</div><div><h3>Užduotis 1</h3><p>Pateik tris tinklo naudojimo pavyzdžius mokykloje. Nurodyk, ar kiekvienam būtinas internetas.</p></div></div><div class="practice-card"><div class="practice-num">02</div><div><h3>Užduotis 2</h3><p>Paaiškink, kuo skiriasi LAN ir WAN. Pateik po vieną realų pavyzdį.</p></div></div><div class="lesson-route"><b>2 pamoka · Tinklo įrenginiai ir jungimo būdai</b><p>Atpažinti tinklo įrangos paskirtį.</p></div><div class="practice-card"><div class="practice-num">03</div><div><h3>Užduotis 3</h3><p>Pagal pateiktą schemą aprašyk duomenų kelią iš telefono į internetą.</p></div></div><div class="practice-card"><div class="practice-num">04</div><div><h3>Užduotis 4</h3><p>Kuo komutatorius skiriasi nuo šakotuvo? Kokią funkciją atlieka maršrutizatorius?</p></div></div><div class="lesson-route"><b>3 pamoka · TCP/IP ir IP adresavimas</b><p>Paaiškinti IP, TCP, DHCP ir NAT.</p></div><div class="practice-card"><div class="practice-num">05</div><div><h3>Užduotis 5</h3><p>Adresas 192.168.0.35: vidinis ar viešasis? Ar jis būtinai dinaminis? Argumentuok.</p></div></div><div class="practice-card"><div class="practice-num">06</div><div><h3>Užduotis 6</h3><p>Aprašyk, kaip dviem kompiuteriams su skirtingais vidiniais IP gali veikti vienas interneto ryšys.</p></div></div><div class="practice-card"><div class="practice-num">07</div><div><h3>Užduotis 7</h3><p>Sujunk sąvokas su funkcijomis: IP, TCP, DHCP, NAT.</p></div></div><div class="lesson-route"><b>4 pamoka · DNS, URL ir interneto paslaugos</b><p>Susieti domenus su IP ir atskirti protokolus.</p></div><div class="practice-card"><div class="practice-num">08</div><div><h3>Užduotis 8</h3><p>URL https://ngg-informatika.lt/learning-materials/ – nurodyk protokolą, domeną ir kelią.</p></div></div><div class="practice-card"><div class="practice-num">09</div><div><h3>Užduotis 9</h3><p>Koks protokolas siunčia el. laišką? Kokie du gali būti naudojami jam gauti?</p></div></div><div class="practice-card"><div class="practice-num">10</div><div><h3>Užduotis 10</h3><p>Paaiškink, kuo skiriasi FTP, FTPS ir SFTP.</p></div></div><div class="lesson-route"><b>5 pamoka · Saugus ryšys ir belaidžiai įrenginiai</b><p>Atsakingai naudotis Wi-Fi, Bluetooth ir HTTPS.</p></div><div class="practice-card"><div class="practice-num">11</div><div><h3>Užduotis 11</h3><p>Palygink Wi-Fi ir Bluetooth pagal naudojimo paskirtį. Pateik du susiejimo pavyzdžius.</p></div></div><div class="practice-card"><div class="practice-num">12</div><div><h3>Praktinė užduotis</h3><p>Kodėl vien HTTPS neįrodo, kad svetainė patikima? Pateik apgaulingo domeno pavyzdžio principą (be realių nuorodų).</p></div></div><div class="lesson-route"><b>6 pamoka · Tinklo diagnostika ir taikymas</b><p>Savarankiškai atlikti saugius tikrinimus.</p></div><div class="practice-card"><div class="practice-num">13</div><div><h3>Užduotis 13</h3><p>Windows terminale atlik ipconfig, ping 1.1.1.1 ir nslookup example.org. Užrašyk, ką sužinojai, bet neviešink savo IP adreso.</p></div></div><div class="practice-card"><div class="practice-num">14</div><div><h3>Užduotis 14</h3><p>Sugalvok diagnostikos veiksmų seką situacijai: Wi-Fi veikia, bet interneto svetainės neatsidaro.</p></div></div><div class="practice-card"><div class="practice-num">15</div><div><h3>Užduotis 15</h3><p>Nupiešk 5 įrenginių vietinio tinklo schemą su vienu komutatoriumi ir maršrutizatoriumi.</p></div></div><div class="note"><span class="symbol">i</span><p><strong>Vertinimui:</strong> svarbu ne vien teisingas terminas, bet ir gebėjimas paaiškinti, kaip prietaisai ir protokolai susiję konkrečioje situacijoje. Praktinėms diagnostikos užduotims tinka ekrano nuotraukos, prieš tai paslėpus asmeninius tinklo duomenis.</p></div></section>
+<section class="lesson-section" id="savikontrole"><div class="section-label">10 / ĮSIVERTINIMAS</div><h2>Pasitikrink žinias</h2><p class="lead">Pirmiausia atsakyk savarankiškai. Tik tada išskleisk atsakymą ir palygink su savo paaiškinimu.</p><div class="questions"><details class="check-question"><summary>1. Kuo skiriasi internetas ir Wi-Fi?</summary><div class="check-answer"><p><strong>Atsakymas:</strong> Internetas – pasaulinis tinklų tinklas, o Wi-Fi – vienas belaidžio jungimo prie vietinio tinklo būdų.</p></div></details><details class="check-question"><summary>2. Ar mokyklos LAN gali veikti be interneto?</summary><div class="check-answer"><p><strong>Atsakymas:</strong> Taip. Vietiniai įrenginiai gali bendrauti ir dalytis ištekliais, jei vidinis tinklas veikia.</p></div></details><details class="check-question"><summary>3. Kurio įrenginio paskirtis – jungti skirtingus tinklus?</summary><div class="check-answer"><p><strong>Atsakymas:</strong> Maršrutizatoriaus (router).</p></div></details><details class="check-question"><summary>4. Kuo komutatorius skiriasi nuo šakotuvo?</summary><div class="check-answer"><p><strong>Atsakymas:</strong> Komutatorius persiunčia kadrus pagal sužinotus MAC adresus, o šakotuvas pakartoja signalą į kitus prievadus.</p></div></details><details class="check-question"><summary>5. Ką reiškia TCP/IP?</summary><div class="check-answer"><p><strong>Atsakymas:</strong> Interneto protokolų šeimą: IP skirta adresavimui ir persiuntimui, TCP – patikimam duomenų perdavimui.</p></div></details><details class="check-question"><summary>6. Ar 192.168.1.25 yra privatus IPv4 adresas?</summary><div class="check-answer"><p><strong>Atsakymas:</strong> Taip. Jis patenka į privatų 192.168.0.0/16 adresų ruožą.</p></div></details><details class="check-question"><summary>7. Kuo skiriasi statinis ir dinaminis IP?</summary><div class="check-answer"><p><strong>Atsakymas:</strong> Statinis adresas skirtas išlikti pastovus, o dinaminis gali būti automatiškai suteiktas ir keistis.</p></div></details><details class="check-question"><summary>8. Kam naudojamas DNS?</summary><div class="check-answer"><p><strong>Atsakymas:</strong> Domenų vardams ir susijusiems DNS įrašams rasti; dažnai vardui susieti su IP adresu.</p></div></details><details class="check-question"><summary>9. Ką URL reiškia „https“?</summary><div class="check-answer"><p><strong>Atsakymas:</strong> Tai protokolo schema: HTTP ryšys, apsaugotas TLS šifravimu.</p></div></details><details class="check-question"><summary>10. Kuris protokolas siunčia el. pašto pranešimus?</summary><div class="check-answer"><p><strong>Atsakymas:</strong> SMTP. Laiškams pasiekti dažnai naudojamas IMAP ar POP3.</p></div></details><details class="check-question"><summary>11. Ar HTTPS garantuoja, kad svetainė nėra apgaulinga?</summary><div class="check-answer"><p><strong>Atsakymas:</strong> Ne. HTTPS saugo ryšį, bet neįrodo, kad svetainės turinys ar jos savininko ketinimai patikimi.</p></div></details><details class="check-question"><summary>12. Ką rodo „ipconfig“ ir „nslookup“?</summary><div class="check-answer"><p><strong>Atsakymas:</strong> ipconfig – tinklo adapterio konfigūraciją; nslookup – DNS užklausos rezultatą.</p></div></details><details class="check-question"><summary>13. Ar „ping“ nesėkmė visada reiškia, kad internetas neveikia?</summary><div class="check-answer"><p><strong>Atsakymas:</strong> Ne. ICMP užklausos gali būti blokuojamos ar ribojamos.</p></div></details><details class="check-question"><summary>14. Kokia Bluetooth paskirtis tinkluose?</summary><div class="check-answer"><p><strong>Atsakymas:</strong> Dažnai naudojamas artimo nuotolio įrenginiams sujungti ir duomenims perduoti.</p></div></details><details class="check-question"><summary>15. Ką daro DHCP?</summary><div class="check-answer"><p><strong>Atsakymas:</strong> Automatiškai suteikia IP adresus ir kitus tinklo nustatymus klientams.</p></div></details></div>
+<div class="soft-panel"><p><strong>Įsivertinimas:</strong> jeigu gali paaiškinti bent 12 klausimų ir atlikti tinklo diagnostikos užduotis, turi gerus temos pagrindus. Jei kyla sunkumų, grįžk prie atitinkamo skyriaus.</p></div></section>
+<section class="lesson-section" id="atmintine"><div class="section-label">11 / SANTRAUKA IR ŠALTINIAI</div><h2>Svarbiausi terminai</h2><p class="lead">Pakartok šiuos terminus prieš praktinį darbą arba atsiskaitymą.</p><div class="table-wrap"><table><thead><tr><th>Terminas</th><th>Trumpa reikšmė</th></tr></thead><tbody>
+<tr><td>LAN / WAN</td><td>Vietinis / platusis tinklas.</td></tr>
+<tr><td>Modemas / ONT</td><td>Ryšys su tiekėjo tinklu (priklausomai nuo technologijos).</td></tr>
+<tr><td>Router / switch / hub</td><td>Jungia tinklus / jungia įrenginius / pakartoja signalą.</td></tr>
+<tr><td>TCP / IP</td><td>Patikimas duomenų srautas / paketų adresavimas ir persiuntimas.</td></tr>
+<tr><td>DHCP / NAT</td><td>Automatiniai IP nustatymai / adresų vertimas.</td></tr>
+<tr><td>DNS / domenas / URL</td><td>Vardų sprendimas / vardas / ištekliaus adresas.</td></tr>
+<tr><td>HTTP(S), FTP(S)</td><td>Žiniatinklio ir failų perdavimas (apsaugoti variantai su TLS).</td></tr>
+<tr><td>SMTP / POP3 / IMAP</td><td>El. pašto siuntimas / gavimas / sinchronizavimas.</td></tr>
+</tbody></table></div>
+<h3>Šaltiniai mokymuisi</h3>
+<ul><li><a href="https://emokykla.lt/bendrosios-programos/visos-bendrosios-programos/3" target="_blank" rel="noopener noreferrer">Oficiali informatikos bendroji programa – III gimnazijos klasė, „Kompiuterių tinklai“.</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Web_mechanics/What_is_a_URL" target="_blank" rel="noopener noreferrer">MDN – kas yra URL?</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Glossary/DNS" target="_blank" rel="noopener noreferrer">MDN – DNS pagrindai.</a></li></ul>
+<p class="muted">Pavyzdžiai ir iliustracinė tinklo schema parengti šiai mokomajai medžiagai. 6 pamokų suskirstymas – mokymo planavimo pasiūlymas.</p></section>
+<footer class="footer">
+<span class="muted">11 klasė · NGG Informatika · Kompiuterių tinklai</span>
+<div style="display:flex;gap:9px;flex-wrap:wrap"><button type="button" class="button button-secondary" onclick="window.print()">Spausdinti</button><a class="button" href="#tinklo-esme">Į temos pradžią ↑</a></div>
+</footer>
+</main></div>
+<script>
+(function(){
+ const nav=Array.from(document.querySelectorAll('.nav a'));
+ const sections=nav.map(a=>document.querySelector(a.getAttribute('href'))).filter(Boolean);
+ const progress=document.getElementById('progress');
+ let ticking=false;
+ const update=()=>{
+  const max=document.documentElement.scrollHeight-window.innerHeight;
+  progress.style.width=(max>0?Math.min(100,Math.max(0,window.scrollY/max*100)):0)+'%';
+  const threshold=window.innerHeight*.22;
+  let active=sections[0];
+  for(const section of sections)if(section.getBoundingClientRect().top<=threshold)active=section;
+  nav.forEach(link=>{const on=link.getAttribute('href')==='#'+active.id;link.classList.toggle('active',on);if(on)link.setAttribute('aria-current','location');else link.removeAttribute('aria-current')});
+  ticking=false;
+ };
+ window.addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(update)}},{passive:true});
+ window.addEventListener('resize',update);
+ update();
+ document.querySelectorAll('.copy').forEach(button=>{
+  button.addEventListener('click',async()=>{
+   const code=button.closest('.codebox').querySelector('pre code').textContent;
+   try{await navigator.clipboard.writeText(code);button.textContent='Nukopijuota';setTimeout(()=>button.textContent='Kopijuoti',1400)}
+   catch(err){button.textContent='Pažymėk komandą';setTimeout(()=>button.textContent='Kopijuoti',1800)}
+  });
+ });
+})();
+</script>
+</body></html>
