@@ -1,0 +1,185 @@
+<!doctype html><html lang="lt"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="color-scheme" content="light"><title>VLOOKUP – teorija | NGG informatika</title><meta name="description" content="11 klasės VLOOKUP pamoka: tiksli ir apytikslė paieška, absoliučios nuorodos, IFERROR, pavyzdžiai ir savikontrolė."><style>
+:root{--bg:#f8f9fb;--surface:#fff;--ink:#182334;--muted:#677489;--line:#e5e9f0;--soft:#f3f6fa;--accent:#3159c9;--accent-soft:#edf2ff;--ok:#256c53;--ok-soft:#e9f6ef;--bad:#a84a53;--bad-soft:#fff1f1;--radius:14px;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);font-synthesis:none}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:26px}
+body{margin:0;background:var(--bg);line-height:1.7;font-size:15px;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:3px solid #819cf2;outline-offset:3px}
+.skip{position:absolute;left:-9999px;top:8px;z-index:100;background:#fff;padding:12px}
+.skip:focus{left:8px}
+.progress{position:fixed;inset:0 auto auto 0;height:3px;width:0;background:var(--accent);z-index:30;transition:width .1s linear}
+.layout{max-width:1220px;padding:0 30px;margin:0 auto;display:grid;grid-template-columns:215px minmax(0,1fr);gap:68px}
+.sidebar{position:sticky;top:0;align-self:start;height:100vh;padding:32px 0 24px;display:flex;flex-direction:column;gap:32px}
+.brand{font-size:13px;font-weight:800;letter-spacing:.035em;display:flex;align-items:center;gap:10px}
+.mark{display:grid;place-items:center;background:#202e48;color:#fff;border-radius:9px;width:34px;height:34px;font-weight:850;letter-spacing:-.05em}
+.side-caption{font-size:11px;letter-spacing:.12em;font-weight:750;color:#8b96a6;text-transform:uppercase;margin:0 0 12px}
+.nav{display:grid;gap:2px}
+.nav a{font-size:13px;color:#647185;padding:9px 12px;border-radius:9px;display:flex;gap:10px;align-items:center;line-height:1.4;transition:background .15s,color .15s}
+.nav a:hover,.nav a.active{background:#edf1f8;color:#274c9e}
+.nav .number{color:#9ba7ba;font-size:11px;font-variant-numeric:tabular-nums}
+.side-end{margin-top:auto;font-size:12px;line-height:1.6;color:#8993a2;border-top:1px solid var(--line);padding-top:18px}
+.main{min-width:0;padding:45px 0 100px}
+.breadcrumb{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12px;color:#8290a3;margin-bottom:25px}
+.crumb-dot{color:#c5ced8}
+.hero{padding:42px 0 42px;border-bottom:1px solid var(--line)}
+.eyebrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.pill{display:inline-flex;align-items:center;font-size:11px;padding:5px 10px;border-radius:6px;font-weight:750;letter-spacing:.02em;background:var(--accent-soft);color:#3156ad}
+.pill.neutral{background:#eef0f3;color:#667385}
+.hero h1{font-size:clamp(36px,5.3vw,61px);line-height:1.1;letter-spacing:-.052em;max-width:750px;margin:0;font-weight:780}
+.hero h1 .highlight{color:var(--accent)}
+.subtitle{font-size:18px;color:#58677d;margin:20px 0 0;max-width:620px;line-height:1.6}
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:34px}
+.fact{border:1px solid var(--line);border-radius:12px;padding:15px 17px;background:var(--surface)}
+.fact strong{font-size:15px;display:block;letter-spacing:-.015em;font-weight:760}
+.fact small{color:#788599;font-size:12px;display:block;margin-top:2px}
+.lesson-section{padding:40px 0;border-bottom:1px solid var(--line);scroll-margin-top:12px}
+.section-label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:var(--accent);margin-bottom:9px}
+h2{font-size:clamp(23px,3vw,29px);letter-spacing:-.035em;line-height:1.25;margin:0 0 16px;font-weight:760}
+h3{font-size:15px;margin:28px 0 8px;font-weight:730;letter-spacing:-.01em}
+p{color:#556378;margin:12px 0;max-width:790px}
+strong{color:#233047;font-weight:730}
+code,pre{font-family:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+p code,li code{background:#eef1f6;padding:2px 5px;border-radius:4px;color:#304b84;font-size:.91em}
+.lead{font-size:16px;color:#40516a}
+.soft-panel{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:18px 21px;margin:22px 0}
+.soft-panel p:first-child{margin-top:0}.soft-panel p:last-child{margin-bottom:0}
+.teach-label{font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:#6b778c;font-weight:780}
+.codebox{border:1px solid #dde4f0;border-radius:11px;overflow:hidden;background:#f3f6fb;margin:17px 0}
+.code-head{padding:9px 14px;border-bottom:1px solid #e1e6ee;display:flex;justify-content:space-between;align-items:center;gap:10px;color:#708098;font-size:11px;font-weight:750;letter-spacing:.035em;text-transform:uppercase}
+.copy{background:#fff;border:1px solid #d9e0eb;color:#3d557e;border-radius:6px;font-size:11px;letter-spacing:0;text-transform:none;font-weight:680;padding:4px 9px;white-space:nowrap}
+.copy:hover{background:#e9effb}
+pre{font-size:13.5px;color:#263e66;line-height:1.75;margin:0;padding:16px 17px;overflow-x:auto;white-space:pre}
+.table-wrap{border:1px solid var(--line);border-radius:11px;overflow-x:auto;margin:20px 0;background:#fff}
+table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:420px}
+th,td{padding:12px 17px;text-align:left;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+th{background:#f7f9fc;font-size:12px;color:#5f6b7d;font-weight:740}
+tr:last-child td{border-bottom:0}
+td code{background:transparent}
+.true,.false{display:inline-block;border-radius:5px;font-weight:750;font-size:11px;letter-spacing:.02em;padding:3px 8px}
+.true{color:var(--ok);background:var(--ok-soft)}
+.false{color:var(--bad);background:var(--bad-soft)}
+.note{display:flex;gap:13px;align-items:flex-start;background:#f0f4fb;border:1px solid #e2e9f7;border-radius:11px;margin-top:22px;padding:15px 18px}
+.note .symbol{font-size:14px;color:var(--accent);font-weight:900;line-height:1.6}
+.note p{margin:0;color:#465a79}
+.steps{display:grid;gap:12px;margin:18px 0}
+.step{display:flex;gap:13px;align-items:flex-start}
+.step b{display:grid;place-items:center;flex:0 0 27px;height:27px;background:#edf1f7;color:#536a92;border-radius:8px;font-size:12px}
+.step span{padding-top:1px;color:#56657a}
+.caution{background:#fcfaf4;border:1px solid #efe8d7;border-radius:12px;padding:18px 22px;margin-top:22px;color:#605b4e}
+.caution strong{color:#68522a}
+ul,ol{padding-left:21px;color:#556378}
+li{margin:9px 0;padding-left:4px}
+.questions{margin-top:18px;counter-reset:q}
+.questions li{padding:5px 0}
+details{border:1px solid var(--line);border-radius:10px;padding:13px 17px;background:#fff;margin-top:18px}
+summary{font-weight:700;cursor:pointer;color:#445a7d}
+details ol{margin-bottom:2px}
+.footer{padding-top:34px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.footer .muted{font-size:12px;color:#7d899b}
+.button{display:inline-flex;align-items:center;gap:8px;justify-content:center;padding:12px 18px;font-size:13px;font-weight:750;border-radius:9px;background:var(--accent);color:white;border:1px solid var(--accent)}
+.button:hover{background:#2648a8}
+.button-secondary{background:#fff;color:#526278;border-color:#dbe1eb}
+.button-secondary:hover{background:#f0f3f9}
+@media(max-width:960px){.layout{gap:28px;grid-template-columns:175px minmax(0,1fr);padding:0 22px}.main{padding-top:30px}.sidebar{padding-top:26px}.nav a{padding:8px 6px}}
+@media(max-width:700px){.layout{display:block;padding:0 18px}.sidebar{height:auto;position:relative;gap:15px;padding:17px 0 10px;border-bottom:1px solid var(--line)}.side-caption,.side-end{display:none}.nav{display:flex;overflow-x:auto;gap:4px;scrollbar-width:thin;padding-bottom:5px}.nav a{white-space:nowrap;padding:9px 11px;border:1px solid var(--line);background:#fff}.main{padding-top:22px}.hero{padding:18px 0 30px}.facts{grid-template-columns:1fr;gap:8px;margin-top:24px}.fact{padding:12px 15px}.lesson-section{padding:32px 0}.subtitle{font-size:16px}.footer{align-items:stretch}.button{width:100%}}
+@media print{body{background:#fff}.layout{max-width:none;display:block;padding:0 10mm}.sidebar,.progress,.skip,.copy,.footer button{display:none!important}.main{padding:0}.hero{padding:12px 0 20px}.hero h1{font-size:34px}.lesson-section{padding:16px 0;break-inside:avoid}.codebox,.soft-panel,.note,.fact,.table-wrap{break-inside:avoid}.facts{grid-template-columns:repeat(3,1fr)}.footer{padding-top:10px}.button{color:#000;background:transparent;border:0;padding:0}.breadcrumb{margin:0}}
+
+
+.lookup-grid{display:grid;grid-template-columns:1fr;gap:12px;margin:22px 0}
+.number-line{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;background:#fff;border:1px solid var(--line);border-radius:10px}
+.number-line b{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;flex:0 0 28px;background:var(--accent-soft);color:var(--accent);font-size:12px}
+.number-line p{margin:0;font-size:14px}
+.codebox pre{white-space:pre-wrap;overflow-wrap:anywhere}
+.info-table th:first-child{width:100px}
+.mini-test{border:1px solid var(--line);border-radius:10px;background:#fff;padding:14px 17px;margin:10px 0}
+.mini-test summary{cursor:pointer;font-size:14px;font-weight:700}
+.mini-test p{font-size:13.5px;margin-bottom:0}
+.section-divider{margin:22px 0;border-top:1px solid var(--line)}
+@media (max-width:700px){.number-line{padding:11px}.table-wrap table{min-width:480px}}
+</style></head><body>
+<div class="progress" id="progress" aria-hidden="true"></div><a class="skip" href="#turinys">Pereiti prie turinio</a>
+<div class="layout"><aside class="sidebar" aria-label="Pamokos navigacija"><div class="brand"><span class="mark">N</span><span>NGG INFORMATIKA</span></div><div><div class="side-caption">Šios pamokos turinys</div><nav class="nav"><a href="#kam"><span class="number">01</span> Kam reikalinga?</a><a href="#sintakse"><span class="number">02</span> 4 argumentai</a><a href="#praktinis"><span class="number">03</span> Pirmoji formulė</a><a href="#tiksli"><span class="number">04</span> FALSE ir TRUE</a><a href="#deriniai"><span class="number">05</span> IF ir IFERROR</a><a href="#klaidos"><span class="number">06</span> Dažnos klaidos</a><a href="#pasitikrink"><span class="number">07</span> Pasitikrink</a><a href="#saltiniai"><span class="number">08</span> Atmintinė</a></nav></div><div class="side-end">11 klasė · Skaičiuoklės<br>Teorija ir savikontrolė</div></aside>
+<main class="main" id="turinys"><div class="breadcrumb"><span>Informatika</span><span class="crumb-dot">/</span><span>Duomenų apdorojimas</span><span class="crumb-dot">/</span><strong>VLOOKUP</strong></div>
+<header class="hero"><div class="eyebrow"><span class="pill">TEORIJA</span><span class="pill neutral">11 KLASĖ</span><span class="pill neutral">PRAKTIKA „EXCEL“</span></div>
+<h1>Duomenų paieška<br><span class="highlight">VLOOKUP</span></h1>
+<p class="subtitle">Išmok automatiškai surasti pavadinimą, kainą, taškus ar nuolaidą pagal kodą arba reikšmę lentelėje.</p>
+<div class="facts"><div class="fact"><strong>FALSE</strong><small>Tiksli paieška pagal kodą</small></div><div class="fact"><strong>TRUE</strong><small>Paieška pagal intervalą</small></div><div class="fact"><strong>25 užduotys</strong><small>Praktiniame „Excel“ faile</small></div></div></header>
+<section id="kam" class="lesson-section"><div class="section-label">01 / VLOOKUP</div><h2>Kam reikalinga VLOOKUP?</h2><p class="lead">VLOOKUP suranda reikšmę pirmajame nurodytos lentelės stulpelyje ir pateikia tos pačios eilutės duomenis iš pasirinkto stulpelio.</p><p>Įsivaizduok elektroninę parduotuvę. Žinai prekės kodą, bet nori automatiškai parodyti jos pavadinimą ir kainą. Vietoj rankinio ieškojimo galima naudoti <strong>VLOOKUP</strong> (*vertical lookup* – vertikalioji paieška).</p>
+<div class="table-wrap"><table class="info-table"><thead><tr><th>A · Kodas</th><th>B · Pavadinimas</th><th>C · Kaina (€)</th></tr></thead><tbody>
+<tr><td>P101</td><td>Sąsiuvinis</td><td>2,20</td></tr>
+<tr><td>P103</td><td>USB laikmena</td><td>12,50</td></tr>
+<tr><td>P108</td><td>Monitorius</td><td>169,00</td></tr></tbody></table></div>
+<p>Jei į <code>E2</code> įrašytas kodas <strong>P103</strong>, VLOOKUP gali surasti kainą <strong>12,50 €</strong>.</p>
+<div class="note"><span class="symbol">i</span><p><strong>Esminė taisyklė:</strong> paieškos reikšmė turi būti pirmame (kairiajame) pasirinkto diapazono stulpelyje. VLOOKUP gali grąžinti reikšmes tik iš stulpelių jo dešinėje.</p></div></section>
+<section id="sintakse" class="lesson-section"><div class="section-label">02 / VLOOKUP</div><h2>Keturi funkcijos argumentai</h2><p class="lead">Dažniausiai, kai reikia rasti konkretų kodą, naudojama tiksli paieška.</p><div class="codebox"><div class="code-head"><span>Pavyzdinė formulė</span><button class="copy" type="button">Kopijuoti</button></div><pre><code>=VLOOKUP(E2;$A$2:$C$4;3;FALSE)</code></pre></div>
+<div class="table-wrap"><table><thead><tr><th>Argumentas</th><th>Pavyzdyje</th><th>Reikšmė</th></tr></thead><tbody>
+<tr><td>1. <strong>Ko ieškoti?</strong></td><td><code>E2</code></td><td>Langelyje įrašytas ieškomas kodas.</td></tr>
+<tr><td>2. <strong>Kur ieškoti?</strong></td><td><code>$A$2:$C$4</code></td><td>Lentelės diapazonas, kurio kairėje yra kodai.</td></tr>
+<tr><td>3. <strong>Ką grąžinti?</strong></td><td><code>3</code></td><td>Trečio stulpelio duomenis – kainą.</td></tr>
+<tr><td>4. <strong>Kaip ieškoti?</strong></td><td><code>FALSE</code></td><td>Tikslus atitikmuo.</td></tr></tbody></table></div>
+<div class="soft-panel"><div class="teach-label">Kaip skaičiuojami stulpeliai?</div>
+<p>Jeigu diapazonas yra <code>B5:E16</code>, tai B yra <strong>1</strong> stulpelis, C – <strong>2</strong>, D – <strong>3</strong>, E – <strong>4</strong>. Skaičiuojame <strong>nuo pasirinkto diapazono pradžios</strong>, ne nuo viso darbalapio A stulpelio.</p></div></section>
+<section id="praktinis" class="lesson-section"><div class="section-label">03 / VLOOKUP</div><h2>Pirmoji formulė žingsnis po žingsnio</h2><p class="lead">Naudok tikslią paiešką ir išmok formulę nukopijuoti žemyn.</p><div class="lookup-grid">
+<div class="number-line"><b>1</b><p>Surask duomenų lentelę, kurios pirmame stulpelyje yra ieškomi kodai, pvz., <code>A5:D16</code>.</p></div>
+<div class="number-line"><b>2</b><p>Įrašyk ieškomą kodą į <code>F5</code>, pvz., <code>P103</code>.</p></div>
+<div class="number-line"><b>3</b><p>Į <code>G5</code> rašyk formulę su <strong>2 stulpeliu</strong> pavadinimui gauti.</p></div>
+<div class="number-line"><b>4</b><p>Pažymėk <code>G5</code> ir nukopijuok formulę žemyn. <code>F5</code> automatiškai taps <code>F6</code>, bet <code>$A$5:$D$16</code> nesikeis.</p></div></div>
+<div class="codebox"><div class="code-head"><span>Prekės pavadinimas</span><button class="copy" type="button">Kopijuoti</button></div><pre><code>=VLOOKUP(F5;$A$5:$D$16;2;FALSE)</code></pre></div>
+<div class="codebox"><div class="code-head"><span>Prekės kaina</span><button class="copy" type="button">Kopijuoti</button></div><pre><code>=VLOOKUP(F5;$A$5:$D$16;4;FALSE)</code></pre></div>
+<div class="note"><span class="symbol">i</span><p><strong>Kodėl reikia dolerio ženklų?</strong> <code>$A$5:$D$16</code> yra absoliučios nuorodos – kopijuojant formulę diapazonas lieka toje pačioje vietoje. Be <code>$</code> nuorodos slinktų, todėl paieška gali pradėti veikti neteisingai.</p></div></section>
+<section id="tiksli" class="lesson-section"><div class="section-label">04 / VLOOKUP</div><h2>Tiksli ir apytikslė paieška</h2><p class="lead">Ketvirtasis argumentas lemia, ar ieškoma būtent tokios reikšmės, ar tinkamos reikšmių ribos.</p><div class="table-wrap"><table><thead><tr><th></th><th><code>FALSE</code> (arba 0)</th><th><code>TRUE</code> (arba 1)</th></tr></thead><tbody>
+<tr><td><strong>Kam naudojama?</strong></td><td>Prekės kodams, mokinio ID, knygos numeriui</td><td>Nuolaidos, tarifo arba balų riba</td></tr>
+<tr><td><strong>Paieškos taisyklė</strong></td><td>Tik tikslus sutapimas</td><td>Didžiausia lentelės riba, neviršijanti ieškomo skaičiaus</td></tr>
+<tr><td><strong>Rikiavimas</strong></td><td>Pirmosios skilties rikiuoti nebūtina</td><td>Pirmą stulpelį <strong>būtina rikiuoti didėjančiai</strong></td></tr></tbody></table></div>
+<h3>Nuolaidų pavyzdys</h3>
+<div class="table-wrap"><table><thead><tr><th>Minimali suma (€)</th><th>Nuolaida</th></tr></thead><tbody>
+<tr><td>0</td><td>0 %</td></tr><tr><td>50</td><td>3 %</td></tr><tr><td>100</td><td>5 %</td></tr><tr><td>200</td><td>7 %</td></tr><tr><td>400</td><td>10 %</td></tr></tbody></table></div>
+<p>Jei pirkimo suma <strong>130 €</strong>, jai taikoma <strong>5 % nuolaida</strong>: 130 ≥ 100, bet 130 &lt; 200.</p>
+<div class="codebox"><div class="code-head"><span>Apytikslė paieška pagal sumą</span><button class="copy" type="button">Kopijuoti</button></div><pre><code>=VLOOKUP(F5;$A$5:$B$9;2;TRUE)</code></pre></div>
+<div class="caution"><strong>Dažna klaida:</strong> jei ketvirtojo argumento nenurodysi, VLOOKUP pagal numatytuosius nustatymus vykdys <strong>apytikslę</strong> paiešką. Todėl ieškant kodų aiškiai įrašyk <code>FALSE</code>.</div></section>
+<section id="deriniai" class="lesson-section"><div class="section-label">05 / VLOOKUP</div><h2>VLOOKUP kartu su IF ir IFERROR</h2><p class="lead">Radus duomenis, juos galima papildomai skaičiuoti arba tikrinti sąlygą.</p><h3>Jei kodo nėra – aiškus pranešimas</h3>
+<div class="codebox"><div class="code-head"><span>IFERROR + VLOOKUP</span><button class="copy" type="button">Kopijuoti</button></div><pre><code>=IFERROR(VLOOKUP(F5;$A$5:$D$16;2;FALSE);"Nerasta")</code></pre></div>
+<p>Jeigu kodo lentelėje nėra, vietoj <code>#N/A</code> bus parodytas pranešimas <strong>„Nerasta“</strong>.</p>
+<h3>VLOOKUP grąžina taškus, IF juos įvertina</h3>
+<div class="codebox"><div class="code-head"><span>IF + VLOOKUP</span><button class="copy" type="button">Kopijuoti</button></div><pre><code>=IF(VLOOKUP(F5;$A$5:$D$16;4;FALSE)&gt;=60;"Išlaikė";"Neišlaikė")</code></pre></div>
+<p>Jei rastas mokinys surinko bent 60 taškų – „Išlaikė“. Kitu atveju – „Neišlaikė“.</p>
+<h3>Paieška kitoje darbaknygės kortelėje</h3>
+<div class="codebox"><div class="code-head"><span>Kito lapo duomenys</span><button class="copy" type="button">Kopijuoti</button></div><pre><code>=VLOOKUP(A5;PREKES!$A$5:$D$16;4;FALSE)</code></pre></div>
+<p><code>PREKES!</code> reiškia, kad duomenų lentelė yra kitame darbalapyje. Praktiniame faile taip skaičiuosi užsakymų kainas.</p>
+<div class="note"><span class="symbol">i</span><p><strong>Patarimas:</strong> naudok <code>IFERROR</code> tik tada, kai supranti galimą klaidą. Jis gali paslėpti ir neteisingai sudarytos formulės klaidas.</p></div></section>
+<section id="klaidos" class="lesson-section"><div class="section-label">06 / VLOOKUP</div><h2>Dažniausios klaidos ir jų taisymas</h2><p class="lead">Daugiausia netikslumų atsiranda dėl neteisingo diapazono, pasirinkto stulpelio ar paieškos tipo.</p><div class="table-wrap"><table><thead><tr><th>Kas nutiko?</th><th>Galima priežastis</th><th>Ką patikrinti?</th></tr></thead><tbody>
+<tr><td><code>#N/A</code></td><td>Ieškomos reikšmės nėra arba nesutampa jos tipas (skaičius / tekstas).</td><td>Patikrink kodą ir <code>FALSE</code>.</td></tr>
+<tr><td><code>#REF!</code></td><td>Trečias argumentas didesnis už paieškos diapazono stulpelių skaičių.</td><td>Jei diapazonas <code>A:C</code>, 4-asis stulpelis neegzistuoja.</td></tr>
+<tr><td>Neteisinga kaina</td><td>Paliktas <code>TRUE</code> arba nenurodytas ketvirtasis argumentas.</td><td>Ieškant prekės kodo pasirink <code>FALSE</code>.</td></tr>
+<tr><td>Pirma eilutė teisinga, kitos – ne</td><td>Kopijuojant pasislenka lentelės diapazonas.</td><td>Naudok absoliučias nuorodas, pvz., <code>$A$5:$D$16</code>.</td></tr>
+<tr><td><code>#NAME?</code></td><td>Neteisingas funkcijos pavadinimas arba programos kalbos skirtumas.</td><td>Patikrink, ar naudojama funkcija „VLOOKUP“ ir tinkami skirtukai.</td></tr>
+</tbody></table></div>
+<div class="soft-panel"><div class="teach-label">Trys patikrinimo klausimai</div><p>1. Ar ieškomi kodai yra pasirinkto diapazono <strong>pirmame</strong> stulpelyje?</p><p>2. Ar trečiasis argumentas rodo teisingą stulpelį?</p><p>3. Ar pagal situaciją parinktas <code>FALSE</code> arba <code>TRUE</code>?</p></div></section>
+<section id="pasitikrink" class="lesson-section"><div class="section-label">07 / VLOOKUP</div><h2>Savikontrolė prieš praktinį darbą</h2><p class="lead">Atsakyk pats, tik tada išskleisk paaiškinimą.</p><div class="questions"><details class="mini-test"><summary>1. Ką VLOOKUP daro su kodu P103?</summary><p><strong>Atsakymas:</strong> Suranda P103 pirmame paieškos diapazono stulpelyje ir grąžina tos pačios eilutės pasirinkto stulpelio reikšmę.</p></details><details class="mini-test"><summary>2. Ką reiškia trečiasis argumentas 4?</summary><p><strong>Atsakymas:</strong> Grąžinami duomenys iš ketvirto pasirinkto diapazono stulpelio, skaičiuojant nuo jo kairiojo krašto.</p></details><details class="mini-test"><summary>3. Kodėl pagal prekės kodą naudotum FALSE?</summary><p><strong>Atsakymas:</strong> Ieškant konkretaus kodo reikia tiksliai jį atitinkančios eilutės.</p></details><details class="mini-test"><summary>4. Ar VLOOKUP gali rasti duomenis stulpelyje į kairę nuo kodo?</summary><p><strong>Atsakymas:</strong> Ne, VLOOKUP paieškos stulpelis turi būti kairiausias pasirinktame diapazone.</p></details><details class="mini-test"><summary>5. Kuo skiriasi F5 ir $A$5:$D$16?</summary><p><strong>Atsakymas:</strong> F5 – santykinė nuoroda, kopijuojant keičiasi; $A$5:$D$16 – absoliuti ir lieka vietoje.</p></details><details class="mini-test"><summary>6. Ar TRUE veiks teisingai, jei nuolaidų ribos nesurikiuotos?</summary><p><strong>Atsakymas:</strong> Rezultatas gali būti neteisingas. Apytikslei paieškai pirmą stulpelį būtina surikiuoti didėjimo tvarka.</p></details><details class="mini-test"><summary>7. Jei pirkimas 150 €, o ribos 0, 50, 100, 200, kurią ribą parinks TRUE?</summary><p><strong>Atsakymas:</strong> 100, nes tai didžiausia riba, neviršijanti 150.</p></details><details class="mini-test"><summary>8. Kaip tvarkingai parodyti „Nerasta“ vietoj #N/A?</summary><p><strong>Atsakymas:</strong> Naudok IFERROR(VLOOKUP(...;FALSE);"Nerasta").</p></details><details class="mini-test"><summary>9. Kaip kreiptis į duomenis iš lapo PREKES?</summary><p><strong>Atsakymas:</strong> Diapazoną rašyk su lapo pavadinimu, pvz., PREKES!$A$5:$D$16.</p></details><details class="mini-test"><summary>10. Jei paieškos diapazonas B:E, ką reiškia 2?</summary><p><strong>Atsakymas:</strong> Antrasis diapazono stulpelis yra C.</p></details></div>
+<div class="note"><span class="symbol">i</span><p><strong>Praktinis darbas:</strong> mokytojo pateiktame Excel faile atlik 25 užduotis lapuose PREKES, MOKINIAI, KNYGOS, NUOLAIDOS, UZSAKYMAI. Kiekviename lape nurodymai pateikti tiesiai virš geltonų langelių.</p></div></section>
+<section id="saltiniai" class="lesson-section"><div class="section-label">08 / VLOOKUP</div><h2>Šaltiniai ir atmintinė</h2><p class="lead">VLOOKUP naudojama tiek Microsoft Excel, tiek kitose VLOOKUP palaikančiose skaičiuoklėse, tačiau argumentų skirtukai ir pavadinimai gali skirtis.</p><div class="soft-panel"><div class="teach-label">Trumpa atmintinė</div><p><code>=VLOOKUP(ieškomas_kodas; $A$5:$D$16; 2; FALSE)</code> – <strong>tiksli paieška</strong>.</p>
+<p><code>=VLOOKUP(suma; $A$5:$B$10; 2; TRUE)</code> – <strong>apytikslė paieška</strong>, tik didėjančia tvarka surikiuotoje lentelėje.</p></div>
+<p><a href="https://support.microsoft.com/en-us/excel/functions/vlookup-function" target="_blank" rel="noopener noreferrer">Microsoft Support – VLOOKUP funkcijos aprašas</a></p>
+<p><a href="https://support.microsoft.com/en-us/excel/use-the-table-array-argument-in-a-lookup-function" target="_blank" rel="noopener noreferrer">Microsoft Support – absoliučių nuorodų naudojimas paieškos lentelėje</a></p>
+<p class="muted">Mokomoji medžiaga parengta 11 klasės mokiniams. Pavyzdžių duomenys sukurti mokymosi tikslams, jie nėra tikri asmens ar verslo duomenys.</p></section>
+<footer class="footer"><span class="muted">NGG informatika · 11 klasė · VLOOKUP</span><div style="display:flex;gap:9px;flex-wrap:wrap"><button type="button" class="button button-secondary" onclick="window.print()">Spausdinti</button><a href="#kam" class="button">Į pradžią ↑</a></div></footer>
+</main></div>
+<script>(function(){
+const nav=[...document.querySelectorAll(".nav a")];
+const sections=nav.map(a=>document.querySelector(a.getAttribute("href"))).filter(Boolean);
+const progress=document.getElementById("progress");
+let ticking=false;
+const update=()=>{
+ const max=document.documentElement.scrollHeight-window.innerHeight;
+ progress.style.width=(max>0?Math.min(100,Math.max(0,window.scrollY/max*100)):0)+"%";
+ const threshold=window.innerHeight*.22;
+ let active=sections[0];
+ for(const section of sections)if(section.getBoundingClientRect().top<=threshold)active=section;
+ nav.forEach(link=>{const on=link.getAttribute("href")==="#"+active.id;link.classList.toggle("active",on);if(on)link.setAttribute("aria-current","location");else link.removeAttribute("aria-current")});
+ ticking=false;
+};
+window.addEventListener("scroll",()=>{if(!ticking){ticking=true;requestAnimationFrame(update)}},{passive:true});
+window.addEventListener("resize",update);update();
+document.querySelectorAll(".copy").forEach(button=>button.addEventListener("click",async()=>{const code=button.closest(".codebox").querySelector("pre code").textContent;try{await navigator.clipboard.writeText(code);button.textContent="Nukopijuota";setTimeout(()=>button.textContent="Kopijuoti",1300)}catch{button.textContent="Pažymėk formulę";setTimeout(()=>button.textContent="Kopijuoti",1300)}}));
+})();</script></body></html>
