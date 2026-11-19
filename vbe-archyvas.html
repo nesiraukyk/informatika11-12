@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="lt"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VBE klausimų archyvas · NGG Informatika</title>
+<link rel="stylesheet" href="style.css"><link rel="stylesheet" href="vbe-archive.css"></head>
+<body><main class="archiveWrap">
+<header class="archiveHeader"><a href="./index.html">← Mokytojo aplinka</a><h1>Informatikos VBE klausimų archyvas</h1><p>Istoriniai, bandomieji ir autoriniai klausimai. Atsakymai prieinami tik mokytojui ir administratoriui.</p></header>
+<div id="archiveMessage" class="notice">Tikrinamas prisijungimas...</div>
+<div id="archiveApp" hidden>
+ <div class="archiveStats" id="archiveStats"></div>
+ <nav class="archiveTabs"><button id="questionsTab" class="active">Klausimai</button><button id="sourcesTab">Egzaminų inventorius</button><button id="importTab">Importuoti CSV</button></nav>
+ <section id="questionsPanel">
+  <div class="archiveFilters"><input id="filterText" placeholder="Ieškoti klausimo, atsakymo, temos..."><select id="filterYear"><option value="">Visi metai</option></select><select id="filterFit"><option value="">Visa atitiktis</option><option value="TAIP">Tinka 11 klasei</option><option value="IS_DALIES">Iš dalies</option><option value="NE">Neaktualu</option></select><select id="filterOrigin"><option value="">Visos kilmės</option><option value="PERFRAZUOTA_PAGAL_EGZAMINA">Pagal egzaminą</option><option value="AUTORINIS_MOKOMASIS">Autorinis</option></select></div>
+  <p class="archiveSub" id="resultCount"></p><div id="questionsList"></div><button id="moreQuestions" class="primary" hidden>Rodyti daugiau</button>
+ </section>
+ <section id="sourcesPanel" hidden><div id="sourcesList"></div></section>
+ <section id="importPanel" hidden><div class="panel"><h2>Importuoti ankstesnę V2 bazę</h2><p>Pasirink „informatikos_klausimai_2026_2027_V2.csv“ arba „informatikos_archyvo_inventorius_V2.csv“. Importas pagal ID nepersidubliuoja. Visi klausimai pažymimi „Nepatvirtinta“.</p><label>Įrašų tipas <select id="importType"><option value="questions">Klausimai</option><option value="sources">Egzaminų inventorius</option></select></label><input type="file" id="csvFile" accept=".csv,text/csv"><button class="primary" id="importButton">Importuoti</button><p class="archiveSub" id="importStatus"></p></div></section>
+</div></main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="supabase-config.js"></script><script src="vbe-archive.js"></script></body></html>
