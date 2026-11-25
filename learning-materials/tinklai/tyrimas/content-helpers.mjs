@@ -1,0 +1,9 @@
+export const single=(id,prompt,options,answer,explanation,skill,transfer=false)=>({id,type:'single',prompt,options,answer,explanation,skill,transfer});
+export const multi=(id,prompt,options,answer,explanation,skill)=>({id,type:'multi',prompt,options,answer,explanation,skill});
+export const open=(id,prompt,criteria,skill)=>({id,type:'open',prompt,criteria,skill,transfer:true});
+export const ordered=(id,prompt,labels,options,answer,explanation,skill,type='order')=>({id,type,prompt,labels,options,answer,explanation,skill});
+export function makeMission(id,lab,title,level,problem,goal,theory,hints,skills,lesson,questions,extra={}){return {id,lab,title,level,problem,goal,theory,hints,skills,lesson,questions,prediction:'Kaip manai, ar tavo pasirinktas pakeitimas leis užbaigti perdavimą?',...extra}}
+export const NETWORK_THEORY={
+ route:[{title:'Maršrutizatorius · Router',text:'Router nukreipia IP paketus tarp tinklų. Vietiniam to paties LAN perdavimui išorinis maršrutas nereikalingas.'},{title:'Numatytasis šliuzas · Default gateway',text:'Ne savo /24 tinklo tikslui įrenginys kreipiasi į pasiekiamą šliuzą. Pavyzdžiui, iš vietinio tinklo siunčiamas paketas į išorinę paslaugą.'},{title:'Prieigos grandinė · Uplink',text:'Šiame pavyzdyje WAN per modemą / ONT pasiekia virtualų tiekėją. Privačiam IPv4 išoriniam ryšiui router atlieka NAT. Tai nėra ugniasienės pakaitalas.'}],
+ bridge:[{title:'Šakotuvas · Hub',text:'Fizinio lygmens įrenginys kartoja gautą signalą į visus kitus prievadus. Jis neparenka gavėjo pagal MAC adresų lentelę.'},{title:'Komutatorius · Switch',text:'Šiame modelyje MAC prievadai jau žinomi: individualus kadras perduodamas į gavėjo kelią. Tikras switch nežinomą paskirtį ar broadcast gali išplatinti.'},{title:'Prieigos taškas · Access point',text:'AP sieja Wi-Fi ir laidinį LAN. Jis pats nesukuria interneto ryšio. Tinklo vardas SSID padeda pasirinkti, prie kurios prieigos jungtis.'}]
+};
